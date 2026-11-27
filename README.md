@@ -10,7 +10,7 @@ La proposta: una piattaforma venduta in abbonamento alle farmacie, con cui ogni 
 
 - No marketplace stile Just Eat: c'è già Pharmap, e la commissione sui farmaci con ricetta vale poco ed è delicata dal punto di vista normativo.
 - Sì a un software per le farmacie, che mantengono il rapporto con il paziente.
-- Il software porta il nome della farmacia che lo sceglie. Il paziente ordina da link web, WhatsApp integrato o app. L'app usa il motore di Armadietto (strada A).
+- Modello misto: l'app nello store ha il marchio della piattaforma, tutto ciò che il paziente vede (link, WhatsApp, widget, sezione "La mia farmacia") porta il nome della farmacia che lo sceglie. Il paziente ordina da link web, WhatsApp integrato o app. L'app usa il motore di Armadietto (strada A).
 - Ricavi da abbonamento mensile per farmacia, a livelli. In futuro anche consegna con corrieri e offerta per le catene.
 
 **Prossimo passo:** validare con 15–20 farmacie e 10–15 pazienti, poi un test manuale con 2–3 farmacie prima di sviluppare il prodotto completo.
@@ -78,6 +78,26 @@ Il paziente vede sempre e solo il nome della farmacia che ha scelto il software.
 2. **App dedicata negli store con il nome della farmacia:** Apple rifiuta le app fatte da template se non sono pubblicate dal titolare dei contenuti ([guideline 4.2.6](https://developer.apple.com/forums/thread/840982)). Quindi la pubblica la farmacia, con il suo account sviluppatore, e voi la gestite per lei. È costosa da mantenere: solo come offerta premium per catene e gruppi.
 
 Armadietto resta l'app consumer per chi non ha una farmacia collegata. Il suo codice diventa il motore delle app con il nome delle farmacie.
+
+### Decisione sul marchio
+
+L'app negli store ha il marchio della piattaforma; il nome della farmacia sta dove il paziente la incontra. Il valore costruito, cioè base di utenti e marchio, resta vostro, e la farmacia mantiene il rapporto con il paziente.
+
+| Dove | Marchio |
+| --- | --- |
+| App negli store | Piattaforma (nuovo nome di Armadietto) |
+| Dentro l'app, sezione "La mia farmacia" | Farmacia: logo, colori, farmacista, servizi |
+| Link web, WhatsApp, widget sul sito | Solo farmacia |
+| Dashboard e messaggi al paziente | Farmacia |
+| App dedicata negli store | Farmacia, solo come offerta premium per catene e gruppi |
+
+**La promessa alle farmacie, scritta nel contratto**
+
+- A un paziente collegato non vengono mai mostrate altre farmacie.
+- I dati del paziente non vengono usati per indirizzarlo altrove.
+- Se la farmacia lascia la piattaforma, può esportare i dati dei suoi pazienti, con il loro consenso.
+
+Pitch: "la tua farmacia, dentro un'app che i pazienti hanno già".
 
 ## Widget e API per i siti delle farmacie
 
@@ -207,7 +227,7 @@ Armadietto ha già la parte più difficile, cioè scorte, scansione e "Da fare".
 | Nessuna conferma di assunzione | Invariato: coerente con "l'app ricorda e organizza, non consiglia" |
 | Target 25–45 anni e caregiver | Allargato: pazienti cronici più anziani, tramite il farmacista e chi li assiste |
 | Paywall consumer | Premium incluso per chi è collegato a una farmacia abbonata |
-| Nome da cambiare, verso la salute in generale | Per le farmacie l'app mostra solo nome, logo e colori della farmacia. Il nuovo nome serve all'app consumer |
+| Nome da cambiare, verso la salute in generale | Per le farmacie l'app mostra solo nome, logo e colori della farmacia. Il nuovo nome è quello della piattaforma negli store |
 
 **Proprietà e accordi.** Armadietto è tuo e la società nasce con un'altra persona. Va deciso per iscritto se Armadietto entra nella società come conferimento o resta tuo e viene dato in licenza. Va verificato anche con il vincolo del contratto Hinto: la società o la partita IVA dovrebbe essere intestata al socio.
 
@@ -274,7 +294,7 @@ L'MVP deve battere WhatsApp al banco. La V2 dà i motivi per pagare e restare, l
 - Telefarmacia: televisita assistita, telemonitoraggio da dispositivi certificati, integrazione con i centri servizi di telemedicina
 - API REST e webhook per l'e-commerce delle farmacie, plugin WordPress/Shopify, widget Riordina con accesso paziente
 - Funzioni per catene e gruppi
-- Elenco delle farmacie aderenti, l'inizio del marketplace
+- Elenco delle farmacie aderenti, attivabile dal paziente (per esempio per la farmacia di turno), senza dirottare i pazienti collegati
 - Pagamento online, se il legale lo approva
 
 ## Privacy, dispositivo medico e rischi
@@ -289,7 +309,7 @@ Il rischio principale non è tecnico: è l'adozione da parte dei pazienti. Seguo
 | Condivisione delle terapie | Consenso esplicito, per singola voce, revocabile in qualsiasi momento |
 | Dispositivo medico (MDR 2017/745) | Promemoria e scorte sì; dosi, interazioni e consigli clinici automatici no. Ogni consiglio passa dal farmacista |
 | Vendita a distanza | Pagamento alla consegna nell'MVP. Prenotazione e consegna sempre fatte dalla farmacia |
-| Diffidenza delle farmacie verso le piattaforme | Il paziente resta della farmacia, con il suo logo. Sondare Federfarma provinciale come canale |
+| Diffidenza delle farmacie verso le piattaforme | Promessa scritta nel contratto: nessun dirottamento dei pazienti, dati esportabili, nome della farmacia in primo piano. Sondare Federfarma provinciale come canale |
 | Concorrenza di Pharmap e Poste | Non competere sulla consegna veloce, ma su terapie, scorte e riordino |
 
 ## Piano di validazione
@@ -335,7 +355,7 @@ L'obiettivo è avere almeno 3 farmacie pronte a pagare e un uso settimanale dei 
 - [ ] Armadietto nella società: conferimento o licenza
 - [ ] Intestazione della società o della partita IVA, compatibile con il contratto Hinto
 - [ ] Ruoli e quote: sviluppo, vendita alle farmacie, operatività
-- [ ] Nuovo nome di Armadietto
+- [ ] Nome della piattaforma, cioè il nuovo nome di Armadietto: compare negli store, da decidere presto
 - [ ] Città di partenza per le prime farmacie pilota
 
 ## Fonti
