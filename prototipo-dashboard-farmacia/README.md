@@ -4,12 +4,11 @@ Prototipo cliccabile della dashboard web per il farmacista: un solo file, `index
 
 ## Cosa contiene
 
-- **In arrivo** (colonna a sinistra): messaggi da WhatsApp, app e link, consulti e pagamenti. Claude li legge e li smista in bozze d'ordine, consulti o domande pratiche; il farmacista decide.
+- **In arrivo** (colonna a sinistra): messaggi da WhatsApp, app e link e pagamenti. Claude li legge e li smista in bozze d'ordine, domande sui farmaci o domande pratiche; il farmacista decide e risponde da lì.
 - **Ordini** (al centro): coda a colonne (Nuovi, Da pagare, In preparazione, Pronti, In consegna) con il dettaglio in un pannello laterale. Dopo la verifica parte un link di pagamento; l'ordine si prepara solo a pagamento confermato.
 - **Giro di consegna**: fattorino della farmacia oppure rider partner tipo Glovo, con prenotazione, codice di ritiro e tracking simulati.
-- **Telefarmacia**: consulti dei pazienti per messaggio, a cui risponde il farmacista.
 - **Chat con Claude** (a destra): legge i dati della dashboard, propone azioni da approvare e non dà consigli clinici.
-- **Simula arrivo**: fa arrivare un ordine, un messaggio WhatsApp, un consulto o un pagamento.
+- **Simula arrivo**: fa arrivare un ordine, un messaggio WhatsApp o un pagamento.
 
 Nel file c'è anche il codice dell'app del paziente e del widget per il sito della farmacia, al momento non collegato a nessun tab.
 
@@ -19,4 +18,4 @@ Apri `index.html` nel browser. La chat e la lettura dei messaggi usano Claude so
 
 ## Da verificare prima del prodotto
 
-Pagamento online anticipato dei farmaci con ricetta, consegna con rider esterni e risposte scritte ai consulti: sono tra le domande per il legale elencate nel [README](../README.md).
+Pagamento online anticipato dei farmaci con ricetta, consegna con rider esterni e risposte scritte alle domande sui farmaci: sono tra le domande per il legale elencate nel [README](../README.md).
