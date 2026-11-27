@@ -1,0 +1,1555 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Farmacia Rossi · Banco digitale</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: assistente fisso a sinistra, area di lavoro a destra con tre tab. */
+:root{
+  --bg:#F4F5F2; --surface:#FFFFFF; --surface-2:#F1F2EE; --lane:#EBEDE8; --chat:#F7F8F6; --line:#E2E5DF; --line-2:#C9CFC7;
+  --fg:#17201B; --fg-2:#3E4943; --muted:#5B6660; --accent:#0B6B5D; --accent-ink:#FFFFFF; --accent-soft:#E3F1EE; --accent-fg:#08493F; --mint:#6FB3A5;
+  --warn-bg:#FCEBDD; --warn-fg:#8F3A0C; --warn-strong:#B4470F; --info-bg:#E4EEF9; --info-fg:#174D8A; --violet-bg:#ECEAF6; --violet-fg:#4A3D8F;
+  --claude:#C15F3C; --claude-soft:#F7E6DE; --ink:#17201B; --ink-fg:#FFFFFF;
+  --font: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0F1512; --surface:#161E1A; --surface-2:#1D2722; --lane:#131B17; --chat:#121915; --line:#2A3630; --line-2:#3A4841;
+  --fg:#E7EEEA; --fg-2:#C3CEC8; --muted:#9AA8A0; --accent:#3FB39F; --accent-ink:#06231D; --accent-soft:#16332C; --accent-fg:#8ED9C9; --mint:#3F8F80;
+  --warn-bg:#3A2415; --warn-fg:#F2B48C; --warn-strong:#E58A55; --info-bg:#172A42; --info-fg:#9CC2F0; --violet-bg:#262140; --violet-fg:#C2B8F5;
+  --claude:#E08A66; --claude-soft:#3A241B; --ink:#E7EEEA; --ink-fg:#0F1512; color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --bg:#0F1512; --surface:#161E1A; --surface-2:#1D2722; --lane:#131B17; --chat:#121915; --line:#2A3630; --line-2:#3A4841;
+  --fg:#E7EEEA; --fg-2:#C3CEC8; --muted:#9AA8A0; --accent:#3FB39F; --accent-ink:#06231D; --accent-soft:#16332C; --accent-fg:#8ED9C9; --mint:#3F8F80;
+  --warn-bg:#3A2415; --warn-fg:#F2B48C; --warn-strong:#E58A55; --info-bg:#172A42; --info-fg:#9CC2F0; --violet-bg:#262140; --violet-fg:#C2B8F5;
+  --claude:#E08A66; --claude-soft:#3A241B; --ink:#E7EEEA; --ink-fg:#0F1512; color-scheme:dark; }
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:14px;line-height:1.45}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.app{display:grid;grid-template-columns:minmax(320px,390px) minmax(0,1fr);min-height:100%}
+@media (max-width:900px){.app{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- Assistente ---------- */
+.ai{background:var(--chat);border-right:1px solid var(--line);display:flex;flex-direction:column;height:100vh;position:sticky;top:0}
+@media (max-width:900px){.ai{height:auto;min-height:70vh;position:static;border-right:0;border-bottom:1px solid var(--line)}}
+.ai-head{display:flex;align-items:center;gap:10px;padding:14px 12px 10px max(16px,env(safe-area-inset-left,0px))}
+.ai-head h2{margin:0;font-size:16px;font-weight:600;flex:1}
+.claude-tag{display:inline-flex;align-items:center;gap:5px;background:var(--claude-soft);color:var(--claude);border-radius:999px;padding:3px 10px;font-size:11.5px;font-weight:600}
+.pend{background:var(--accent-soft);color:var(--accent-fg);border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600;white-space:nowrap}
+.icon-btn{border:0;background:transparent;width:34px;height:34px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;color:var(--muted)}
+.icon-btn:hover{background:var(--surface-2);color:var(--fg)}
+.icon-btn[aria-pressed="true"]{color:var(--accent)}
+.ai-log{flex:1;overflow-y:auto;padding:4px 16px 16px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:18px}
+.hello{display:flex;flex-direction:column;gap:12px;padding-top:10px}
+.hello h3{margin:0;font-size:24px;line-height:1.2;font-weight:600;letter-spacing:-.01em;color:var(--accent);text-wrap:balance}
+.hello p{margin:0;color:var(--fg-2);font-size:15px}
+.sugg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.sugg button{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;min-height:76px;display:flex;flex-direction:column;justify-content:space-between;gap:8px;font-size:13px;font-weight:500}
+.sugg button:hover{border-color:var(--line-2)}
+.sugg small{color:var(--muted);font-weight:400;font-size:11px}
+.notice{background:var(--warn-bg);color:var(--warn-fg);border-radius:12px;padding:10px 12px;font-size:13px}
+
+.msg-me{align-self:flex-end;max-width:85%;background:var(--accent-soft);color:var(--fg);border-radius:18px;padding:9px 14px;font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg-ai{display:flex;gap:10px;align-items:flex-start}
+.msg-ai .star{flex:0 0 auto;margin-top:2px}
+.msg-ai .body{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}
+.acts{display:flex;flex-direction:column;gap:3px}
+.acts:empty{display:none}
+.act{font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:center}
+.act::before{content:"";width:6px;height:6px;border-radius:999px;background:var(--mint)}
+.txt{font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+.txt p{margin:0 0 6px}.txt p:last-child{margin:0}
+.txt ul{margin:2px 0 6px;padding-left:18px}.txt li{margin:2px 0}
+.thinking{font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:center}
+.dots{display:inline-flex;gap:3px}.dots i{width:5px;height:5px;border-radius:999px;background:var(--accent);opacity:.4;animation:b 1.2s infinite}
+.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+@keyframes b{0%,80%,100%{opacity:.25}40%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.dots i{animation:none;opacity:.7}}
+.err{font-size:13px;color:var(--warn-fg);background:var(--warn-bg);border-radius:10px;padding:8px 10px}
+.cards{display:flex;flex-direction:column;gap:10px}.cards:empty{display:none}
+.prop{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.prop-k{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.prop-k span{font-size:12px;color:var(--muted)}
+.prop-t{font-weight:600;font-size:13.5px}
+.prop-q{margin:0;background:var(--surface-2);border-radius:12px;padding:10px 12px;font-size:13px;white-space:pre-wrap}
+.prop-why{font-size:12.5px;color:var(--fg-2)}
+.prop-row{display:flex;flex-wrap:wrap;gap:8px}
+.prop-done{display:inline-flex;gap:6px;align-items:center;font-size:12px;font-weight:600;color:var(--accent-fg);background:var(--accent-soft);border-radius:999px;padding:5px 12px;align-self:flex-start}
+.prop-done.no{color:var(--muted);background:var(--surface-2)}
+.fchips{display:flex;flex-wrap:wrap;gap:6px}.fchips:empty{display:none}
+.fchip{border:1px solid var(--line-2);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:12.5px;text-align:left}
+.fchip:hover{border-color:var(--accent);color:var(--accent-fg)}
+.fb{display:flex;gap:2px;margin-left:-6px}
+
+.ai-foot{padding:10px 14px 14px max(14px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:8px}
+.ctx-chip{align-self:flex-start;font-size:12px;border:1px solid var(--line-2);background:var(--surface);border-radius:999px;padding:5px 12px;color:var(--fg)}
+.ctx-chip:hover{border-color:var(--accent)}
+.composer{display:flex;align-items:flex-end;gap:6px;background:var(--surface);border:1px solid var(--line-2);border-radius:24px;padding:4px 4px 4px 18px}
+.composer:focus-within{border-color:var(--accent)}
+.composer textarea{flex:1;min-width:0;border:0;outline:none;background:transparent;resize:none;min-height:40px;max-height:140px;padding:10px 0;font-size:14px;line-height:1.4}
+.send{border:0;width:40px;height:40px;border-radius:999px;background:var(--accent);color:var(--accent-ink);display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
+.send.stop{background:var(--ink);color:var(--ink-fg)}
+.fine{font-size:11px;color:var(--muted);text-align:center}
+
+/* ---------- Area di lavoro ---------- */
+.work{min-width:0;display:flex;flex-direction:column}
+.top{background:var(--surface);border-bottom:1px solid var(--line);padding:12px max(16px,env(safe-area-inset-right,0px)) 0 24px;display:flex;flex-direction:column;gap:10px}
+@media (max-width:900px){.top{padding-left:max(16px,env(safe-area-inset-left,0px))}}
+.brand{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{width:38px;height:38px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex:0 0 auto}
+.brand b{display:block;font-size:15px;font-weight:600}
+.brand .grow{flex:1;min-width:160px;display:flex;flex-direction:column}
+.btn{border:1px solid var(--line-2);background:var(--surface);border-radius:8px;padding:0 13px;min-height:40px;font-size:13px;font-weight:500}
+.btn:hover{background:var(--surface-2)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn.soft{background:var(--accent-soft);border-color:transparent;color:var(--accent-fg);font-weight:600}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--fg-2)}
+.btn.sm{min-height:36px;padding:0 12px;font-size:12.5px}
+.btn.pill{border-radius:999px}
+.btn.big{min-height:48px;font-size:15px;border-radius:10px}
+.tabs{display:flex;gap:4px;overflow-x:auto}
+.tab{border:0;background:transparent;padding:0 16px;min-height:46px;font-size:15px;font-weight:600;color:var(--fg-2);border-bottom:3px solid transparent;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--accent-fg);border-bottom-color:var(--accent)}
+.badge{background:var(--warn-strong);color:#FFFFFF;border-radius:999px;padding:0 7px;font-size:12px;line-height:19px}
+.page{padding:20px max(16px,env(safe-area-inset-right,0px)) 48px 24px;display:flex;flex-direction:column;gap:18px;max-width:1480px;width:100%}
+@media (max-width:900px){.page{padding-left:max(16px,env(safe-area-inset-left,0px))}}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:10px}
+.kpi{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:1px}
+.kpi:hover{border-color:var(--line-2)}
+.kpi .l{font-size:12px;color:var(--muted);font-weight:500}
+.kpi .v{font-size:24px;font-weight:600;font-variant-numeric:tabular-nums}
+.kpi .s{font-size:12px;color:var(--muted)}
+.bar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.vseg{display:inline-grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:3px;background:var(--lane);border-radius:10px;padding:3px}
+.vseg button{border:0;background:transparent;border-radius:8px;padding:0 14px;min-height:38px;font-size:13px;font-weight:600;color:var(--fg-2);white-space:nowrap}
+.vseg button[aria-pressed="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(23,32,27,.18)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line-2);background:var(--surface);border-radius:999px;padding:0 12px;min-height:34px;font-size:13px;font-weight:500}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--ink-fg)}
+.summary{font-size:13px;color:var(--muted)}
+
+.ord{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start}
+.board{flex:999 1 560px;min-width:0;overflow-x:auto}
+.cols{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;min-width:1000px}
+.dot{width:8px;height:8px;border-radius:999px;background:var(--accent);flex:0 0 auto}
+.s-pagamento{background:var(--claude-soft);color:var(--claude)}
+.tag.pay{background:var(--claude-soft);color:var(--claude)}
+.paynote{border-radius:8px;padding:9px 11px;font-size:13px;background:var(--claude-soft);color:var(--claude)}
+.col{background:var(--lane);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px;min-height:420px}
+.col-h{display:flex;justify-content:space-between;align-items:baseline;padding:4px 6px 6px}
+.col-h h3{margin:0;font-size:14px;font-weight:600}
+.col-h small{display:block;font-size:12px;color:var(--muted)}
+.col-h span{font-weight:600;color:var(--fg-2);font-variant-numeric:tabular-nums}
+.ocard{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:6px;font-size:13px;box-shadow:0 1px 0 rgba(23,32,27,.04)}
+.ocard[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.ocard .t{display:flex;justify-content:space-between;gap:8px;width:100%}
+.ocard .t b{font-size:14px}
+.ocard .t span,.ocard .sub{font-size:12px;color:var(--fg-2)}
+.ocard .t span{color:var(--muted);font-variant-numeric:tabular-nums}
+.tags{display:flex;flex-wrap:wrap;gap:4px}
+.tag{border-radius:6px;padding:2px 7px;font-size:11px;font-weight:600;background:var(--surface-2);color:var(--fg-2)}
+.tag.new{background:var(--ink);color:var(--ink-fg)}
+.tag.ok{background:var(--accent-soft);color:var(--accent-fg)}
+.tag.w{background:var(--warn-bg);color:var(--warn-fg)}
+.tag.i{background:var(--info-bg);color:var(--info-fg)}
+.col-empty{margin:0;padding:18px 8px;text-align:center;font-size:12px;color:var(--muted)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;min-width:0}
+.ord > .det{flex:1 1 360px}
+.split{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start}
+.split > .list{flex:1 1 320px}
+.split > .det{flex:999 1 460px}
+.pill{display:inline-flex;align-items:center;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:600;white-space:nowrap}
+.s-nuovo{background:var(--warn-bg);color:var(--warn-fg)}
+.s-prep{background:var(--info-bg);color:var(--info-fg)}
+.s-pronto,.s-chiuso{background:var(--accent-soft);color:var(--accent-fg)}
+.s-consegna{background:var(--violet-bg);color:var(--violet-fg)}
+.list{display:flex;flex-direction:column}
+.row{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line);border-left:3px solid transparent}
+.row:last-child{border-bottom:0}
+.row.on{border-left-color:var(--accent);background:var(--accent-soft)}
+.row-main{flex:1;min-width:0;border:0;background:transparent;text-align:left;padding:12px 14px;display:flex;flex-direction:column;gap:5px}
+.row-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:space-between}
+.row-top b{font-size:14px}
+.row-sub{font-size:12.5px;color:var(--fg-2)}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+.det{display:flex;flex-direction:column}
+.det-sec{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.det-sec:last-child{border-bottom:0}
+.det h2{margin:0;font-size:19px;font-weight:600;text-wrap:balance}
+.kv{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.lbl{font-size:12px;color:var(--muted)}
+.h3{font-size:13px;font-weight:600;color:var(--fg-2)}
+.item{border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;background:var(--surface-2);border-radius:8px;padding:3px}
+.seg button{border:0;background:transparent;border-radius:6px;min-height:34px;font-size:12px;font-weight:600;color:var(--fg-2)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(23,32,27,.18)}
+.hint{font-size:12px;color:var(--muted)}.hint.w{color:var(--warn-fg)}
+.note{border-radius:8px;padding:8px 10px;font-size:12px}
+.note.ok{background:var(--accent-soft);color:var(--accent-fg)}
+.note.n{background:var(--surface-2);color:var(--fg-2)}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:480px){.two{grid-template-columns:minmax(0,1fr)}}
+.field{display:flex;align-items:center;border:1px solid var(--line-2);border-radius:8px;padding:0 10px;min-height:40px;background:var(--surface)}
+.field input{border:0;outline:none;background:transparent;width:100%;padding:8px 6px}
+.thread{display:flex;flex-direction:column;gap:4px}
+.bub{max-width:85%;border-radius:10px;padding:7px 10px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}
+.bub.me{align-self:flex-end;background:var(--accent-soft)}
+.bub.pt{align-self:flex-start;background:var(--surface-2)}
+.meta{font-size:11px;color:var(--muted);margin-bottom:4px}.meta.r{align-self:flex-end}
+.line-in{display:flex;gap:8px}
+.line-in input,.line-in textarea{flex:1;min-width:0;border:1px solid var(--line-2);border-radius:8px;padding:9px 12px;background:var(--surface);outline:none}
+.line-in textarea{resize:vertical;min-height:90px;line-height:1.45;border-radius:10px}
+.line-in input:focus,.line-in textarea:focus{border-color:var(--accent)}
+.ctxbox{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.ctxbox > div{background:var(--surface-2);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:3px;font-size:13px}
+.tbl-wrap{overflow-x:auto}
+.tbl{width:100%;min-width:820px;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:500;font-size:12px;color:var(--muted);padding:12px 16px;border-bottom:1px solid var(--line)}
+.tbl td{padding:12px 16px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:0}
+.toast{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;background:var(--ink);color:var(--ink-fg);padding:11px max(16px,env(safe-area-inset-right,0px)) 11px 24px;font-size:13.5px;font-weight:500}
+.toast.new{background:var(--accent);color:var(--accent-ink)}
+.toast svg{flex:0 0 auto}
+@media (max-width:900px){.toast{padding-left:max(16px,env(safe-area-inset-left,0px))}}
+
+/* Grafica scarna del primo prototipo: barra unica in alto, tab a pillola, angoli 8px, notifiche scure. */
+.top{flex-direction:row;flex-wrap:wrap;align-items:center;gap:12px 24px;padding:12px max(16px,env(safe-area-inset-right,0px)) 12px 24px}
+.brand{display:contents}
+.top .logo{order:0;width:40px;height:40px;font-size:15px}
+.top .grow{order:1;flex:0 1 auto;min-width:0}
+.top .tabs{order:2;flex:0 1 auto;gap:4px}
+.top .btn{order:3;padding:0 11px}
+.tab{border-bottom:0;border-radius:8px;min-height:44px;padding:0 14px;font-size:14px;font-weight:500;color:var(--fg-2)}
+.tab[aria-selected="true"]{background:var(--accent-soft);color:var(--accent-fg)}
+.badge{background:var(--warn-strong);font-weight:600}
+.toast.new{background:var(--ink);color:var(--ink-fg)}
+.btn.pill{border-radius:8px}
+.btn.big{border-radius:10px}
+.ai{background:var(--surface)}
+.ai-head{border-bottom:1px solid var(--line);padding-bottom:12px}
+.ai-log{background:var(--chat);padding-top:16px}
+.hello h3{font-size:20px;color:var(--fg)}
+.hello p{font-size:14px}
+.sugg button{border-radius:10px;min-height:68px}
+.msg-me{background:var(--ink);color:var(--ink-fg);border-radius:12px 12px 4px 12px;padding:8px 12px;font-size:13.5px}
+.msg-ai .txt{background:var(--surface);border:1px solid var(--line);border-radius:12px 12px 12px 4px;padding:8px 12px;font-size:13.5px}
+.msg-ai .txt:empty{display:none}
+.prop{border-radius:12px;padding:12px}
+.prop-q{border-radius:8px}
+.composer{border-radius:10px;padding:4px 4px 4px 12px}
+.send{border-radius:8px}
+.fchip,.ctx-chip{border-radius:8px}
+.app.noai{grid-template-columns:minmax(0,1fr)}
+.app.noai .ai{display:none}
+#aiOpen{order:-1}
+
+/* Layout pulito: una riga in alto, elenco + dettaglio affiancati, dettaglio ordine in un pannello laterale. */
+.page{container-type:inline-size;gap:16px;padding-top:24px}
+.top{padding-top:10px;padding-bottom:10px}
+.top .grow b{font-size:15px}
+.sim{order:3;margin-left:auto;position:relative}
+.sim-menu{position:absolute;right:0;top:calc(100% + 6px);min-width:220px;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px rgba(15,21,18,.12);padding:6px;display:flex;flex-direction:column;z-index:25}
+.sim-menu button{border:0;background:transparent;text-align:left;border-radius:6px;min-height:40px;padding:0 10px;font-size:13.5px}
+.sim-menu button:hover{background:var(--surface-2)}
+.split{display:flex;flex-direction:column;gap:16px}
+@container (min-width: 720px){ .split{display:grid;grid-template-columns:minmax(260px,340px) minmax(0,1fr);align-items:start} }
+.row-main{padding:12px 16px}
+.cols{gap:16px}
+.col{background:transparent;padding:0;min-height:0;gap:10px}
+.col-h{padding:0 2px 8px;border-bottom:2px solid var(--line)}
+.col-h h3{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--fg-2)}
+.col-h small{display:none}
+.col-empty{padding:12px 4px;text-align:left}
+.ocard{border-color:transparent;box-shadow:0 1px 2px rgba(23,32,27,.08)}
+.det-sec{border-bottom:0;padding:10px 20px}
+.det-sec:first-child{padding-top:20px}
+.det-sec:last-child{padding-bottom:20px}
+.det h2{font-size:20px}
+.scrim{position:fixed;inset:0;background:rgba(15,21,18,.22);z-index:29}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(480px,100%);background:var(--surface);box-shadow:-16px 0 40px rgba(15,21,18,.14);overflow-y:auto;z-index:30;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) 0}
+.drawer .card{border:0;border-radius:0}
+.drawer-x{position:sticky;top:0;display:flex;justify-content:flex-end;padding:10px 12px 0;background:var(--surface);z-index:1}
+.sugg{grid-template-columns:minmax(0,1fr);gap:0;border-top:1px solid var(--line)}
+.sugg button{border:0;border-bottom:1px solid var(--line);border-radius:0;min-height:46px;flex-direction:row;align-items:center;background:transparent;padding:8px 2px}
+.sugg button:hover{background:transparent;color:var(--accent-fg)}
+.sugg button::after{content:"\2192";color:var(--muted)}
+.sugg small{display:none}
+.fine{font-size:10.5px}
+
+.queue{flex:0 0 auto;max-height:56vh;overflow-y:auto;border-bottom:1px solid var(--line);background:var(--surface)}
+.q-head{display:flex;align-items:center;gap:8px;padding:12px 16px 6px;position:sticky;top:0;background:var(--surface);z-index:1}
+.q-head h3{margin:0;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--fg-2);flex:1}
+.q-list{display:flex;flex-direction:column;gap:2px;padding:0 8px 10px}
+.q-item{border-radius:10px}
+.q-item.open{background:var(--surface-2)}
+.q-row{width:100%;border:0;background:transparent;text-align:left;display:flex;gap:8px;align-items:flex-start;padding:9px 8px;border-radius:10px}
+.q-row:hover{background:var(--surface-2)}
+.q-row .dot{margin-top:6px}
+.q-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.q-top{display:flex;justify-content:space-between;gap:8px}
+.q-top b{font-size:13.5px}
+.q-prev{font-size:12.5px;color:var(--fg-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.q-body{display:flex;flex-direction:column;gap:10px;padding:2px 10px 12px 24px}
+.q-body .bub{max-width:100%;background:var(--surface)}
+.q-empty{margin:0;padding:2px 16px 12px;font-size:12.5px;color:var(--muted)}
+
+/* Intestazione unica sopra chat e pagina; chat senza intestazione; niente sfondi colorati. */
+.shell{display:flex;flex-direction:column;height:100vh}
+.shell > .top{flex:0 0 auto;border-bottom:1px solid var(--line)}
+.shell > .toast{flex:0 0 auto;position:static}
+.app{flex:1 1 auto;min-height:0;grid-template-rows:minmax(0,1fr)}
+.ai{height:auto;position:static;min-height:0}
+.work{overflow-y:auto;min-height:0}
+@media (max-width:900px){.shell{height:auto}.app{display:block}.work{overflow:visible}.ai{min-height:60vh}}
+#aiOpen{display:inline-flex;align-items:center;gap:8px}
+#aiOpen[aria-pressed="false"]{color:var(--muted)}
+.linkbtn{border:0;background:none;padding:0;color:var(--fg-2);text-decoration:underline;font-size:inherit;cursor:pointer}
+:root{--bg:#FFFFFF;--chat:#FFFFFF;--lane:#FFFFFF;--surface-2:#F5F6F4}
+.queue{border-bottom:1px solid var(--line)}
+.q-head{padding-top:14px}
+.q-item.open{background:transparent;box-shadow:inset 2px 0 0 var(--fg)}
+.tab{border-radius:0}
+.tab[aria-selected="true"]{background:transparent;color:var(--fg);font-weight:600;box-shadow:inset 0 -2px 0 var(--fg)}
+.badge{background:transparent;color:var(--warn-fg);padding:0 2px}
+.tag,.pill{background:transparent!important;border:1px solid var(--line-2);color:var(--fg-2)}
+.tag.ok,.s-pronto,.s-chiuso{border-color:currentColor;color:var(--accent-fg)}
+.tag.w,.s-nuovo{border-color:currentColor;color:var(--warn-fg)}
+.tag.i,.s-prep{border-color:currentColor;color:var(--info-fg)}
+.tag.pay,.s-pagamento{border-color:currentColor;color:var(--claude)}
+.s-consegna{border-color:currentColor;color:var(--violet-fg)}
+.tag.new{border-color:var(--fg);color:var(--fg)}
+.note,.paynote{background:transparent!important;padding:0}
+.note.ok{color:var(--accent-fg)}
+.paynote{color:var(--claude)}
+.prop-done{background:transparent;padding:0}
+.row.on{background:transparent}
+.btn.soft{background:transparent;border-color:var(--line-2);color:var(--fg)}
+.chip[aria-pressed="true"]{background:transparent;color:var(--fg);border-color:var(--fg)}
+.vseg{background:transparent;border:1px solid var(--line)}
+.vseg button[aria-pressed="true"]{box-shadow:none;background:transparent;color:var(--fg);text-decoration:underline;text-underline-offset:4px}
+.seg{background:transparent;border:1px solid var(--line)}
+.seg button[aria-pressed="true"]{box-shadow:none;background:transparent;color:var(--fg);outline:1px solid var(--fg)}
+.ocard{border-color:var(--line);box-shadow:none}
+.ctxbox > div{background:transparent;border:1px solid var(--line)}
+.msg-me{background:var(--surface-2);color:var(--fg)}
+.bub.me{background:var(--surface-2)}
+.q-body .bub{background:var(--surface-2)}
+.toast.new,.toast{background:var(--ink);color:var(--ink-fg)}
+
+.q-head h3{flex:1}
+
+#inBtn{order:3;margin-left:auto;display:inline-flex;align-items:center;gap:8px}
+#inBtn .badge{background:var(--warn-strong);color:#FFFFFF;padding:0 7px;border-radius:999px}
+.sim{margin-left:0}
+.in-drawer{width:min(440px,100%)}
+.in-drawer .queue{max-height:none;border:0;background:var(--surface)}
+.in-drawer .q-head{position:static;padding:8px 16px 6px}
+.q-done{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 24px;font-size:13px}
+.q-done .q-main b{font-size:13px}
+
+/* Tre colonne: In arrivo a sinistra, dashboard al centro, chat a destra. */
+.app{--colIn:minmax(280px,340px);--colAi:minmax(320px,380px);grid-template-columns:var(--colIn) minmax(0,1fr) var(--colAi)}
+.app.noin{--colIn:0px}
+.app.noai{--colAi:0px;grid-template-columns:var(--colIn) minmax(0,1fr) var(--colAi)}
+.app > .inbox-col{grid-column:1;grid-row:1}
+.app > .work{grid-column:2;grid-row:1}
+.app > .ai{grid-column:3;grid-row:1;border-right:0;border-left:1px solid var(--line)}
+.app.noin .inbox-col{display:none}
+.inbox-col{background:var(--surface);border-right:1px solid var(--line);overflow-y:auto;min-height:0}
+.inbox-col .queue{max-height:none;border:0;background:var(--surface)}
+.inbox-col .q-head{position:sticky;top:0}
+#inBtn{order:-2;margin-left:0}
+#aiOpen{order:5}
+.sim{margin-left:auto}
+#inBtn[aria-pressed="false"],#aiOpen[aria-pressed="false"]{color:var(--muted)}
+@media (max-width:900px){.app > .ai{border-left:0;border-top:1px solid var(--line)}.inbox-col{border-right:0;border-bottom:1px solid var(--line)}}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.tbl td{vertical-align:top}
+
+.chan{display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start}
+.chan-fig{margin:0;display:flex;flex-direction:column;gap:8px;flex:0 0 auto}
+.chan-fig.grow{flex:1 1 420px;min-width:0}
+.chan-fig figcaption{font-size:12px;color:var(--muted)}
+.phone{width:300px;max-width:100%;border:1px solid var(--line-2);border-radius:38px;padding:10px;background:var(--surface)}
+.screen{height:600px;border:1px solid var(--line);border-radius:30px;overflow:hidden;display:flex;flex-direction:column;background:var(--surface)}
+.ap-top{display:flex;gap:10px;align-items:center;padding:22px 16px 12px;border-bottom:1px solid var(--line)}
+.ap-top b{display:block;font-size:14px}.ap-top small{font-size:12px;color:var(--muted)}
+.ap-body{flex:1;overflow-y:auto;padding:14px 16px 18px;display:flex;flex-direction:column;gap:12px}
+.ap-body small{font-size:12px;color:var(--muted);display:block}
+.ap-sec{display:flex;flex-direction:column;gap:4px}
+.ap-h{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--fg-2);font-weight:600}
+.ap-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px;text-align:left;width:100%}
+.ap-row b{display:block;font-weight:600}.ap-row small.w{color:var(--warn-fg)}
+.ap-link{border:0;border-bottom:1px solid var(--line);background:transparent}
+.ap-pill{font-size:11px;border:1px solid var(--line-2);border-radius:999px;padding:1px 8px;color:var(--fg-2);white-space:nowrap}
+.ap-pill.w{color:var(--claude);border-color:currentColor}
+.ap-actions{display:flex;flex-direction:column;gap:8px;margin-top:auto}
+.ap-btn,.wg-btn{border:0;border-radius:12px;background:var(--accent);color:var(--accent-ink);min-height:44px;font-weight:600;font-size:14px;padding:0 14px}
+.ap-btn.sm{min-height:32px;font-size:12px;border-radius:8px;padding:0 10px}
+.ap-btn.ghost,.wg-btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line-2)}
+.ap-back{border:0;background:none;padding:0;color:var(--fg-2);font-size:13px;align-self:flex-start;min-height:32px}
+.ap-title{font-size:18px;font-weight:600}
+.ap-lbl{font-size:12px;color:var(--fg-2);margin-bottom:-6px}
+.ap-in{border:1px solid var(--line-2);border-radius:10px;padding:10px 12px;font-size:14px;background:var(--surface);width:100%;outline:none}
+.ap-in:focus{border-color:var(--accent)}
+textarea.ap-in{resize:vertical;min-height:110px}
+.ap-seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.ap-seg button{border:1px solid var(--line-2);background:transparent;border-radius:10px;min-height:40px;font-size:13px}
+.ap-seg button[aria-pressed="true"]{border-color:var(--fg);font-weight:600}
+.ap-err{font-size:13px;color:var(--danger,#B42318)}
+.ap-pay{border:1px solid var(--line-2);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px}
+.ap-msg{border-top:1px solid var(--line);padding-top:8px;font-size:13px}
+.trk{list-style:none;margin:4px 0;padding:0;display:flex;flex-direction:column;gap:0}
+.trk li{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);padding:5px 0;position:relative}
+.trk li.done{color:var(--fg-2)}.trk li.now{color:var(--fg);font-weight:600}
+.trk-dot{width:10px;height:10px;border-radius:999px;border:1.5px solid var(--line-2);flex:0 0 auto}
+.trk li.done .trk-dot{background:var(--accent);border-color:var(--accent)}
+.trk li.now .trk-dot{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.browser{border:1px solid var(--line-2);border-radius:12px;overflow:hidden;background:var(--surface);display:flex;flex-direction:column}
+.b-bar{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--line)}
+.b-dots{display:inline-flex;gap:5px}.b-dots i{width:9px;height:9px;border-radius:999px;border:1px solid var(--line-2)}
+.b-url{flex:1;font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 12px}
+.site{position:relative;height:560px;overflow:hidden;padding:0 20px}
+.site-nav{display:flex;gap:18px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line);font-size:13px;color:var(--fg-2)}
+.site-nav b{margin-right:auto;color:var(--fg)}
+.site-hero{display:flex;flex-direction:column;gap:8px;padding:22px 0}
+.site-cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.ph{background:var(--surface-2);border-radius:8px}
+.wg-launch{position:absolute;right:16px;bottom:16px;border:0;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-weight:600;font-size:14px;padding:0 18px;min-height:46px;box-shadow:0 6px 20px rgba(15,21,18,.18)}
+.wg-panel{position:absolute;right:16px;bottom:16px;width:min(330px,calc(100% - 32px));max-height:calc(100% - 32px);overflow-y:auto;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 36px rgba(15,21,18,.18);display:flex;flex-direction:column}
+.wg-head{display:flex;justify-content:space-between;align-items:center;padding:10px 8px 6px 16px}
+.wg-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:0 12px;border-bottom:1px solid var(--line)}
+.wg-tabs button{border:0;background:transparent;min-height:38px;font-size:13px;color:var(--fg-2)}
+.wg-tabs button[aria-pressed="true"]{color:var(--fg);font-weight:600;box-shadow:inset 0 -2px 0 var(--fg)}
+.wg-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:10px}
+.wg-body small{font-size:12px;color:var(--muted)}
+.snippet{display:block;font-family:var(--mono);font-size:11.5px;color:var(--fg-2);padding:10px 12px;border-top:1px solid var(--line);overflow-x:auto;white-space:pre}
+</style>
+
+<div class="shell">
+    <header class="top">
+      <div class="brand">
+        <button class="btn" id="aiOpen" type="button" aria-pressed="true" aria-label="Mostra o nascondi la chat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 3v18"></path></svg><span id="aiOpenLbl">Chat</span></button>
+        <div class="logo">FR</div>
+        <div class="grow"><b>Farmacia Rossi</b></div>
+        <button class="btn" id="inBtn" type="button" aria-pressed="true" aria-controls="inCol"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg><span>In arrivo</span><span class="badge" id="inCount" hidden></span></button>
+        <div class="sim">
+          <button class="btn" id="simBtn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="simMenu">Simula arrivo ▾</button>
+          <div class="sim-menu" id="simMenu" role="menu" hidden>
+            <button role="menuitem" id="simOrder" type="button">Un ordine dall'app</button>
+            <button role="menuitem" id="simWa" type="button">Un messaggio WhatsApp</button>
+            <button role="menuitem" id="simCons" type="button">Un consulto</button>
+            <button role="menuitem" id="simPay" type="button">Un pagamento</button>
+          </div>
+        </div>
+      </div>
+      <nav class="tabs" role="tablist" aria-label="Sezioni" id="tabs"></nav>
+    </header>
+    <div class="toast" id="toast" role="status" hidden></div>
+<div class="app">
+  <aside class="inbox-col" id="inCol" aria-label="In arrivo"><section class="queue" id="queue" aria-label="Messaggi in arrivo"></section></aside>
+  <aside class="ai" aria-label="Assistente">
+    <div class="ai-log" id="log" role="log" aria-live="polite"></div>
+    <div class="ai-foot">
+      <button class="ctx-chip" id="ctxChip" type="button" hidden></button>
+      <form class="composer" id="ask">
+        <label for="askIn" class="sr">Chiedi all'assistente</label>
+        <textarea id="askIn" rows="1" placeholder="Chiedi a Claude…"></textarea>
+        <button class="send" id="sendBtn" type="submit" aria-label="Invia">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"></path><path d="m5 12 7-7 7 7"></path></svg>
+        </button>
+      </form>
+      <div class="fine">Risponde Claude, sul tuo account. Prepara le azioni, le approvi tu. Niente consigli su dosi o interazioni. <button class="linkbtn" id="newChat" type="button">Nuova conversazione</button></div>
+    </div>
+  </aside>
+
+  <div class="work">
+    <main class="page" id="main"></main>
+  </div>
+</div>
+</div>
+
+<script>
+(() => {
+/* ================= Dati di esempio ================= */
+const CH = { wa: 'WhatsApp', web: 'Link web', app: 'App' };
+const ST = { nuovo: 'Da verificare', pagamento: 'Attesa pagamento', prep: 'In preparazione', pronto: 'Pronto', consegna: 'In consegna', chiuso: 'Chiuso' };
+const RANK = { nuovo: 0, pagamento: 1, prep: 2, pronto: 3, consegna: 4 };
+const fmtEur = (n) => n.toFixed(2).replace('.', ',');
+const AV = [['pronto', 'Pronto'], ['grossista', 'Dal grossista'], ['equivalente', 'Equivalente']];
+
+const S = {
+  tab: 'ordini', chatForce: false, inbox: [], iSel: null, iFilter: 'aperti', oview: 'coda', filter: 'tutti', sel: null, draft: '', copied: null,
+  cFilter: 'nuovo', cSel: 'c5', cDraft: '', closing: false, pSel: 'p1', done: 9, next: 0,
+  orders: [
+    { id: 'o1', code: '2041', patient: 'Giulia Marchetti', who: 'Ordina per la madre, Anna Marchetti', ch: 'wa', at: '08:42', status: 'nuovo', mode: 'consegna', slot: 'oggi 16:00–18:00', address: 'Via Mazzini 14', cf: 'MRCNNA41C52L219K', amount: '', free: 'Cerotti per calli',
+      items: [ { name: 'Ramipril 5 mg, 28 compresse', nre: '0901A 4183 772615', av: 'pronto' }, { name: 'Bisoprololo 2,5 mg, 28 compresse', nre: '0901A 4183 772616', av: null } ],
+      chat: [ { me: false, t: 'Buongiorno, mando le ricette di mia mamma. Le portate oggi pomeriggio?', at: '08:42' } ] },
+    { id: 'o2', code: '2042', patient: 'Paolo Ferri', who: '', ch: 'web', at: '09:05', status: 'nuovo', mode: 'ritiro', slot: 'oggi dalle 12:00', address: '', cf: 'FRRPLA63M10L219X', amount: '', free: '', photo: true,
+      items: [ { name: 'Metformina 1000 mg, 60 compresse', nre: '0901A 4190 115302', av: null } ], chat: [] },
+    { id: 'o3', code: '2043', patient: 'Lucia De Santis', who: '', ch: 'app', at: '09:20', status: 'nuovo', mode: 'ritiro', slot: 'domani mattina', address: '', cf: 'DSNLCU78D61L219P', amount: '', free: '', armadietto: true,
+      items: [ { name: 'Levotiroxina 75 mcg, 50 compresse', nre: '0901A 4192 640087', av: null } ], chat: [] },
+    { id: 'o4', code: '2038', patient: 'Marco Gentile', who: '', ch: 'wa', at: 'ieri 18:10', status: 'prep', mode: 'consegna', slot: 'oggi 16:00–18:00', address: 'Corso Francia 88', cf: 'GNTMRC55B03L219T', amount: '0,00', noPay: true, free: '',
+      items: [ { name: 'Insulina glargine, 5 penne', nre: '0901A 4178 220941', av: 'grossista', fridge: true } ],
+      chat: [ { me: true, t: 'Arriva dal grossista alle 15:00, la portiamo nel giro delle 16.', at: 'ieri 18:20' } ] },
+    { id: 'o5', code: '2039', patient: 'Elena Russo', who: '', ch: 'web', at: '08:15', status: 'prep', mode: 'ritiro', slot: 'oggi dalle 17:00', address: '', cf: 'RSSLNE70T44L219B', amount: '9,80', paidAt: '08:40', free: '',
+      items: [ { name: 'Atorvastatina 20 mg, 30 compresse', nre: '0901A 4185 903317', av: 'equivalente' } ],
+      chat: [ { me: true, t: 'Il marchio indicato non è disponibile. Va bene l’equivalente con lo stesso principio attivo?', at: '08:30' } ] },
+    { id: 'o6', code: '2035', patient: 'Franco Moretti', who: '', ch: 'app', at: 'ieri 17:02', status: 'pronto', mode: 'ritiro', slot: 'quando vuole', address: '', cf: 'MRTFNC49A20L219W', amount: '6,40', paidAt: 'ieri 17:15', free: '', armadietto: true,
+      items: [ { name: 'Amlodipina 10 mg, 28 compresse', nre: '0901A 4175 554120', av: 'pronto' } ], chat: [] },
+    { id: 'o7', code: '2036', patient: 'Rosa Galli', who: 'Consegna alla vicina, sig.ra Conti', ch: 'wa', at: 'ieri 19:12', status: 'pronto', mode: 'consegna', slot: 'oggi 16:00–18:00', address: 'Via Cibrario 3', cf: 'GLLRSO38E50L219F', amount: '12,90', paidAt: '09:05', via: 'rider', free: 'Fermenti lattici',
+      items: [ { name: 'Furosemide 25 mg, 30 compresse', nre: '0901A 4176 008812', av: 'pronto' }, { name: 'Pantoprazolo 20 mg, 28 compresse', nre: '0901A 4176 008813', av: 'pronto' } ], chat: [] },
+    { id: 'o9', code: '2040', patient: 'Teresa Gallo', who: '', ch: 'wa', at: '09:35', status: 'pagamento', mode: 'consegna', slot: 'oggi 16:00–18:00', address: 'Via Bellini 7', cf: 'GLLTRS52D44L219M', amount: '18,50', free: 'Crema idratante', payLink: 'https://paga.[DOMINIO PIATTAFORMA]/fr/2040-k3p8', linkAt: '09:52',
+      items: [ { name: 'Enoxaparina 4000 UI, 6 siringhe', nre: '0901A 4194 552301', av: 'pronto' } ],
+      chat: [ { me: false, t: 'Buongiorno, vi mando la ricetta delle punture. Me le portate oggi?', at: '09:35' }, { me: true, t: 'Ricetta verificata. Totale € 18,50. Può pagare qui con carta, Apple Pay o Google Pay: https://paga.[DOMINIO PIATTAFORMA]/fr/2040-k3p8\nAppena riceviamo il pagamento prepariamo il suo ordine.', at: '09:52' } ] },
+    { id: 'o8', code: '2031', patient: 'Sergio Villa', who: '', ch: 'app', at: 'ieri 11:40', status: 'consegna', mode: 'consegna', slot: 'oggi 14:00–16:00', address: 'Via Nizza 120', cf: 'VLLSRG60H15L219Q', amount: '4,20', paidAt: 'ieri 12:10', free: '',
+      items: [ { name: 'Losartan 50 mg, 28 compresse', nre: '0901A 4171 330456', av: 'pronto' } ],
+      chat: [ { me: true, t: 'Il fattorino è partito, arriva entro le 15:30.', at: '14:05' } ] }
+  ],
+  consults: [
+    { id: 'c5', patient: 'Rosa Galli', who: '', ch: 'wa', at: '08:50', wait: 105, cat: 'Effetti indesiderati', status: 'nuovo', shared: [], orders: ['#2036 furosemide e pantoprazolo, consegna oggi'],
+      msgs: [ { me: false, t: 'Buongiorno, da quando prendo la furosemide ho spesso crampi alle gambe la sera. Devo preoccuparmi?', at: '08:50' } ] },
+    { id: 'c2', patient: 'Anna Marchetti', who: 'Scrive la figlia, Giulia', ch: 'app', at: '09:40', wait: 55, cat: 'Uso del farmaco', status: 'nuovo', shared: ['Bisoprololo 2,5 mg · finisce tra 3 giorni', 'Ramipril 5 mg · finisce tra 18 giorni'], orders: ['#2041 in verifica, consegna oggi'],
+      msgs: [ { me: false, t: 'Mia mamma ieri sera ha dimenticato il bisoprololo. Stamattina deve prenderne due?', at: '09:40' } ] },
+    { id: 'c1', patient: 'Marco Gentile', who: '', ch: 'wa', at: '10:10', wait: 25, cat: 'Interazioni', status: 'nuovo', shared: ['Insulina glargine · in arrivo oggi', 'Amoxicillina 1 g · aggiunta ieri'], orders: ['#2038 insulina glargine, consegna oggi'],
+      msgs: [ { me: false, t: 'Il medico mi ha dato l’amoxicillina per 6 giorni. Posso fare l’insulina come sempre?', at: '10:10' } ] },
+    { id: 'c3', patient: 'Paolo Ferri', who: '', ch: 'web', at: '08:55', wait: 0, cat: 'Uso del farmaco', status: 'attesa', shared: [], orders: ['#2042 metformina, ritiro oggi'],
+      msgs: [ { me: false, t: 'Posso dividere a metà le compresse di metformina da 1000?', at: '08:55' }, { me: true, t: 'Buongiorno Paolo, mi manda una foto della confezione? Alcune compresse si possono dividere, altre no.\nDott. Neri, Farmacia Rossi', at: '09:10' } ] },
+    { id: 'c4', patient: 'Lucia De Santis', who: '', ch: 'app', at: 'ieri', wait: 0, cat: 'Prodotti senza ricetta', status: 'chiuso', outcome: 'Invitata in farmacia', shared: ['Levotiroxina 75 mcg · finisce tra 7 giorni'], orders: ['#2043 levotiroxina, ritiro domani'],
+      msgs: [ { me: false, t: 'Cosa posso prendere per il raffreddore? Prendo la levotiroxina.', at: 'ieri 18:02' }, { me: true, t: 'Buonasera Lucia, passi domattina: le facciamo vedere cosa va bene con la sua terapia.\nDott.ssa Bianchi, Farmacia Rossi', at: 'ieri 18:20' } ] }
+  ],
+  patients: [
+    { id: 'p1', name: 'Anna Marchetti', note: 'La gestisce la figlia Giulia', ch: 'WhatsApp', ther: [ ['Bisoprololo 2,5 mg', 3], ['Ramipril 5 mg', 18] ] },
+    { id: 'p2', name: 'Ivo Sartori', note: '', ch: 'App', ther: [ ['Allopurinolo 300 mg', 4] ] },
+    { id: 'p3', name: 'Carlo Benedetti', note: '', ch: 'App', ther: [ ['Atenololo 50 mg', 5] ] },
+    { id: 'p4', name: 'Lucia De Santis', note: '', ch: 'App', ther: [ ['Levotiroxina 75 mcg', 7] ] },
+    { id: 'p5', name: 'Franco Moretti', note: '', ch: 'App', ther: [ ['Amlodipina 10 mg', 26] ] },
+    { id: 'p6', name: 'Sergio Villa', note: 'Profilo famiglia: 2 persone', ch: 'App', ther: [ ['Losartan 50 mg', 24] ] },
+    { id: 'p7', name: 'Paolo Ferri', note: 'Non condivide le terapie', ch: 'Link web', ther: [] }
+  ]
+};
+const POOL = [
+  { patient: 'Andrea Colombo', ch: 'wa', mode: 'consegna', slot: 'oggi 16:00–18:00', address: 'Via Po 21', cf: 'CLMNDR66P08L219H', item: ['Omeprazolo 20 mg, 14 capsule', '0901A 4195 771020'], msg: 'Salve, vi giro la ricetta. Potete portarla a casa?' },
+  { patient: 'Chiara Bruno', ch: 'web', mode: 'ritiro', slot: 'oggi dalle 18:00', address: '', cf: 'BRNCHR85L49L219D', item: ['Salbutamolo spray 100 mcg', '0901A 4195 771344'], msg: '' },
+  { patient: 'Giorgio Esposito', ch: 'app', mode: 'consegna', slot: 'domani 10:00–12:00', address: 'Corso Vercelli 7', cf: 'SPSGRG52S11L219N', item: ['Warfarin 5 mg, 30 compresse', '0901A 4195 772001'], msg: '' }
+];
+
+/* ================= Utilità DOM ================= */
+const $ = (id) => document.getElementById(id);
+function h(tag, attrs, ...kids) {
+  const el = document.createElement(tag);
+  if (attrs) for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === 'class') el.className = v;
+    else if (k === 'on') for (const [ev, fn] of Object.entries(v)) el.addEventListener(ev, fn);
+    else if (k === 'style') el.style.cssText = v;
+    else if (k === 'value') el.value = v;
+    else if (k in el && k !== 'list' && typeof v !== 'string') el[k] = v;
+    else el.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of kids.flat(Infinity)) if (c != null && c !== false) el.append(c instanceof Node ? c : document.createTextNode(String(c)));
+  return el;
+}
+const now = () => { const d = new Date(); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
+let toastT;
+function toast(t, kind) {
+  const el = $('toast'); el.className = 'toast' + (kind ? ' ' + kind : '');
+  el.innerHTML = kind === 'new' ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>' : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>';
+  el.append(h('span', null, t)); el.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { el.hidden = true; }, kind === 'new' ? 4500 : 3000);
+}
+async function copy(text, key) {
+  try { await navigator.clipboard.writeText(text); } catch (e) { /* alcuni viewer rifiutano: mostriamo comunque il testo */ }
+  S.copied = key; render(); setTimeout(() => { if (S.copied === key) { S.copied = null; render(); } }, 1500);
+}
+const open = () => S.orders.filter((o) => o.status !== 'chiuso');
+const byCode = (c) => S.orders.find((o) => o.code === String(c).replace('#', '').trim());
+const fmtWait = (m) => (m >= 60 ? Math.floor(m / 60) + ' h ' + (m % 60) + ' min' : m + ' min');
+
+/* ================= Azioni sugli ordini ================= */
+function nextLabel(o) {
+  if (o.status === 'nuovo') return 'Verifica';
+  if (o.status === 'pagamento') return 'Promemoria';
+  if (o.status === 'prep') return 'Segna pronto';
+  if (o.status === 'pronto') return o.mode === 'consegna' ? 'Affida al fattorino' : 'Ritirato';
+  return 'Consegnato';
+}
+function markPaid(o) {
+  if (o.status !== 'pagamento') return;
+  const ready = o.items.every((i) => i.av === 'pronto');
+  o.status = ready ? 'pronto' : 'prep'; o.paidAt = now();
+  o.chat.push({ me: true, t: 'Pagamento ricevuto, grazie! ' + (ready ? 'Il suo ordine è pronto' + (o.mode === 'consegna' ? ' e parte con il giro di oggi.' : ': può passare a ritirarlo.') : 'Lo stiamo preparando, le scriviamo appena è pronto.'), at: now() });
+  inboxPayment(o);
+  render(); toast('Pagamento ricevuto da ' + o.patient + ' · € ' + o.amount + ' · ordine #' + o.code + ' da preparare', 'new');
+  pendingNotes.push('È arrivato il pagamento dell\u2019ordine #' + o.code + ' di ' + o.patient);
+}
+function advance(o) {
+  if (o.status === 'nuovo') {
+    if (o.items.some((i) => !i.av)) { S.sel = o.id; S.tab = 'ordini'; render(); toast('Indica la disponibilità di ogni farmaco, poi conferma.'); return false; }
+    const amt = parseFloat(String(o.amount || '').replace(',', '.'));
+    if (String(o.amount || '').trim() === '' || !(amt >= 0)) { S.sel = o.id; S.tab = 'ordini'; render(); toast('Scrivi il totale da pagare (0,00 se non c\u2019è nulla da pagare), poi conferma.'); setTimeout(() => { const el = $('amt'); if (el) el.focus(); }, 0); return false; }
+    o.fresh = false; o.amount = fmtEur(amt);
+    if (amt === 0) {
+      const ready = o.items.every((i) => i.av === 'pronto');
+      o.status = ready ? 'pronto' : 'prep'; o.noPay = true;
+      o.chat.push({ me: true, t: 'Ricetta verificata, non c\u2019è nulla da pagare. ' + (ready ? 'Il suo ordine è pronto.' : 'Le scriviamo appena è pronto.'), at: now() });
+      toast('Ordine #' + o.code + ' verificato, nulla da pagare');
+    } else {
+      o.status = 'pagamento'; o.linkAt = now(); o.payLink = 'https://paga.[DOMINIO PIATTAFORMA]/fr/' + o.code + '-' + Math.random().toString(36).slice(2, 6);
+      o.chat.push({ me: true, t: 'Ricetta verificata. Totale € ' + o.amount + '. Può pagare qui con carta, Apple Pay o Google Pay: ' + o.payLink + '\nAppena riceviamo il pagamento prepariamo il suo ordine.', at: now() });
+      toast('Link di pagamento da € ' + o.amount + ' inviato a ' + o.patient + ' su ' + CH[o.ch]);
+    }
+  } else if (o.status === 'pagamento') {
+    o.reminded = now();
+    o.chat.push({ me: true, t: 'Le ricordiamo il pagamento del suo ordine (€ ' + o.amount + '): ' + o.payLink + '\nLo prepariamo appena lo riceviamo.', at: now() });
+    toast('Promemoria di pagamento inviato a ' + o.patient);
+  } else if (o.status === 'prep') {
+    o.status = 'pronto'; o.items.forEach((i) => { i.av = 'pronto'; });
+    o.chat.push({ me: true, t: 'Il suo ordine è pronto.', at: now() });
+    toast('Ordine #' + o.code + ' pronto, paziente avvisato');
+  } else if (o.status === 'pronto' && o.mode === 'consegna') {
+    o.status = 'consegna'; o.chat.push({ me: true, t: 'Il fattorino è partito.', at: now() });
+    toast('Ordine #' + o.code + ' affidato al fattorino');
+  } else {
+    o.status = 'chiuso'; S.done++;
+    if (S.sel === o.id) S.sel = null;
+    toast('Ordine #' + o.code + ' chiuso · scorte aggiornate in Armadietto');
+  }
+  render(); return true;
+}
+
+/* ================= Render area di lavoro ================= */
+function render() {
+  const nNew = open().filter((o) => o.status === 'nuovo').length;
+  const nC = S.consults.filter((c) => c.status === 'nuovo').length;
+  const tabs = [['ordini', 'Ordini', nNew], ['tele', 'Telefarmacia', nC]];
+  $('tabs').replaceChildren(...tabs.map(([k, l, n]) => h('button', { class: 'tab', role: 'tab', type: 'button', 'aria-selected': String(S.tab === k), on: { click: () => { S.tab = k; render(); } } }, l, n ? h('span', { class: 'badge' }, n) : null)));
+  const m = $('main');
+  m.replaceChildren(S.tab === 'ordini' ? viewOrders() : viewTele());
+  updateCtxChip();
+  renderQueue();
+}
+
+function tagsFor(o) {
+  const t = [];
+  if (o.fresh) t.push(['Nuovo', 'new']);
+  if (o.status === 'pagamento') t.push(['Link inviato ' + o.linkAt + ' · € ' + o.amount, 'pay']);
+  if (o.paidAt) t.push(['Pagato', 'ok']);
+  if (o.mode === 'consegna' && o.via === 'rider') t.push([o.rider && o.rider.name ? 'Rider ' + o.rider.name : 'Rider partner', 'i']);
+  if (o.noPay) t.push(['Nulla da pagare', '']);
+  if (o.fromAi) t.push(['Creato con Claude', '']);
+  if (o.armadietto) t.push(['Riordino da Armadietto', 'ok']);
+  if (o.photo) t.push(['Foto promemoria', '']);
+  if (o.items.some((i) => i.fridge)) t.push(['Frigo', 'i']);
+  if (o.items.some((i) => i.av === 'grossista')) t.push(['Dal grossista 15:00', '']);
+  if (o.items.some((i) => i.av === 'equivalente')) t.push(['Equivalente da confermare', 'w']);
+  return t.map(([l, c]) => h('span', { class: 'tag ' + c }, l));
+}
+
+function viewOrders() {
+  const all = open();
+  const by = (st) => all.filter((o) => o.status === st);
+  const deliveries = all.filter((o) => o.mode === 'consegna');
+  const views = h('div', { class: 'vseg', role: 'group', 'aria-label': 'Vista' },
+    [['coda', 'Coda ordini'], ['giro', 'Giro di consegna']].map(([k, l]) => h('button', { type: 'button', 'aria-pressed': String(S.oview === k), on: { click: () => { S.oview = k; render(); } } }, l)));
+  const filters = S.oview === 'coda' ? h('div', { class: 'chips' },
+    [['tutti', 'Tutti'], ['consegna', 'Consegne'], ['ritiro', 'Ritiri'], ['wa', 'Da WhatsApp']].map(([k, l]) => h('button', { class: 'chip', type: 'button', 'aria-pressed': String(S.filter === k), on: { click: () => { S.filter = k; render(); } } }, l))) : null;
+  const bar = h('div', { class: 'bar' }, views, filters);
+  if (S.oview === 'giro') return h('div', { style: 'display:flex;flex-direction:column;gap:18px' }, bar, viewGiro(deliveries));
+
+  const pass = (o) => S.filter === 'tutti' || (S.filter === 'wa' ? o.ch === 'wa' : o.mode === S.filter);
+  const COLS = [['nuovo', 'Nuovi', 'Ricetta da verificare'], ['pagamento', 'Da pagare', 'Link di pagamento inviato'], ['prep', 'In preparazione', 'Grossista o equivalente'], ['pronto', 'Pronti', 'Al banco o da consegnare'], ['consegna', 'In consegna', 'Con il fattorino']];
+  const cols = COLS.map(([k, title, sub]) => {
+    const list = by(k).filter(pass);
+    return h('div', { class: 'col' },
+      h('div', { class: 'col-h' }, h('div', null, h('h3', null, title), h('small', null, sub)), h('span', null, String(list.length))),
+      list.length ? list.map((o) => h('button', { class: 'ocard', type: 'button', 'aria-pressed': String(S.sel === o.id), on: { click: () => { S.sel = o.id; S.draft = ''; render(); } } },
+        h('span', { class: 't' }, h('b', null, o.patient), h('span', null, o.at)),
+        h('span', { class: 'sub' }, CH[o.ch] + ' · ' + (o.items.length === 1 ? '1 ricetta' : o.items.length + ' ricette')),
+        h('span', { class: 'sub' }, (o.mode === 'consegna' ? 'Consegna · ' : 'Ritiro · ') + o.slot),
+        (() => { const t = tagsFor(o); return t.length ? h('span', { class: 'tags' }, t) : null; })()))
+      : h('p', { class: 'col-empty' }, 'Nessun ordine'));
+  });
+  return h('div', { style: 'display:flex;flex-direction:column;gap:18px' }, bar,
+    h('section', { class: 'board', 'aria-label': 'Coda ordini' }, h('div', { class: 'cols' }, cols)), orderDrawer());
+}
+
+const RIDERS = ['Marco', 'Sara', 'Yusuf', 'Elena'];
+function addMin(hhmm, m) { const [a, b] = String(hhmm).split(':').map(Number); const t = (a * 60 + b + m) % 1440; return String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0'); }
+function riderCost(o) { let n = 0; for (const ch of o.address || o.code) n += ch.charCodeAt(0); return fmtEur(3.9 + (n % 4)); }
+const hasFridge = (o) => o.items.some((i) => i.fridge);
+
+function bookRider(o) {
+  if (hasFridge(o)) { toast('Questo ordine contiene un farmaco da frigo: lo porta il fattorino della farmacia.'); return; }
+  o.rider = { state: 'cerco', cost: riderCost(o), code: String(1000 + ((o.code.charCodeAt(3) * 37) % 9000)), name: '', eta: '' };
+  render(); toast('Richiesta inviata al rider partner per ' + o.patient + ' · € ' + o.rider.cost);
+  setTimeout(() => {
+    if (!o.rider || o.rider.state !== 'cerco') return;
+    o.rider.state = 'assegnato'; o.rider.name = RIDERS[Number(o.code) % RIDERS.length]; o.rider.eta = addMin(now(), 12);
+    render(); toast('Rider ' + o.rider.name + ' assegnato: arriva in farmacia alle ' + o.rider.eta + ' · codice ritiro ' + o.rider.code, 'new');
+  }, 3500);
+}
+function riderPicked(o) {
+  if (!o.rider || o.rider.state !== 'assegnato') return;
+  o.rider.state = 'in viaggio'; o.status = 'consegna'; o.rider.dropEta = addMin(now(), 18);
+  o.chat.push({ me: true, t: 'Il suo ordine è partito con il nostro corriere partner, arriva verso le ' + o.rider.dropEta + '. Può seguirlo qui: https://traccia.[DOMINIO PIATTAFORMA]/' + o.code, at: now() });
+  render(); toast('Ritirato da ' + o.rider.name + ' · il paziente riceve il link per seguire la consegna');
+  setTimeout(() => {
+    if (!o.rider || o.status !== 'consegna') return;
+    o.rider.state = 'consegnato'; o.chat.push({ me: true, t: 'Consegnato. Grazie!', at: now() });
+    advance(o);
+    toast('Consegna del rider completata con foto · ordine #' + o.code + ' chiuso', 'new');
+  }, 7000);
+}
+function cancelRider(o) { o.rider = null; render(); toast('Richiesta al rider annullata'); }
+function setVia(o, via) { if (via === 'rider' && hasFridge(o)) { toast('Farmaco da frigo: solo fattorino della farmacia.'); return; } o.via = via; render(); }
+function dispatchGiro(list) {
+  list.forEach((o) => { o.status = 'consegna'; o.chat.push({ me: true, t: 'Il fattorino è partito con il suo ordine, arriva nella fascia ' + o.slot.replace('oggi ', '') + '.', at: now() }); });
+  render(); toast('Giro affidato a Luca: ' + list.length + (list.length === 1 ? ' tappa' : ' tappe') + ' sul suo telefono', 'new');
+}
+
+function viewGiro(deliveries) {
+  const rank = { consegna: 0, pronto: 1, prep: 2, pagamento: 3, nuovo: 4 };
+  const sorted = deliveries.slice().sort((a, b) => rank[a.status] - rank[b.status]);
+  const own = sorted.filter((o) => o.via !== 'rider');
+  const partner = sorted.filter((o) => o.via === 'rider');
+  const readyOwn = own.filter((o) => o.status === 'pronto');
+  const payCell = (o) => o.paidAt ? h('span', { class: 'tag ok' }, 'Pagato') : o.status === 'pagamento' ? h('span', { class: 'tag pay' }, 'Da pagare') : o.noPay ? h('span', { class: 'tag' }, 'Nulla da pagare') : h('span', { class: 'muted' }, 'Da verificare');
+  const who = (o) => h('td', null, h('button', { class: 'linkbtn', type: 'button', style: 'font-weight:600;text-decoration:none;color:var(--fg);text-align:left', on: { click: () => { S.oview = 'coda'; S.sel = o.id; render(); } } }, o.patient), h('div', { class: 'lbl' }, (o.who || 'Al paziente') + (hasFridge(o) ? ' · frigo' : '')));
+  const notReady = (o) => o.status !== 'pronto' && o.status !== 'consegna';
+
+  const ownRows = own.map((o, i) => h('tr', null,
+    h('td', { style: 'font-weight:600' }, String(i + 1)), who(o), h('td', null, o.address), h('td', null, o.slot.replace('oggi ', '')), h('td', null, payCell(o)),
+    h('td', null, h('span', { class: 'pill s-' + o.status }, ST[o.status])),
+    h('td', { style: 'text-align:right;white-space:nowrap' },
+      o.status === 'consegna' ? h('button', { class: 'btn sm', type: 'button', on: { click: () => advance(o) } }, 'Consegnato · firma o foto')
+      : h('span', { style: 'display:inline-flex;gap:6px;align-items:center' },
+          notReady(o) ? h('span', { class: 'lbl' }, 'Non ancora pronto') : null,
+          hasFridge(o) ? null : h('button', { class: 'btn ghost sm', type: 'button', on: { click: () => setVia(o, 'rider') } }, 'Passa al rider')))));
+
+  const riderState = (o) => {
+    const r = o.rider;
+    if (!r) return notReady(o) ? h('span', { class: 'lbl' }, 'Non ancora pronto') : h('span', { class: 'lbl' }, 'Da prenotare · stima € ' + riderCost(o));
+    if (r.state === 'cerco') return h('span', { class: 'tag' }, 'Cerco un rider…');
+    if (r.state === 'assegnato') return h('span', null, h('span', { class: 'tag i' }, r.name + ' arriva alle ' + r.eta), h('div', { class: 'lbl' }, 'Codice ritiro ' + r.code + ' · € ' + r.cost));
+    if (r.state === 'in viaggio') return h('span', null, h('span', { class: 'tag pay' }, 'In viaggio con ' + r.name), h('div', { class: 'lbl' }, 'Arrivo verso le ' + r.dropEta + ' · il paziente lo segue'));
+    return h('span', { class: 'tag ok' }, 'Consegnato');
+  };
+  const riderAction = (o) => {
+    const r = o.rider;
+    if (!r) return h('span', { style: 'display:inline-flex;gap:6px' },
+      h('button', { class: 'btn pri sm', type: 'button', disabled: notReady(o), on: { click: () => bookRider(o) } }, 'Prenota rider'),
+      h('button', { class: 'btn ghost sm', type: 'button', on: { click: () => setVia(o, 'fattorino') } }, 'Torna al fattorino'));
+    if (r.state === 'cerco') return h('button', { class: 'btn ghost sm', type: 'button', on: { click: () => cancelRider(o) } }, 'Annulla');
+    if (r.state === 'assegnato') return h('button', { class: 'btn pri sm', type: 'button', on: { click: () => riderPicked(o) } }, 'Consegnato al rider · codice ' + r.code);
+    return null;
+  };
+  const partnerRows = partner.map((o) => h('tr', null, who(o), h('td', null, o.address), h('td', null, payCell(o)), h('td', null, riderState(o)), h('td', { style: 'text-align:right;white-space:nowrap' }, riderAction(o))));
+
+  const th = (cols) => h('thead', null, h('tr', null, cols.map((t) => h('th', { scope: 'col' }, t))));
+  return h('div', { style: 'display:flex;flex-direction:column;gap:22px' },
+    h('div', { class: 'bar' }, h('button', { class: 'btn ghost sm', type: 'button', on: { click: () => askClaude('Organizza le consegne di oggi: cosa affidare al fattorino e cosa conviene dare al rider partner, e in che ordine.') } }, '✦ Chiedi a Claude come dividere le consegne')),
+    h('section', { style: 'display:flex;flex-direction:column;gap:10px' },
+      h('div', { class: 'kv', style: 'flex-wrap:wrap' },
+        h('div', null, h('div', { class: 'h3', style: 'font-size:15px;color:var(--fg)' }, 'Fattorino della farmacia'), h('div', { class: 'lbl' }, 'Luca · giro 16:00–18:00 · firma o foto alla consegna · obbligatorio per frigo e stupefacenti')),
+        h('button', { class: 'btn pri sm', type: 'button', disabled: !readyOwn.length, on: { click: () => dispatchGiro(readyOwn) } }, readyOwn.length ? 'Affida il giro a Luca · ' + readyOwn.length + (readyOwn.length === 1 ? ' tappa' : ' tappe') : 'Nessuna tappa pronta')),
+      h('div', { class: 'card tbl-wrap' }, own.length ? h('table', { class: 'tbl' }, th(['Tappa', 'Paziente', 'Indirizzo', 'Fascia', 'Pagamento', 'Stato', '']), h('tbody', null, ownRows)) : h('p', { class: 'empty' }, 'Nessuna consegna per il fattorino.'))),
+    h('section', { style: 'display:flex;flex-direction:column;gap:10px' },
+      h('div', null, h('div', { class: 'h3', style: 'font-size:15px;color:var(--fg)' }, 'Rider partner'), h('div', { class: 'lbl' }, 'Tipo Glovo On-Demand · si prenota quando l’ordine è pronto · costo per consegna · il paziente segue il rider')),
+      h('div', { class: 'card tbl-wrap' }, partner.length ? h('table', { class: 'tbl' }, th(['Paziente', 'Indirizzo', 'Pagamento', 'Rider', '']), h('tbody', null, partnerRows))
+        : h('p', { class: 'empty' }, 'Nessuna consegna con rider. Usa “Passa al rider” su una tappa del fattorino.')),
+      h('p', { class: 'hint', style: 'margin:0' }, 'Prima di usarlo per i farmaci con ricetta va verificato con il legale e nel contratto con il partner.')));
+}
+
+function orderDrawer() {
+  const o = open().find((x) => x.id === S.sel);
+  if (!o) return null;
+  const close = () => { S.sel = null; render(); };
+  return h('div', null, h('div', { class: 'scrim', on: { click: close } }),
+    h('div', { class: 'drawer', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Ordine #' + o.code },
+      h('div', { class: 'drawer-x' }, h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Chiudi', on: { click: close } }, '\u2715')),
+      orderDetail()));
+}
+function orderDetail() {
+  const o = open().find((x) => x.id === S.sel);
+  if (!o) return h('aside', { class: 'card det empty' }, 'Scegli un ordine dalla coda.');
+  const sec = (...k) => h('div', { class: 'det-sec' }, ...k);
+  const items = o.items.map((it, i) => h('div', { class: 'item' },
+    h('div', { class: 'kv', style: 'align-items:flex-start' },
+      h('div', { style: 'min-width:0' }, h('div', { style: 'font-weight:600' }, it.name), h('div', { class: 'mono', style: 'font-size:13px;color:var(--fg-2)' }, 'NRE ' + it.nre),
+        it.fridge ? h('div', { class: 'hint', style: 'color:var(--info-fg);font-weight:600' }, 'Da frigo: consegna con il fattorino della farmacia') : null),
+      h('button', { class: 'btn sm', type: 'button', on: { click: () => copy(it.nre.replace(/\s/g, ''), o.id + i) } }, S.copied === o.id + i ? 'Copiato' : 'Copia NRE')),
+    h('div', { class: 'seg', role: 'group', 'aria-label': 'Disponibilità ' + it.name }, AV.map(([k, l]) => h('button', { type: 'button', 'aria-pressed': String(it.av === k), on: { click: () => { it.av = k; render(); } } }, l))),
+    !it.av ? h('div', { class: 'hint w' }, 'Indica la disponibilità dopo la verifica nel gestionale') :
+      it.av === 'grossista' ? h('div', { class: 'hint' }, 'Arrivo previsto dal grossista alle 15:00') :
+      it.av === 'equivalente' ? h('div', { class: 'hint' }, 'Da confermare con il paziente prima della consegna') : null));
+  const msgs = o.chat.flatMap((c) => [h('div', { class: 'bub ' + (c.me ? 'me' : 'pt') }, c.t), h('div', { class: 'meta' + (c.me ? ' r' : '') }, (c.me ? 'Farmacia' : o.patient.split(' ')[0]) + ' · ' + c.at)]);
+  const send = () => { const t = S.draft.trim(); if (!t) return; o.chat.push({ me: true, t, at: now() }); S.draft = ''; render(); toast('Inviato su ' + CH[o.ch] + ' con il nome Farmacia Rossi'); };
+  const primary = o.status === 'nuovo' ? ['Conferma e invia il link di pagamento', 'Il paziente riceve il link su ' + CH[o.ch] + '. L\u2019ordine si prepara dopo il pagamento.']
+    : o.status === 'pagamento' ? ['Invia un promemoria di pagamento', 'Link inviato alle ' + o.linkAt]
+    : o.status === 'prep' ? ['Segna come pronto', 'Avvisa il paziente che può ' + (o.mode === 'consegna' ? 'attendere la consegna' : 'passare a ritirare')]
+    : o.status === 'pronto' ? (o.mode === 'consegna' ? ['Affida al fattorino', 'Entra nel giro delle consegne di oggi'] : ['Ritirato al banco', 'Chiude l’ordine e aggiorna le scorte in Armadietto'])
+    : ['Conferma la consegna', 'Con firma o foto del fattorino'];
+  return h('aside', { class: 'card det', 'aria-label': 'Ordine #' + o.code },
+    sec(h('div', { class: 'kv' }, h('span', { class: 'lbl' }, 'Ordine #' + o.code + ' · ' + CH[o.ch] + ' · ' + o.at), h('span', { class: 'pill s-' + o.status }, ST[o.status])),
+      h('h2', null, o.patient), o.who ? h('div', { style: 'font-size:13px;color:var(--fg-2)' }, o.who) : null,
+      o.armadietto ? h('div', { class: 'note ok' }, 'Riordino partito dall’avviso scorte di Armadietto.') : null,
+      o.photo ? h('div', { class: 'note n' }, 'Foto del promemoria allegata: controlla l’NRE prima di copiarlo nel gestionale.') : null,
+      h('div', null, h('button', { class: 'btn soft sm pill', type: 'button', on: { click: () => askClaude('Aiutami con l’ordine #' + o.code + ' di ' + o.patient + ': cosa manca per chiuderlo?') } }, '✦ Chiedi a Claude su questo ordine'))),
+    sec(h('div', { class: 'kv' }, h('div', null, h('div', { class: 'lbl' }, 'Codice fiscale'), h('div', { class: 'mono', style: 'font-size:14px' }, o.cf)), h('button', { class: 'btn sm', type: 'button', on: { click: () => copy(o.cf, o.id + 'cf') } }, S.copied === o.id + 'cf' ? 'Copiato' : 'Copia'))),
+    sec(h('div', { class: 'h3' }, 'Ricette e disponibilità'), items, o.free ? h('div', { style: 'font-size:13px' }, h('span', { class: 'lbl' }, 'Senza ricetta: '), o.free) : null),
+    sec(h('div', { class: 'two' },
+      h('div', null, h('div', { class: 'lbl' }, o.mode === 'consegna' ? 'Consegna a domicilio' : 'Ritiro in farmacia'), h('div', { style: 'font-weight:600' }, o.slot), o.address ? h('div', { style: 'font-size:12px;color:var(--fg-2)' }, o.address) : null),
+      h('div', null, h('label', { class: 'lbl', for: 'amt' }, 'Totale da pagare'), h('div', { class: 'field' }, h('span', { class: 'muted' }, '€'), h('input', { id: 'amt', inputmode: 'decimal', placeholder: '0,00', value: o.amount, disabled: o.status !== 'nuovo', on: { change: (e) => { o.amount = e.target.value; } } }))))),
+    o.status === 'pagamento' ? sec(h('div', { class: 'h3' }, 'Pagamento'),
+      h('div', { class: 'paynote' }, 'In attesa di pagamento · € ' + o.amount + ' · link inviato alle ' + o.linkAt + (o.reminded ? ' · promemoria alle ' + o.reminded : '')),
+      h('div', { class: 'kv' }, h('span', { class: 'mono', style: 'font-size:12px;overflow-wrap:anywhere;min-width:0' }, o.payLink), h('button', { class: 'btn sm', type: 'button', on: { click: () => copy(o.payLink, o.id + 'pl') } }, S.copied === o.id + 'pl' ? 'Copiato' : 'Copia link')),
+      h('div', { class: 'bar' }, h('button', { class: 'btn soft sm pill', type: 'button', on: { click: () => markPaid(o) } }, 'Simula pagamento ricevuto'), h('span', { class: 'hint' }, 'Nella realtà la conferma arriva da sola dal sistema di pagamento.')))
+    : o.paidAt ? sec(h('div', { class: 'note ok', style: 'font-size:13px' }, 'Pagato con carta alle ' + o.paidAt + ' · € ' + o.amount))
+    : o.noPay ? sec(h('div', { class: 'note n', style: 'font-size:13px' }, 'Nessun importo da pagare'))
+    : null,
+    sec(h('div', { class: 'h3' }, 'Messaggi su questo ordine'), o.chat.length ? h('div', { class: 'thread' }, msgs) : null,
+      h('form', { class: 'line-in', on: { submit: (e) => { e.preventDefault(); send(); } } },
+        h('label', { class: 'sr', for: 'odraft' }, 'Messaggio al paziente'),
+        h('input', { id: 'odraft', placeholder: 'Scrivi al paziente…', value: S.draft, on: { input: (e) => { S.draft = e.target.value; } } }),
+        h('button', { class: 'btn', type: 'submit', style: 'background:var(--ink);color:var(--ink-fg);border-color:var(--ink)' }, 'Invia')),
+      h('div', { class: 'hint', style: 'font-size:11px' }, 'Il paziente riceve i messaggi su ' + CH[o.ch] + ' con il nome Farmacia Rossi')),
+    sec(h('button', { class: 'btn pri big', type: 'button', on: { click: () => advance(o) } }, primary[0]), h('div', { class: 'hint', style: 'text-align:center' }, primary[1])));
+}
+
+function viewTele() {
+  const list = S.consults.filter((c) => c.status === S.cFilter).sort((a, b) => ((b.prio ? 1 : 0) - (a.prio ? 1 : 0)) || (b.wait - a.wait));
+  const bar = h('div', { class: 'bar' },
+    [['nuovo', 'Da rispondere'], ['attesa', 'In attesa del paziente'], ['chiuso', 'Chiusi']].map(([k, l]) => h('button', { class: 'chip', type: 'button', 'aria-pressed': String(S.cFilter === k), on: { click: () => { S.cFilter = k; const f = S.consults.filter((c) => c.status === k).sort((a, b) => ((b.prio ? 1 : 0) - (a.prio ? 1 : 0)) || (b.wait - a.wait))[0]; S.cSel = f ? f.id : null; S.closing = false; render(); } } }, l + ' · ' + S.consults.filter((c) => c.status === k).length)));
+  const rows = list.length ? list.map((c) => h('div', { class: 'row' + (S.cSel === c.id ? ' on' : '') },
+    h('button', { class: 'row-main', type: 'button', 'aria-pressed': String(S.cSel === c.id), on: { click: () => { S.cSel = c.id; S.closing = false; render(); } } },
+      h('span', { class: 'row-top' }, h('b', null, c.patient), h('span', { class: 'tags' }, c.prio && c.status === 'nuovo' ? h('span', { class: 'tag w' }, 'Da richiamare') : null, h('span', { class: 'tag' }, c.cat))),
+      h('span', { class: 'row-sub', style: 'display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden' }, c.msgs[c.msgs.length - 1].t),
+      h('span', { class: 'row-sub', style: 'font-weight:600;' + (c.status === 'nuovo' && c.wait >= 60 ? 'color:var(--warn-fg)' : '') },
+        c.status === 'nuovo' ? (c.wait ? 'Aspetta da ' + fmtWait(c.wait) : 'Appena arrivato') + ' · ' + CH[c.ch] : c.status === 'attesa' ? 'Hai risposto · ' + CH[c.ch] : 'Chiuso · ' + c.outcome)))) : [h('p', { class: 'empty' }, 'Nessun consulto qui.')];
+  return h('div', { style: 'display:flex;flex-direction:column;gap:14px' }, bar, h('div', { class: 'split' }, h('section', { class: 'card list', 'aria-label': 'Consulti' }, rows), consultDetail()));
+}
+
+function consultDetail() {
+  const c = S.consults.find((x) => x.id === S.cSel);
+  if (!c) return h('section', { class: 'card empty' }, 'Scegli un consulto dall’elenco.');
+  const sec = (...k) => h('div', { class: 'det-sec' }, ...k);
+  const writer = c.who ? c.who.split(', ').pop() : c.patient.split(' ')[0];
+  const add = (t) => () => { S.cDraft = (S.cDraft ? S.cDraft.replace(/\s*$/, '') + ' ' : '') + t; render(); const ta = $('cdraft'); if (ta) { ta.focus(); ta.selectionStart = ta.value.length; } };
+  const send = () => {
+    const t = S.cDraft.trim(); if (!t) { toast('Scrivi la risposta prima di inviarla.'); return; }
+    c.msgs.push({ me: true, t: t + '\nDott.ssa Bianchi, Farmacia Rossi', at: now() }); c.status = 'attesa'; S.cDraft = ''; render();
+    toast('Risposta inviata su ' + CH[c.ch]);
+    setTimeout(() => { c.msgs.push({ me: false, t: 'Grazie mille, chiarissimo.', at: now() }); render(); }, 6000);
+  };
+  const outcomes = ['Risolto', 'Indirizzato al medico', 'Invitato in farmacia'];
+  return h('section', { class: 'card det', 'aria-label': 'Consulto di ' + c.patient },
+    sec(h('div', { class: 'kv' }, h('span', { class: 'lbl' }, CH[c.ch] + ' · ' + c.at + ' · categoria proposta da Claude: ' + c.cat),
+        h('span', { class: 'pill s-' + (c.status === 'nuovo' ? 'nuovo' : c.status === 'attesa' ? 'prep' : 'chiuso') }, c.status === 'nuovo' ? 'Da rispondere' : c.status === 'attesa' ? 'In attesa' : 'Chiuso')),
+      h('h2', null, c.patient), c.who ? h('div', { class: 'muted' }, c.who) : null,
+      h('div', { class: 'bar' },
+        h('button', { class: 'btn soft sm', type: 'button', on: { click: () => askClaude('Riassumimi il consulto di ' + c.patient + ' e il contesto che abbiamo. Non serve una risposta clinica.') } }, '✦ Riassumi con Claude'),
+        c.status !== 'chiuso' ? h('button', { class: 'btn sm', type: 'button', on: { click: () => { S.closing = !S.closing; render(); } } }, 'Chiudi il consulto') : null),
+      S.closing ? h('div', { class: 'bar' }, h('span', { class: 'lbl' }, 'Com’è finito?'), outcomes.map((l) => h('button', { class: 'btn soft sm pill', type: 'button', on: { click: () => { c.status = 'chiuso'; c.outcome = l; S.closing = false; render(); toast('Consulto chiuso · ' + l); } } }, l))) : null),
+    c.ai ? sec(h('div', { class: 'h3' }, '\u2726 Nota di Claude'), c.ai.summary ? h('div', { class: 'note n', style: 'font-size:13px' }, c.ai.summary) : null,
+      c.prio && c.ai.why ? h('div', { class: 'note', style: 'background:var(--warn-bg);color:var(--warn-fg);font-size:13px' }, c.ai.why) : null,
+      c.ai.checks.length ? h('div', null, h('div', { class: 'lbl' }, 'Potresti dover chiedere o controllare'), h('ul', { style: 'margin:4px 0 0;padding-left:18px;font-size:13px' }, c.ai.checks.map((t) => h('li', null, t)))) : null,
+      h('div', { class: 'hint' }, 'Claude non risponde ai pazienti sui farmaci: la risposta la scrivi tu.')) : null,
+    sec(h('div', { class: 'lbl', style: 'font-weight:600;color:var(--fg)' }, 'Contesto del paziente'),
+      h('div', { class: 'ctxbox' },
+        h('div', null, h('span', { class: 'lbl' }, 'Terapie condivise da Armadietto'), c.shared.length ? c.shared.map((t) => h('span', null, t)) : h('span', { class: 'muted' }, 'Non ha condiviso le terapie.')),
+        h('div', null, h('span', { class: 'lbl' }, 'Ordini recenti'), c.orders.length ? c.orders.map((t) => h('span', null, t)) : h('span', { class: 'muted' }, 'Nessun ordine aperto')))),
+    sec(h('div', { class: 'thread' }, c.msgs.flatMap((x) => [h('div', { class: 'bub ' + (x.me ? 'me' : 'pt') }, x.t), h('div', { class: 'meta' + (x.me ? ' r' : '') }, (x.me ? 'Farmacia' : writer) + ' · ' + x.at)]))),
+    c.status !== 'chiuso' ? sec(
+      h('div', { class: 'bar' }, h('span', { class: 'lbl' }, 'Frasi pronte'),
+        [['Saluto', 'Buongiorno ' + writer + ','], ['Chiedi una foto', 'Mi manda una foto della confezione e del foglietto? Così verifico con precisione.'], ['Senta il medico', 'Su questo è meglio sentire il suo medico curante.'], ['Passi in farmacia', 'Passi pure in farmacia quando vuole, ne parliamo di persona.']]
+          .map(([l, t]) => h('button', { class: 'chip', type: 'button', style: 'min-height:30px;font-size:12px', on: { click: add(t) } }, l))),
+      h('div', { class: 'line-in' }, h('label', { class: 'sr', for: 'cdraft' }, 'Risposta del farmacista'),
+        h('textarea', { id: 'cdraft', placeholder: 'Scrivi la risposta. La firma viene aggiunta da sola.', value: S.cDraft, on: { input: (e) => { S.cDraft = e.target.value; } } })),
+      h('div', { class: 'kv' }, h('span', { class: 'hint' }, 'La risposta la scrivi tu: Claude non suggerisce contenuti clinici.'), h('button', { class: 'btn pri', type: 'button', on: { click: send } }, 'Invia la risposta'))) : null);
+}
+
+function viewPatients() {
+  const sel = S.patients.find((p) => p.id === S.pSel);
+  const rows = S.patients.map((p) => {
+    const low = p.ther.filter(([, d]) => d <= 7).sort((a, b) => a[1] - b[1]);
+    return h('div', { class: 'row' + (S.pSel === p.id ? ' on' : '') },
+      h('button', { class: 'row-main', type: 'button', 'aria-pressed': String(S.pSel === p.id), on: { click: () => { S.pSel = p.id; render(); } } },
+        h('span', { class: 'row-top' }, h('b', null, p.name), low.length ? h('span', { class: 'tag w' }, low[0][0] + ': ' + low[0][1] + ' giorni') : null),
+        h('span', { class: 'row-sub' }, (p.note || 'Paziente') + ' · ' + p.ch)));
+  });
+  const det = sel ? h('section', { class: 'card det' },
+    h('div', { class: 'det-sec' }, h('h2', null, sel.name), h('div', { class: 'muted' }, (sel.note || 'Paziente') + ' · ' + sel.ch)),
+    h('div', { class: 'det-sec' }, h('div', { class: 'lbl', style: 'font-weight:600;color:var(--fg)' }, 'Terapie condivise da Armadietto'),
+      sel.ther.length ? sel.ther.map(([n, d]) => h('div', { class: 'kv item', style: 'flex-direction:row' }, h('b', null, n), h('span', { style: 'font-weight:600;' + (d <= 7 ? 'color:var(--warn-fg)' : 'color:var(--muted)') }, 'finisce tra ' + d + ' giorni'))) : h('div', { class: 'hint' }, 'Il paziente non ha condiviso le terapie con la farmacia.'),
+      h('div', { class: 'hint' }, 'Il consenso è del paziente, per singola terapia, e si revoca dall’app.')),
+    sel.ther.some(([, d]) => d <= 7) ? h('div', { class: 'det-sec' }, h('button', { class: 'btn soft', type: 'button', style: 'justify-content:center;min-height:44px', on: { click: () => askClaude('Prepara un messaggio di riordino per ' + sel.name + ' per le terapie che stanno finendo.') } }, '✦ Fai preparare a Claude il messaggio di riordino')) : null)
+    : h('section', { class: 'card empty' }, 'Scegli un paziente.');
+  return h('div', { class: 'split' }, h('section', { class: 'card list', 'aria-label': 'Pazienti collegati' }, rows), det);
+}
+
+/* ================= Assistente: Claude ================= */
+let sample = null, sampleState = 'loading', toolsOk = false, busy = null;
+const turns = [];      // conversazione visibile a Claude (testo)
+let pendingNotes = []; // cose successive da far sapere a Claude al prossimo messaggio
+let propSeq = 0;
+const props = {};
+
+function rules() {
+  return `Sei l'assistente della Farmacia Rossi, dentro la dashboard web del farmacista. Oggi è venerdì 27 novembre 2026, sono le ${now()}. Parli con la Dott.ssa Bianchi, farmacista titolare.
+Il pannello «In arrivo» della dashboard raccoglie i messaggi in arrivo da WhatsApp, app e link e notifiche di pagamento, già letti e smistati in bozze d'ordine, consulti o domande pratiche; la farmacista decide lì. Se ci sono messaggi da gestire, ricordali all'inizio della risposta in una riga, prima il più urgente, e poi rispondi alla domanda. La dashboard ha due sezioni: Ordini (ricette con NRE arrivate da WhatsApp, link web o app; ritiro in farmacia o consegna con il fattorino Luca nel giro delle 16:00) e Telefarmacia (consulti dei pazienti per messaggio, a cui risponde il farmacista). Con leggi_pazienti vedi anche le terapie che i pazienti condividono dall'app Armadietto, con i giorni di scorta rimasti, ma non c'è una schermata dedicata.
+
+Regole:
+- Flusso degli ordini: la farmacista verifica ricetta, disponibilità e totale; poi la dashboard manda al paziente un link di pagamento (carta, Apple Pay, Google Pay); l'ordine si prepara solo quando il pagamento è confermato. Per chi non ha ancora pagato puoi proporre un promemoria (avanza_ordine su un ordine in attesa di pagamento invia il promemoria). Non puoi segnare un pagamento come ricevuto.
+- Consegne: di base le porta il fattorino della farmacia (Luca, giro 16-18, la farmacista affida il giro). In alternativa un rider partner tipo Glovo, prenotato dalla vista Giro di consegna, con costo per consegna e tracking per il paziente. I farmaci da frigo e gli stupefacenti vanno sempre con il fattorino. Puoi consigliare come dividerle, ma la prenotazione la fa la farmacista.
+- Leggi i dati con gli strumenti prima di rispondere. Non inventare pazienti, ordini, orari o numeri.
+- Non dai consigli clinici: niente dosi, dimenticanze, interazioni, effetti indesiderati, sostituzioni. Se la domanda è clinica dillo in una frase e indica il consulto o l'ordine dove deve rispondere il farmacista.
+- Per fare qualcosa usa proponi_azione: compare una scheda e la farmacista approva o scarta. Non dire mai che un'azione è fatta: dì che l'hai proposta.
+- I messaggi per i pazienti sono brevi, cortesi, in italiano, senza indicazioni cliniche, e finiscono con "Farmacia Rossi".
+- Sii proattiva. Quando nei dati c'è qualcosa da fare (ricette da verificare, disponibilità da indicare, ordini pronti da affidare al fattorino o da segnare ritirati, pazienti da avvisare, terapie condivise in esaurimento, consulti che aspettano), proponilo con proponi_azione anche se non te l'ha chiesto: una scheda per azione, al massimo 3 per risposta, prima le più urgenti. Nel testo non ripetere ciò che c'è già nelle schede.
+- Alla fine di ogni risposta chiama suggerisci_seguiti con 2 o 3 domande brevi che la farmacista potrebbe farti dopo.
+- Puoi portare la farmacista alla schermata giusta con apri_schermata.
+- Rispondi in italiano, breve e concreto. Testo semplice: frasi brevi, elenchi con il trattino quando servono, **grassetto** solo per nomi e codici. Niente tabelle né titoli.`;
+}
+
+function snapshotOrders() {
+  return open().map((o) => ({ codice: o.code, paziente: o.patient, chi_ordina: o.who || undefined, canale: CH[o.ch], ricevuto: o.at, stato: ST[o.status], modalita: o.mode, quando: o.slot, indirizzo: o.address || undefined,
+    farmaci: o.items.map((i) => ({ nome: i.name, disponibilita: i.av ? AV.find((a) => a[0] === i.av)[1] : 'da indicare', frigo: i.fridge || undefined })),
+    senza_ricetta: o.free || undefined, importo: o.amount || undefined, consegna_con: o.mode === 'consegna' ? (o.via === 'rider' ? 'rider partner' + (o.rider ? ' (' + o.rider.state + ')' : ', da prenotare') : 'fattorino della farmacia') : undefined, pagamento: o.paidAt ? 'pagato alle ' + o.paidAt : o.status === 'pagamento' ? 'link inviato alle ' + o.linkAt + ', non ancora pagato' : o.noPay ? 'nulla da pagare' : 'totale da indicare in verifica', foto_promemoria: o.photo || undefined, riordino_da_armadietto: o.armadietto || undefined }));
+}
+function snapshotConsults() {
+  return S.consults.filter((c) => c.status !== 'chiuso').map((c) => ({ id: c.id, paziente: c.patient, chi_scrive: c.who || undefined, canale: CH[c.ch], stato: c.status === 'nuovo' ? 'da rispondere' : 'in attesa del paziente', attesa_minuti: c.wait || undefined, categoria: c.cat,
+    messaggi: c.msgs.map((m) => (m.me ? 'Farmacia: ' : 'Paziente: ') + m.t), terapie_condivise: c.shared, ordini: c.orders }));
+}
+function snapshotPatients() { return S.patients.map((p) => ({ paziente: p.name, note: p.note || undefined, canale: p.ch, terapie_condivise: p.ther.map(([n, d]) => ({ farmaco: n, giorni_di_scorta: d })) })); }
+
+function tools(actBox, cardBox, followBox) {
+  const note = (t) => actBox.append(h('div', { class: 'act' }, t));
+  return [
+    { name: 'leggi_ordini', description: 'Restituisce gli ordini aperti della farmacia: codice, paziente, stato, ritiro o consegna, farmaci con disponibilità, flag (frigo, equivalente, foto). Usalo per ogni domanda su ordini, consegne e priorità.',
+      execute: () => { const d = snapshotOrders(); note('Ho letto ' + d.length + ' ordini aperti'); return d; } },
+    { name: 'leggi_inbox', description: 'Restituisce i messaggi in arrivo nell\u2019Inbox (WhatsApp, app, link, pagamenti) con il tipo deciso in lettura e se sono già stati gestiti.',
+      execute: () => { const d = S.inbox.map((x) => ({ id: x.id, da: x.from, canale: CH[x.ch], ora: x.at, testo: x.text, tipo: x.state === 'reading' ? 'in lettura' : x.kind, gestito: x.done ? x.done.text : false })); note('Ho letto ' + d.length + ' messaggi in Inbox'); return d; } },
+    { name: 'leggi_consulti', description: 'Restituisce i consulti di telefarmacia aperti, con i messaggi, l’attesa in minuti, la categoria e il contesto del paziente.',
+      execute: () => { const d = snapshotConsults(); note('Ho letto ' + d.length + ' consulti aperti'); return d; } },
+    { name: 'leggi_pazienti', description: 'Restituisce i pazienti collegati con le terapie condivise da Armadietto e i giorni di scorta rimasti.',
+      execute: () => { const d = snapshotPatients(); note('Ho letto le terapie di ' + d.length + ' pazienti'); return d; } },
+    { name: 'apri_schermata', description: 'Porta la farmacista su una schermata: ordini (con codice ordine), telefarmacia (con id consulto) o pazienti (con nome paziente).',
+      inputSchema: { type: 'object', properties: { schermata: { type: 'string', enum: ['inbox', 'ordini', 'telefarmacia'] }, riferimento: { type: 'string', description: 'Codice ordine, id consulto o nome paziente' } }, required: ['schermata'] },
+      execute: (inp) => {
+        const sc = String(inp.schermata || ''); const ref = String(inp.riferimento || '');
+        if (sc === 'inbox') { const it = S.inbox.find((x) => x.id === ref || x.from.toLowerCase() === ref.toLowerCase()); if (it) S.iSel = it.id; setIn(true); }
+        else if (sc === 'ordini') { S.tab = 'ordini'; const o = byCode(ref); if (o) S.sel = o.id; }
+        else if (sc === 'telefarmacia') { S.tab = 'tele'; const c = S.consults.find((x) => x.id === ref || x.patient.toLowerCase() === ref.toLowerCase()); if (c) { S.cSel = c.id; S.cFilter = c.status; } }
+        else throw new Error('Schermata sconosciuta');
+        render(); note('Ho aperto ' + (sc === 'telefarmacia' ? 'Telefarmacia' : sc.charAt(0).toUpperCase() + sc.slice(1)));
+        return 'Schermata aperta.';
+      } },
+    { name: 'suggerisci_seguiti', description: 'Mostra sotto la risposta 2 o 3 domande brevi, cliccabili, che la farmacista potrebbe farti dopo. Chiamalo una sola volta, alla fine.',
+      inputSchema: { type: 'object', properties: { domande: { type: 'array', items: { type: 'string' }, maxItems: 3 } }, required: ['domande'] },
+      execute: (inp) => { const qs = (Array.isArray(inp.domande) ? inp.domande : []).map(String).filter(Boolean).slice(0, 3); followBox.replaceChildren(...qs.map((q) => h('button', { class: 'fchip', type: 'button', on: { click: () => askClaude(q) } }, q))); return 'Domande mostrate.'; } },
+    { name: 'proponi_azione', description: 'Mostra alla farmacista una proposta da approvare. tipo: avanza_ordine (porta l’ordine al passo successivo), segna_disponibilita (un farmaco di un ordine: pronto, grossista o equivalente), messaggio_paziente (un messaggio non clinico a un paziente). Restituisce solo che la proposta è stata mostrata.',
+      inputSchema: { type: 'object', properties: {
+        tipo: { type: 'string', enum: ['avanza_ordine', 'segna_disponibilita', 'messaggio_paziente'] },
+        codice_ordine: { type: 'string', description: 'Per avanza_ordine e segna_disponibilita' },
+        farmaco: { type: 'string', description: 'Per segna_disponibilita: nome del farmaco come nell’ordine' },
+        disponibilita: { type: 'string', enum: ['pronto', 'grossista', 'equivalente'] },
+        paziente: { type: 'string', description: 'Per messaggio_paziente: nome del paziente come nei dati' },
+        testo: { type: 'string', description: 'Per messaggio_paziente: il messaggio completo' },
+        motivo: { type: 'string', description: 'Una frase che spiega perché lo proponi' } }, required: ['tipo', 'motivo'] },
+      execute: (inp) => { const card = proposal(inp); cardBox.append(card); scrollLog(); return 'Proposta mostrata alla farmacista. Attende la sua approvazione.'; } }
+  ];
+}
+
+function proposal(inp) {
+  const id = 'p' + (++propSeq); const tipo = String(inp.tipo || '');
+  const o = inp.codice_ordine ? byCode(inp.codice_ordine) : null;
+  let kind = '', title = '', body = null;
+  if (tipo === 'avanza_ordine') { kind = 'Ordine'; title = o ? nextActionText(o) + ' · #' + o.code + ' ' + o.patient : 'Ordine ' + (inp.codice_ordine || '') + ' non trovato'; }
+  else if (tipo === 'segna_disponibilita') { kind = 'Disponibilità'; title = (inp.farmaco || 'Farmaco') + ': ' + ({ pronto: 'pronto', grossista: 'dal grossista', equivalente: 'equivalente' }[inp.disponibilita] || inp.disponibilita) + (o ? ' · #' + o.code : ''); }
+  else if (tipo === 'messaggio_paziente') { kind = 'Messaggio'; title = 'Messaggio per ' + (inp.paziente || 'il paziente'); body = h('p', { class: 'prop-q' }, String(inp.testo || '')); }
+  else { kind = 'Proposta'; title = tipo; }
+  const actions = h('div', { class: 'prop-row' });
+  const card = h('div', { class: 'prop', id }, h('div', { class: 'prop-k' }, h('span', { class: 'tag ok' }, kind), h('span', null, 'Proposta da Claude')), h('div', { class: 'prop-t' }, title), body, inp.motivo ? h('div', { class: 'prop-why' }, String(inp.motivo)) : null, actions);
+  const finish = (ok, text) => { actions.replaceWith(h('div', { class: 'prop-done' + (ok ? '' : ' no') }, text)); pendingNotes.push((ok ? 'La farmacista ha approvato: ' : 'La farmacista ha scartato: ') + title); };
+  actions.append(
+    h('button', { class: 'btn pri sm pill', type: 'button', on: { click: () => { const r = applyProposal(tipo, inp, o); if (r) finish(true, r); } } }, tipo === 'messaggio_paziente' ? 'Approva e invia' : 'Approva'),
+    h('button', { class: 'btn sm pill', type: 'button', on: { click: () => finish(false, 'Scartata') } }, 'Scarta'));
+  props[id] = inp; return card;
+}
+function nextActionText(o) { return o.status === 'nuovo' ? 'Conferma e invia il link di pagamento' : o.status === 'pagamento' ? 'Promemoria di pagamento' : o.status === 'prep' ? 'Segna pronto' : o.status === 'pronto' ? (o.mode === 'consegna' ? 'Affida al fattorino' : 'Segna ritirato') : 'Conferma la consegna'; }
+function applyProposal(tipo, inp, o) {
+  if (tipo === 'avanza_ordine') { if (!o || o.status === 'chiuso') { toast('Ordine non trovato o già chiuso.'); return null; } const before = ST[o.status]; if (!advance(o)) return null; return 'Fatto: da ' + before.toLowerCase() + ' a ' + ST[o.status].toLowerCase(); }
+  if (tipo === 'segna_disponibilita') {
+    if (!o) { toast('Ordine non trovato.'); return null; }
+    const f = String(inp.farmaco || '').toLowerCase().split(/[ ,]/)[0];
+    const it = o.items.find((i) => i.name.toLowerCase().includes(f));
+    if (!it || !['pronto', 'grossista', 'equivalente'].includes(inp.disponibilita)) { toast('Farmaco non trovato nell’ordine.'); return null; }
+    it.av = inp.disponibilita; S.tab = 'ordini'; S.sel = o.id; render(); return 'Disponibilità aggiornata';
+  }
+  if (tipo === 'messaggio_paziente') {
+    const name = String(inp.paziente || '').toLowerCase(); const t = String(inp.testo || '').trim();
+    if (!t) return null;
+    const ord = open().find((x) => x.patient.toLowerCase() === name || (x.who || '').toLowerCase().includes(name));
+    const con = S.consults.find((x) => x.status !== 'chiuso' && x.patient.toLowerCase() === name);
+    if (con) { con.msgs.push({ me: true, t, at: now() }); con.status = 'attesa'; }
+    else if (ord) ord.chat.push({ me: true, t, at: now() });
+    render(); toast('Messaggio inviato a ' + (inp.paziente || 'paziente') + ' con il nome Farmacia Rossi');
+    return 'Inviato';
+  }
+  return null;
+}
+
+/* ---- rendering del testo di Claude (markdown minimo, sempre come testo) ---- */
+function inline(el, s) { s.split(/(\*\*[^*]+\*\*)/g).forEach((p) => { if (/^\*\*[^*]+\*\*$/.test(p)) el.append(h('strong', null, p.slice(2, -2))); else if (p) el.append(document.createTextNode(p)); }); return el; }
+function richText(text) {
+  const box = h('div', { class: 'txt' }); let ul = null;
+  for (const raw of String(text).split('\n')) {
+    const line = raw.trimEnd();
+    const li = line.match(/^\s*(?:[-•*]|\d+[.)])\s+(.*)$/);
+    if (li) { if (!ul) { ul = h('ul'); box.append(ul); } ul.append(inline(h('li'), li[1])); continue; }
+    ul = null; if (line.trim()) box.append(inline(h('p'), line.replace(/^#+\s*/, '')));
+  }
+  return box;
+}
+
+function fbRow(text) {
+  const mk = (label, path, key) => h('button', { class: 'icon-btn', type: 'button', 'aria-label': label, 'aria-pressed': 'false', on: { click: (e) => { const b = e.currentTarget; const on = b.getAttribute('aria-pressed') !== 'true'; row.querySelectorAll('[data-k]').forEach((x) => x.setAttribute('aria-pressed', 'false')); b.setAttribute('aria-pressed', String(on)); if (on) toast(key === 'up' ? 'Grazie, segnalato come utile' : 'Grazie, ne terremo conto'); } }, 'data-k': key });
+  const svg = (d) => { const el = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); el.setAttribute('width', '16'); el.setAttribute('height', '16'); el.setAttribute('viewBox', '0 0 24 24'); el.setAttribute('fill', 'none'); el.setAttribute('stroke', 'currentColor'); el.setAttribute('stroke-width', '2'); el.setAttribute('stroke-linecap', 'round'); el.setAttribute('stroke-linejoin', 'round'); el.setAttribute('aria-hidden', 'true'); el.innerHTML = d; return el; };
+  const up = mk('Risposta utile', '', 'up'); up.append(svg('<path d="M7 10v12"></path><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"></path>'));
+  const down = mk('Risposta non utile', '', 'down'); down.append(svg('<path d="M17 14V2"></path><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"></path>'));
+  const cp = h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Copia la risposta', on: { click: async () => { try { await navigator.clipboard.writeText(text); toast('Risposta copiata'); } catch (e) { toast('Copia non disponibile in questa vista'); } } } });
+  cp.append(svg('<rect x="8" y="8" width="14" height="14" rx="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>'));
+  const row = h('div', { class: 'fb' }, up, down, cp);
+  return row;
+}
+
+function scrollLog() { const l = $('log'); l.scrollTop = l.scrollHeight; }
+function renderHello() {
+  const log = $('log'); log.replaceChildren();
+  const s = [['Cosa devo fare adesso?', 'Ordini, consulti, priorità'], ['Prepara il giro delle consegne', 'Le consegne di oggi pomeriggio'], ['Chi ha terapie in esaurimento?', 'E prepara i messaggi'], ['Cosa c\u2019è da gestire per primo?', 'Pannello In arrivo']];
+  const box = h('div', { class: 'hello' });
+  log.append(box);
+  if (sampleState === 'off') box.append(h('div', { class: 'notice' }, 'Claude non è disponibile in questa vista. Apri la pagina dentro Claude per usare l’assistente: il resto della dashboard funziona lo stesso.'));
+  if (sampleState === 'denied') box.append(h('div', { class: 'notice' }, 'Non hai consentito a questa pagina di usare Claude. Ricarica la pagina per riprovare.'));
+}
+
+const ERR = {
+  not_granted: 'Non hai consentito a questa pagina di usare Claude.', sampling_disabled: 'Claude non è disponibile per questo account.',
+  rate_limited: 'Troppe richieste in poco tempo. Riprova tra un momento.', session_expired: 'La sessione è scaduta: accedi di nuovo a Claude.',
+  refused: 'Claude non ha risposto a questa richiesta. Prova a riformularla.', empty_completion: 'Claude non ha scritto niente. Prova a chiedere in modo più semplice.',
+  prompt_too_large: 'La conversazione è troppo lunga: inizia una nuova conversazione.', upstream_error: 'Si è interrotta la connessione con Claude. Riprova.'
+};
+
+async function askClaude(text) {
+  if (document.querySelector('.app').classList.contains('noai')) setAi(true);
+  text = String(text || '').trim();
+  if (!text || busy) return;
+  if (!sample) { toast(sampleState === 'loading' ? 'Sto collegando Claude, riprova tra un attimo.' : 'Claude non è disponibile in questa vista.'); return; }
+  const log = $('log');
+  if (log.querySelector('.hello')) log.replaceChildren();
+  log.append(h('div', { class: 'msg-me' }, text));
+  const actBox = h('div', { class: 'acts' });
+  const thinking = h('div', { class: 'thinking' }, h('span', { class: 'dots' }, h('i'), h('i'), h('i')), 'Claude sta pensando…');
+  const textBox = h('div');
+  const cardBox = h('div', { class: 'cards' });
+  const followBox = h('div', { class: 'fchips' });
+  const body = h('div', { class: 'body' }, actBox, thinking, textBox, cardBox, followBox);
+  log.append(h('div', { class: 'msg-ai' }, h('svg', { class: 'star', width: '20', height: '20', viewBox: '0 0 24 24', 'aria-hidden': 'true' }), body));
+  const star = log.lastChild.querySelector('svg'); star.innerHTML = '<path d="M12 2c.6 4.8 3.2 7.4 8 8-4.8.6-7.4 3.2-8 8-.6-4.8-3.2-7.4-8-8 4.8-.6 7.4-3.2 8-8z" fill="var(--accent)"></path>';
+  scrollLog();
+
+  let content = text;
+  if (S.tab === 'ordini' && S.sel) { const o = open().find((x) => x.id === S.sel); if (o) content += '\n\n[Schermata aperta: Ordini, ordine #' + o.code + ' di ' + o.patient + ']'; }
+  else if (S.tab === 'tele' && S.cSel) { const c = S.consults.find((x) => x.id === S.cSel); if (c) content += '\n\n[Schermata aperta: Telefarmacia, consulto ' + c.id + ' di ' + c.patient + ']'; }
+  else if (S.tab === 'inbox' && S.iSel) { const it = S.inbox.find((x) => x.id === S.iSel); if (it) content += '\n\n[Schermata aperta: Inbox, messaggio ' + it.id + ' di ' + it.from + ']'; }
+  else if (S.tab === 'pazienti' && S.pSel) { const p = S.patients.find((x) => x.id === S.pSel); if (p) content += '\n\n[Schermata aperta: Pazienti, ' + p.name + ']'; }
+  { const pend = S.inbox.filter((x) => !x.done); if (pend.length) content += '\n\n[In arrivo, da gestire: ' + pend.map((x) => x.from + ' (' + (x.state === 'reading' ? 'in lettura' : x.kind) + ', ' + CH[x.ch] + ' ' + x.at + ')').join('; ') + ']'; }
+  if (pendingNotes.length) { content = '[Nel frattempo: ' + pendingNotes.join('; ') + ']\n\n' + content; pendingNotes = []; }
+  if (!toolsOk) content += '\n\n[Dati della farmacia, in sola lettura]\nOrdini: ' + JSON.stringify(snapshotOrders()) + '\nConsulti: ' + JSON.stringify(snapshotConsults()) + '\nPazienti: ' + JSON.stringify(snapshotPatients()) + '\n(In questa vista non puoi proporre azioni: descrivi cosa faresti.)';
+  turns.push({ role: 'user', content });
+  while (JSON.stringify(turns).length > 40000 && turns.length > 2) turns.splice(0, 2);
+
+  const ctl = new AbortController(); busy = ctl; setSend();
+  try {
+    const opts = { signal: ctl.signal, cache: false, onText: ({ text: t }) => { thinking.remove(); textBox.replaceChildren(richText(t)); scrollLog(); } };
+    if (toolsOk) { delete opts.cache; opts.tools = tools(actBox, cardBox, followBox); }
+    const res = await sample([{ role: 'user', content: rules() }, ...turns], opts);
+    thinking.remove(); textBox.replaceChildren(richText(res.text));
+    if (res.truncated) body.append(h('div', { class: 'hint' }, 'Risposta interrotta perché troppo lunga: chiedi una cosa alla volta.'));
+    turns.push({ role: 'assistant', content: res.text });
+    body.append(fbRow(res.text));
+  } catch (e) {
+    thinking.remove();
+    if (e && e.text) textBox.replaceChildren(richText(e.text)); else if (e && e.code === 'refused') textBox.replaceChildren();
+    if (e && e.code !== 'cancelled') body.append(h('div', { class: 'err' }, ERR[e && e.code] || ERR.upstream_error));
+    if (e && e.code === 'not_granted') sampleState = 'denied';
+    if (e && e.text) turns.push({ role: 'assistant', content: e.text });
+  } finally { busy = null; setSend(); scrollLog(); }
+}
+
+function setSend() {
+  const b = $('sendBtn');
+  if (busy) { b.classList.add('stop'); b.setAttribute('aria-label', 'Ferma'); b.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="2" fill="currentColor"></rect></svg>'; }
+  else { b.classList.remove('stop'); b.setAttribute('aria-label', 'Invia'); b.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"></path><path d="m5 12 7-7 7 7"></path></svg>'; }
+}
+function updateCtxChip() {
+  const chip = $('ctxChip'); let q = '', label = '';
+  if (S.tab === 'ordini') { const o = open().find((x) => x.id === S.sel); if (o) { label = '✦ Chiedi dell’ordine #' + o.code; q = 'Cosa manca per chiudere l’ordine #' + o.code + ' di ' + o.patient + '?'; } }
+  else if (S.tab === 'tele') { const c = S.consults.find((x) => x.id === S.cSel); if (c) { label = '✦ Riassumi il consulto di ' + c.patient.split(' ')[0]; q = 'Riassumimi il consulto di ' + c.patient + ' e il contesto che abbiamo.'; } }
+  else if (S.tab === 'inbox') { const it = S.inbox.find((x) => x.id === S.iSel); if (it) { label = '\u2726 Chiedi del messaggio di ' + it.from.split(' ')[0]; q = 'Aiutami con il messaggio di ' + it.from + ' in Inbox: cosa devo fare?'; } }
+  else if (S.tab === 'pazienti') { const p = S.patients.find((x) => x.id === S.pSel); if (p) { label = '✦ Situazione di ' + p.name; q = 'Com’è la situazione delle terapie di ' + p.name + '?'; } }
+  chip.hidden = !label; chip.textContent = label; chip.onclick = () => askClaude(q);
+}
+
+/* ================= Simula WhatsApp: Claude prepara la bozza ================= */
+const WA = [
+  { from: 'Carla Fontana', text: 'Buongiorno, sono Carla Fontana. Vi mando la ricetta di mio marito Bruno, l’NRE è 0901A4196118230 e il codice fiscale FNTBRN50R12L219S. Passo a prenderla stasera verso le 18.',
+    fb: { e_ordine: true, paziente: 'Bruno Fontana', chi_scrive: 'La moglie, Carla Fontana', codice_fiscale: 'FNTBRN50R12L219S', nre: ['0901A 4196 118230'], modalita: 'ritiro', quando: 'oggi dalle 18:00', indirizzo: '', da_controllare: ['Il farmaco non è scritto nel messaggio: leggilo nel gestionale'] } },
+  { from: 'Tommaso Rinaldi', text: 'Ciao! NRE 0901A4196220871 codice RNLTMS90A01L219E. Me lo portate domani mattina? Via Garibaldi 30, citofono Rinaldi',
+    fb: { e_ordine: true, paziente: 'Tommaso Rinaldi', chi_scrive: '', codice_fiscale: 'RNLTMS90A01L219E', nre: ['0901A 4196 220871'], modalita: 'consegna', quando: 'domani mattina', indirizzo: 'Via Garibaldi 30, citofono Rinaldi', da_controllare: ['Fascia oraria da confermare: il giro del mattino è 10:00–12:00'] } },
+  { from: 'Silvia Conte', text: 'Buongiorno, a che ora chiudete sabato? Devo passare per il ritiro di mia mamma.',
+    fb: { e_ordine: false, paziente: 'Silvia Conte', chi_scrive: '', codice_fiscale: '', nre: [], modalita: '', quando: '', indirizzo: '', da_controllare: [], risposta_suggerita: 'Buongiorno Silvia, sabato siamo aperti fino alle 19:30. A presto, Farmacia Rossi' } },
+  { from: 'Luisa Neri', text: 'Ciao, ieri sera ho dimenticato la dose dell\u2019antibiotico. Stamattina devo prenderne due?',
+    fb: { e_ordine: false, consulto: true, categoria: 'Uso del farmaco', riassunto: 'Ha dimenticato una dose di antibiotico ieri sera e chiede come recuperarla.', paziente: 'Luisa Neri', chi_scrive: '', codice_fiscale: '', nre: [], modalita: '', quando: '', indirizzo: '', da_controllare: ['Quale antibiotico e ogni quante ore'] } },
+  { from: 'Ada Ricci', text: 'Salve, ho due ricette: 0901A4197004512 e 0901A4197004513. Sono Ada Ricci, RCCDAA47S55L219U. Si può avere a casa oggi pomeriggio? Abito in via Roma 5.',
+    fb: { e_ordine: true, paziente: 'Ada Ricci', chi_scrive: '', codice_fiscale: 'RCCDAA47S55L219U', nre: ['0901A 4197 004512', '0901A 4197 004513'], modalita: 'consegna', quando: 'oggi 16:00–18:00', indirizzo: 'Via Roma 5', da_controllare: [] } }
+];
+let waNext = 0;
+
+function waPrompt(m, at) {
+  return `Sei l'assistente della Farmacia Rossi. Alle ${at} è arrivato questo messaggio WhatsApp da "${m.from}":
+"""${m.text}"""
+Capisci se è una richiesta d'ordine da ricetta e prepara la bozza per il farmacista. Le consegne a domicilio si fanno oggi 16:00–18:00 o domani 10:00–12:00.
+Rispondi solo con un oggetto JSON con queste chiavi:
+{"e_ordine": true o false, "paziente": "nome di chi prende il farmaco", "chi_scrive": "chi scrive, se non è il paziente, altrimenti stringa vuota", "codice_fiscale": "", "nre": ["NRE in gruppi 5-4-6, es. 0901A 4196 118230"], "modalita": "ritiro" o "consegna", "quando": "es. oggi dalle 18:00", "indirizzo": "", "da_controllare": ["cosa deve verificare il farmacista, frasi brevi"], "consulto": true se NON è un ordine ma una domanda sui farmaci o sulla salute per il farmacista, "categoria": per i consulti una tra ${CATS.map((c) => '"' + c + '"').join(', ')}, "riassunto": "per i consulti, una frase su cosa chiede", "risposta_suggerita": "solo se NON è un ordine e NON è un consulto: risposta breve, cortese, non clinica, che finisce con Farmacia Rossi"}
+Non inventare: se un dato manca lascia la stringa vuota e scrivilo in da_controllare. Non dare indicazioni cliniche.`;
+}
+
+/* ================= Simula consulto: arriva da WhatsApp, app o link ================= */
+const CP = [
+  { from: 'Gino Pellegrini', who: '', ch: 'wa', text: 'Buonasera, ho mal di schiena da due giorni. Posso prendere l’ibuprofene se prendo già la cardioaspirina tutte le mattine?',
+    fb: { categoria: 'Interazioni', riassunto: 'Chiede se può prendere ibuprofene insieme alla cardioaspirina che usa ogni giorno.', da_sapere: ['Non ha condiviso le terapie: chiedi cos’altro prende', 'Da quanto tempo ha il dolore'], priorita: 'normale' } },
+  { from: 'Anna Marchetti', who: 'Scrive la figlia, Giulia', ch: 'app', text: 'Stamattina la mamma aveva la pressione un po’ più alta del solito. Il ramipril lo deve prendere comunque all’ora di sempre?',
+    fb: { categoria: 'Uso del farmaco', riassunto: 'La figlia chiede se la madre deve prendere il ramipril come sempre, con la pressione un po’ più alta.', da_sapere: ['Quali valori ha misurato', 'Ha condiviso ramipril e bisoprololo'], priorita: 'normale' } },
+  { from: 'Marta Villa', who: '', ch: 'web', text: 'Ho in casa uno sciroppo per la tosse aperto due mesi fa. Si può ancora dare a mio figlio di 8 anni?',
+    fb: { categoria: 'Conservazione', riassunto: 'Chiede se uno sciroppo aperto da due mesi si può ancora dare al figlio di 8 anni.', da_sapere: ['Nome dello sciroppo', 'Una foto della confezione'], priorita: 'normale' } },
+  { from: 'Sergio Villa', who: '', ch: 'wa', text: 'Mi è arrivata a casa la confezione di losartan ma la scatola è diversa dal solito e da ieri ho un po’ di giramenti di testa. È lo stesso farmaco?',
+    fb: { categoria: 'Effetti indesiderati', riassunto: 'La confezione di losartan è diversa dal solito e da ieri ha giramenti di testa.', da_sapere: ['Foto della nuova confezione', 'Ordine #2031 consegnato oggi'], priorita: 'alta', motivo_priorita: 'Riferisce un sintomo nuovo: valuta di richiamarlo' } }
+];
+let cpNext = 0, consSeq = 0;
+const CATS = ['Uso del farmaco', 'Interazioni', 'Effetti indesiderati', 'Conservazione', 'Prodotti senza ricetta', 'Altro'];
+
+function sharedFor(name) {
+  const p = S.patients.find((x) => x.name === name);
+  return p ? p.ther.map(([n, d]) => n + ' · finisce tra ' + d + ' giorni') : [];
+}
+
+function consPrompt(m) {
+  const shared = sharedFor(m.from);
+  return `Sei l'assistente della Farmacia Rossi. È arrivato un consulto per il farmacista da "${m.from}"${m.who ? ' (' + m.who + ')' : ''} via ${CH[m.ch]}:
+"""${m.text}"""
+Terapie che il paziente ha condiviso da Armadietto: ${shared.length ? shared.join('; ') : 'nessuna'}.
+Prepara il consulto per il farmacista. NON rispondere alla domanda e non dare indicazioni cliniche: la risposta la scrive il farmacista.
+Rispondi solo con un oggetto JSON:
+{"categoria": una tra ${CATS.map((c) => '"' + c + '"').join(', ')}, "riassunto": "una frase su cosa chiede", "da_sapere": ["al massimo 3 cose brevi che il farmacista potrebbe dover chiedere o controllare"], "priorita": "alta" se il messaggio riferisce un sintomo nuovo o qualcosa che fa pensare di richiamare subito il paziente, altrimenti "normale", "motivo_priorita": "frase breve, solo se alta"}`;
+}
+
+function createConsult(m, at, ai) {
+  consSeq++;
+  const ords = open().filter((o) => o.patient === m.from).map((o) => '#' + o.code + ' ' + ST[o.status].toLowerCase());
+  const c = { id: 'k' + consSeq, patient: m.from, who: m.who || '', ch: m.ch, at, wait: 0, cat: CATS.includes(ai.categoria) ? ai.categoria : 'Altro', status: 'nuovo', prio: ai.priorita === 'alta',
+    shared: sharedFor(m.from), orders: ords, msgs: [ { me: false, t: m.text, at } ],
+    ai: { summary: String(ai.riassunto || ''), checks: (Array.isArray(ai.da_sapere) ? ai.da_sapere : []).map(String).filter(Boolean).slice(0, 3), why: String(ai.motivo_priorita || '') } };
+  S.consults.unshift(c); S.tab = 'tele'; S.cFilter = 'nuovo'; S.cSel = c.id; S.closing = false; S.cDraft = ''; render();
+  pendingNotes.push('È arrivato un consulto da ' + c.patient + ' (' + c.cat + ')');
+  return c;
+}
+
+/* ================= Inbox: messaggi in arrivo, letti e smistati da Claude ================= */
+let inSeq = 0;
+const WA_ORDER = [1, 3, 4, 0, 2];
+const KIND = { ordine: ['Bozza d’ordine', 'ok'], consulto: ['Consulto', 'i'], domanda: ['Domanda', ''], pagamento: ['Pagamento', 'pay'] };
+function kindOf(it) { if (it.src === 'cons') return 'consulto'; if (it.src === 'pay') return 'pagamento'; const d = it.d || {}; return d.e_ordine !== false ? 'ordine' : d.consulto ? 'consulto' : 'domanda'; }
+function addInbox(it) { it.id = 'm' + (++inSeq); it.unread = true; S.inbox.unshift(it); return it; }
+
+function seedInbox() {
+  const mk = (src, m, at, d) => { const it = addInbox({ src, from: m.from, who: m.who || '', ch: m.ch || 'wa', at, text: m.text, m, d, state: 'ready', byClaude: null }); it.kind = kindOf(it); it.reply = String((d && d.risposta_suggerita) || ''); return it; };
+  mk('wa', WA[0], '09:58', WA[0].fb);
+  mk('wa', WA[2], '10:15', WA[2].fb);
+  mk('cons', CP[0], '10:24', CP[0].fb);
+  cpNext = 1;
+}
+
+async function simWhatsApp() {
+  const m = WA[WA_ORDER[waNext % WA_ORDER.length]]; waNext++;
+  const it = addInbox({ src: 'wa', from: m.from, who: '', ch: 'wa', at: now(), text: m.text, m, d: null, state: 'reading', byClaude: false });
+  it.unread = false; S.iSel = it.id; setIn(true); render();
+  toast('Nuovo messaggio WhatsApp da ' + m.from + ' · Claude lo sta leggendo', 'new');
+  let d = null;
+  if (sample) { try { d = await sample.json(waPrompt(m, it.at), { modelTier: 'quick', cache: false }); it.byClaude = true; } catch (e) { if (e && e.code === 'not_granted') sampleState = 'denied'; } }
+  if (!d || typeof d !== 'object') { d = m.fb; it.byClaude = false; }
+  it.d = d; it.kind = kindOf(it); it.reply = String(d.risposta_suggerita || ''); it.state = 'ready'; render();
+}
+
+async function simConsult() {
+  const m = CP[cpNext % CP.length]; cpNext++;
+  const it = addInbox({ src: 'cons', from: m.from, who: m.who || '', ch: m.ch, at: now(), text: m.text, m, d: null, state: 'reading', byClaude: false });
+  it.unread = false; S.iSel = it.id; setIn(true); render();
+  toast('Nuovo messaggio da ' + m.from + ' su ' + CH[m.ch] + ' · Claude lo sta leggendo', 'new');
+  let d = null;
+  if (sample) { try { d = await sample.json(consPrompt(m), { modelTier: 'quick', cache: false }); it.byClaude = true; } catch (e) { if (e && e.code === 'not_granted') sampleState = 'denied'; } }
+  if (!d || typeof d !== 'object') { d = m.fb; it.byClaude = false; }
+  it.d = d; it.kind = 'consulto'; it.state = 'ready'; render();
+}
+
+function inboxPayment(o) {
+  const it = addInbox({ src: 'pay', from: o.patient, who: '', ch: o.ch, at: now(), text: 'Pagamento completato con carta: € ' + o.amount + ' per l’ordine #' + o.code + '.', state: 'ready', byClaude: null, orderId: o.id });
+  it.kind = 'pagamento';
+}
+
+function orderFromInbox(it) {
+  const d = it.d || {}; const nre = (Array.isArray(d.nre) ? d.nre : []).map(String).filter(Boolean);
+  S.next++;
+  const o = { id: 'w' + S.next, code: String(2059 + S.next), patient: String(d.paziente || it.from), who: String(d.chi_scrive || ''), ch: it.ch, at: it.at, status: 'nuovo', mode: d.modalita === 'consegna' ? 'consegna' : 'ritiro', slot: String(d.quando || 'da concordare'), address: String(d.indirizzo || ''), cf: String(d.codice_fiscale || ''), amount: '', free: '', fresh: true, fromAi: true,
+    items: (nre.length ? nre : ['']).map((n) => ({ name: 'Farmaco da leggere nel gestionale', nre: n || 'mancante', av: null })), chat: [ { me: false, t: it.text, at: it.at } ] };
+  S.orders.unshift(o);
+  it.done = { text: 'Ordine #' + o.code + ' creato tra i Nuovi', label: 'Apri l’ordine', go: { tab: 'ordini', oview: 'coda', filter: 'tutti', sel: o.id } };
+  pendingNotes.push('La farmacista ha creato l’ordine #' + o.code + ' dal messaggio di ' + it.from);
+  render(); toast('Ordine #' + o.code + ' creato: verifica ricetta e totale', 'new');
+}
+function consultFromInbox(it) {
+  const d = it.d || {};
+  const ai = it.src === 'cons' ? d : { categoria: d.categoria, riassunto: d.riassunto, da_sapere: d.da_controllare, priorita: d.priorita || 'normale' };
+  const c = createConsult({ from: it.from, who: it.who || String(d.chi_scrive || ''), ch: it.ch, text: it.text }, it.at, ai);
+  it.done = { text: 'Aperto in Telefarmacia tra i Da rispondere', label: 'Apri il consulto', go: { tab: 'tele', cFilter: 'nuovo', cSel: c.id } };
+  render(); toast('Consulto di ' + c.patient + ' aperto in Telefarmacia', 'new');
+}
+
+function viewInbox() {
+  const openN = S.inbox.filter((x) => !x.done).length;
+  const list = S.inbox.filter((x) => S.iFilter === 'tutti' || !x.done);
+  const bar = h('div', { class: 'bar' },
+    [['aperti', 'Da gestire · ' + openN], ['tutti', 'Tutti · ' + S.inbox.length]].map(([k, l]) => h('button', { class: 'chip', type: 'button', 'aria-pressed': String(S.iFilter === k), on: { click: () => { S.iFilter = k; render(); } } }, l)));
+  const rows = list.length ? list.map((it) => h('div', { class: 'row' + (S.iSel === it.id ? ' on' : '') },
+    h('button', { class: 'row-main', type: 'button', 'aria-pressed': String(S.iSel === it.id), on: { click: () => { S.iSel = it.id; it.unread = false; render(); } } },
+      h('span', { class: 'row-top' }, h('span', { style: 'display:flex;align-items:center;gap:8px;min-width:0' }, it.unread ? h('span', { class: 'dot', 'aria-label': 'Non letto' }) : null, h('b', null, it.from)), h('span', { class: 'lbl' }, CH[it.ch] + ' · ' + it.at)),
+      h('span', { class: 'row-sub', style: 'display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden' }, it.text),
+      h('span', { class: 'tags' }, it.state === 'reading' ? h('span', { class: 'tag' }, 'Claude sta leggendo…') : h('span', { class: 'tag ' + KIND[it.kind][1] }, KIND[it.kind][0]),
+        it.kind === 'consulto' && it.d && it.d.priorita === 'alta' && !it.done ? h('span', { class: 'tag w' }, 'Da richiamare') : null,
+        it.done ? h('span', { class: 'tag ok' }, 'Gestito') : null)))) : [h('p', { class: 'empty' }, 'Niente da gestire. I nuovi messaggi arrivano qui.')];
+  return h('div', { style: 'display:flex;flex-direction:column;gap:14px' }, bar, h('div', { class: 'split' }, h('section', { class: 'card list', 'aria-label': 'Messaggi in arrivo' }, rows), inboxDetail()));
+}
+
+function inboxDetail(itArg, compact) {
+  const it = itArg || S.inbox.find((x) => x.id === S.iSel);
+  if (!it) return h('section', { class: 'card det empty' }, 'Scegli un messaggio.');
+  const sec = (...k) => h('div', { class: 'det-sec' }, ...k);
+  const d = it.d || {};
+  const goBtn = (label, patch) => h('button', { class: 'btn soft sm pill', type: 'button', on: { click: () => { Object.assign(S, patch); render(); } } }, label);
+  const archive = h('button', { class: 'btn ghost sm', type: 'button', on: { click: () => { it.done = { text: 'Archiviato' }; render(); } } }, 'Archivia');
+  const src = h('div', { class: 'hint' }, it.byClaude === true ? 'Letto da Claude' : it.byClaude === false ? 'Claude non disponibile: dati di esempio' : 'Esempio già smistato');
+  let ai;
+  if (it.state === 'reading') ai = h('div', { class: 'thinking' }, h('span', { class: 'dots' }, h('i'), h('i'), h('i')), 'Claude sta leggendo il messaggio…');
+  else if (it.done) ai = h('div', { style: 'display:flex;flex-direction:column;gap:8px' }, h('div', { class: 'note ok', style: 'font-size:13px' }, it.done.text), it.done.go ? h('div', null, goBtn(it.done.label, it.done.go)) : null);
+  else if (it.kind === 'pagamento') ai = h('div', { style: 'display:flex;flex-direction:column;gap:8px' }, h('div', { class: 'paynote' }, 'L’ordine è passato da preparare.'),
+    h('div', { class: 'prop-row' }, goBtn('Apri l’ordine', { tab: 'ordini', oview: 'coda', filter: 'tutti', sel: it.orderId }), h('button', { class: 'btn ghost sm', type: 'button', on: { click: () => { it.done = { text: 'Visto', label: 'Apri l’ordine', go: { tab: 'ordini', oview: 'coda', filter: 'tutti', sel: it.orderId } }; render(); } } }, 'Segna come visto')));
+  else if (it.kind === 'ordine') {
+    const nre = (Array.isArray(d.nre) ? d.nre : []).map(String).filter(Boolean);
+    const checks = (Array.isArray(d.da_controllare) ? d.da_controllare : []).map(String).filter(Boolean);
+    const kv = (k, v, mono) => [h('span', { class: 'lbl' }, k), h('span', { class: mono ? 'mono' : '', style: 'font-size:13px;white-space:pre-line;' + (v ? '' : 'color:var(--warn-fg)') }, v || 'Mancante')];
+    ai = h('div', { style: 'display:flex;flex-direction:column;gap:10px' },
+      h('div', { class: 'prop-t' }, 'È una richiesta d’ordine. Ho preparato la bozza:'),
+      h('div', { style: 'display:grid;grid-template-columns:minmax(0,auto) minmax(0,1fr);gap:4px 14px;align-items:baseline' },
+        kv('Paziente', d.paziente), d.chi_scrive ? kv('Scrive', d.chi_scrive) : null, kv('Codice fiscale', d.codice_fiscale, true),
+        kv(nre.length > 1 ? 'NRE (' + nre.length + ')' : 'NRE', nre.join('\n'), true), kv(d.modalita === 'consegna' ? 'Consegna' : 'Ritiro', [d.quando, d.indirizzo].filter(Boolean).join(' · '))),
+      checks.length ? h('div', { class: 'tags' }, checks.map((c) => h('span', { class: 'tag w' }, c))) : h('div', { class: 'tags' }, h('span', { class: 'tag ok' }, 'Dati completi')),
+      h('div', { class: 'prop-row' }, h('button', { class: 'btn pri sm pill', type: 'button', on: { click: () => orderFromInbox(it) } }, 'Crea l’ordine'), archive), src);
+  } else if (it.kind === 'consulto') {
+    const checks = (Array.isArray(it.src === 'cons' ? d.da_sapere : d.da_controllare) ? (it.src === 'cons' ? d.da_sapere : d.da_controllare) : []).map(String).filter(Boolean);
+    ai = h('div', { style: 'display:flex;flex-direction:column;gap:10px' },
+      h('div', { class: 'prop-t' }, 'È una domanda per il farmacista: va in Telefarmacia.'),
+      h('div', { class: 'tags' }, h('span', { class: 'tag' }, String(d.categoria || 'Altro')), d.priorita === 'alta' ? h('span', { class: 'tag w' }, 'Da richiamare subito') : null),
+      d.riassunto ? h('div', { class: 'note n', style: 'font-size:13px' }, String(d.riassunto)) : null,
+      d.priorita === 'alta' && d.motivo_priorita ? h('div', { class: 'note', style: 'background:var(--warn-bg);color:var(--warn-fg);font-size:13px' }, String(d.motivo_priorita)) : null,
+      checks.length ? h('div', null, h('div', { class: 'lbl' }, 'Potresti dover chiedere o controllare'), h('ul', { style: 'margin:4px 0 0;padding-left:18px;font-size:13px' }, checks.slice(0, 3).map((t) => h('li', null, t)))) : null,
+      h('div', { class: 'prop-row' }, h('button', { class: 'btn pri sm pill', type: 'button', on: { click: () => consultFromInbox(it) } }, 'Apri in Telefarmacia'), archive),
+      h('div', { class: 'hint' }, (it.byClaude === true ? 'Smistato da Claude' : it.byClaude === false ? 'Claude non disponibile: dati di esempio' : 'Esempio già smistato') + ' · la risposta la scrivi tu'));
+  } else {
+    ai = h('div', { style: 'display:flex;flex-direction:column;gap:10px' },
+      h('div', { class: 'prop-t' }, 'Non è un ordine né una domanda sui farmaci.' + (it.reply ? ' Ti propongo questa risposta:' : '')),
+      h('div', { class: 'line-in' }, h('label', { class: 'sr', for: 'ireply' }, 'Risposta'), h('textarea', { id: 'ireply', value: it.reply, placeholder: 'Scrivi la risposta…', on: { input: (e) => { it.reply = e.target.value; } } })),
+      h('div', { class: 'prop-row' }, h('button', { class: 'btn pri sm pill', type: 'button', on: { click: () => { const t = String(it.reply || '').trim(); if (!t) { toast('Scrivi la risposta prima di inviarla.'); return; } it.sent = { t, at: now() }; it.done = { text: 'Risposta inviata su ' + CH[it.ch] }; render(); toast('Risposta inviata a ' + it.from + ' su ' + CH[it.ch]); } } }, 'Invia la risposta'), archive), src);
+  }
+  if (compact) return h('div', { class: 'q-body' }, it.who ? h('div', { class: 'lbl' }, it.who) : null, h('div', { class: 'bub pt' }, it.text), ai,
+    h('button', { class: 'btn ghost sm', type: 'button', style: 'align-self:flex-start', on: { click: () => askClaude('Aiutami con il messaggio di ' + it.from + ': cosa devo fare?') } }, '\u2726 Chiedi all\u2019assistente'));
+  return h('section', { class: 'card det', 'aria-label': 'Messaggio di ' + it.from },
+    sec(h('div', { class: 'kv' }, h('span', { class: 'lbl' }, CH[it.ch] + ' · ' + it.at), it.state === 'reading' ? h('span', { class: 'tag' }, 'In lettura') : h('span', { class: 'tag ' + KIND[it.kind][1] }, KIND[it.kind][0])),
+      h('h2', null, it.from), it.who ? h('div', { style: 'font-size:13px;color:var(--fg-2)' }, it.who) : null),
+    sec(h('div', { class: 'thread' }, h('div', { class: 'bub pt' }, it.text), h('div', { class: 'meta' }, it.from.split(' ')[0] + ' · ' + it.at),
+      it.sent ? h('div', { class: 'bub me' }, it.sent.t) : null, it.sent ? h('div', { class: 'meta r' }, 'Farmacia · ' + it.sent.at) : null)),
+    sec(h('div', { class: 'h3' }, '✦ Lettura di Claude'), ai),
+    sec(h('div', null, h('button', { class: 'btn ghost sm', type: 'button', on: { click: () => askClaude('Aiutami con il messaggio di ' + it.from + ' in Inbox: cosa devo fare?') } }, '✦ Chiedi all’assistente'))));
+}
+
+
+/* ================= Coda «Da gestire» in cima all'assistente ================= */
+function noteToChat(it) {
+  const log = $('log');
+  const go = it.done && it.done.go ? h('button', { class: 'btn ghost sm', type: 'button', on: { click: () => { Object.assign(S, it.done.go); render(); } } }, it.done.label) : null;
+  log.append(h('div', { class: 'msg-ai' }, h('span', { style: 'width:20px;flex:0 0 auto' }), h('div', { class: 'body' }, h('div', { style: 'display:flex;gap:8px;align-items:center;flex-wrap:wrap' }, h('span', { class: 'prop-done' }, it.from + ' · ' + it.done.text), go))));
+  scrollLog();
+}
+function renderQueue() {
+  const q = $('queue'); if (!q) return;
+  const hot = (x) => (x.kind === 'consulto' && x.d && x.d.priorita === 'alta') ? 1 : 0;
+  const items = S.inbox.filter((x) => !x.done).map((x, i) => [x, i]).sort((a, b) => (hot(b[0]) - hot(a[0])) || (a[1] - b[1])).map((p) => p[0]);
+  const done = S.inbox.filter((x) => x.done);
+  const ic = $('inCount'); if (ic) { ic.textContent = items.length ? String(items.length) : ''; ic.hidden = !items.length; }
+  const row = (it) => {
+    const isOpen = S.iSel === it.id;
+    return h('div', { class: 'q-item' + (isOpen ? ' open' : '') },
+      h('button', { class: 'q-row', type: 'button', 'aria-expanded': String(isOpen), on: { click: () => { S.iSel = isOpen ? null : it.id; it.unread = false; renderQueue(); } } },
+        h('span', { class: 'dot', style: it.unread ? '' : 'visibility:hidden', 'aria-hidden': 'true' }),
+        h('span', { class: 'q-main' }, h('span', { class: 'q-top' }, h('b', null, it.from), h('span', { class: 'lbl' }, CH[it.ch] + ' · ' + it.at)), h('span', { class: 'q-prev' }, it.text)),
+        it.state === 'reading' ? h('span', { class: 'tag' }, 'Legge…') : h('span', { class: 'tag ' + (hot(it) ? 'w' : KIND[it.kind][1]) }, hot(it) ? 'Da richiamare' : KIND[it.kind][0])),
+      isOpen ? inboxDetail(it, true) : null);
+  };
+  const doneRow = (it) => h('div', { class: 'q-done' }, h('span', { class: 'q-main' }, h('b', null, it.from), h('span', { class: 'lbl' }, it.done.text)),
+    it.done.go ? h('button', { class: 'linkbtn', type: 'button', style: 'font-size:12px', on: { click: () => { Object.assign(S, it.done.go); render(); } } }, it.done.label) : null);
+  q.replaceChildren(...[
+    h('div', { class: 'q-head' }, h('h3', null, 'Da gestire'), h('span', { class: items.length ? 'badge' : 'pend' }, String(items.length))),
+    h('div', { class: 'q-list' }, items.length ? items.map(row) : h('p', { class: 'q-empty' }, 'Niente da gestire. I messaggi da WhatsApp, app e link arrivano qui, già letti da Claude.')),
+    done.length ? h('div', { class: 'q-head' }, h('h3', null, 'Gestiti oggi')) : null,
+    done.length ? h('div', { class: 'q-list' }, done.map(doneRow)) : null].filter(Boolean));
+}
+function setIn(open) {
+  document.querySelector('.app').classList.toggle('noin', !open); $('inBtn').setAttribute('aria-pressed', String(open));
+  try { localStorage.setItem('farmacia-in-nascosto', open ? '0' : '1'); } catch (e) { /* storage non disponibile */ }
+  if (open) renderQueue();
+}
+/* ================= Lato paziente: app e widget per il sito ================= */
+const LUCIA = { name: 'Lucia De Santis', first: 'Lucia', cf: 'DSNLCU78D61L219P', address: 'Via Garibaldi 12' };
+S.app = { screen: 'home', nre: '', mode: 'ritiro', addr: LUCIA.address, err: '', orderId: null, msg: '', fromStock: false };
+S.wid = { open: false, tab: 'ordina', name: '', cf: '', nre: '', mode: 'ritiro', addr: '', err: '', done: null, q: '', qerr: '' };
+
+function cleanNre(v) { const x = String(v || '').replace(/\s+/g, '').toUpperCase(); return x.length === 15 ? x.slice(0, 5) + ' ' + x.slice(5, 9) + ' ' + x.slice(9) : null; }
+function newPatientOrder(src) {
+  S.next++;
+  const o = { id: 'p' + S.next, code: String(2069 + S.next), patient: src.patient, who: '', ch: src.ch, at: now(), status: 'nuovo', mode: src.mode, slot: src.mode === 'consegna' ? 'oggi 16:00–18:00' : 'oggi, quando vuole', address: src.address || '', cf: src.cf, amount: '', free: '', fresh: true, armadietto: !!src.armadietto,
+    items: [ { name: src.drug || 'Farmaco da leggere nel gestionale', nre: src.nre, av: null } ], chat: [] };
+  S.orders.unshift(o);
+  pendingNotes.push('È arrivato l’ordine #' + o.code + ' di ' + o.patient + ' da ' + CH[o.ch]);
+  toast('Nuovo ordine ' + (src.ch === 'app' ? 'dall’app' : 'dal sito') + ' di ' + o.patient + ' · #' + o.code, 'new');
+  return o;
+}
+async function receiveConsult(m) {
+  const it = addInbox({ src: 'cons', from: m.from, who: m.who || '', ch: m.ch, at: now(), text: m.text, m, d: null, state: 'reading', byClaude: false });
+  S.iSel = it.id; setIn(true); render();
+  toast('Nuova domanda da ' + m.from + ' su ' + CH[m.ch] + ' · Claude la sta leggendo', 'new');
+  let d = null;
+  if (sample) { try { d = await sample.json(consPrompt(m), { modelTier: 'quick', cache: false }); it.byClaude = true; } catch (e) { if (e && e.code === 'not_granted') sampleState = 'denied'; } }
+  if (!d || typeof d !== 'object') { d = m.fb; it.byClaude = false; }
+  it.d = d; it.kind = 'consulto'; it.state = 'ready'; render();
+}
+
+const STEPS = (o) => ['Ricevuto', 'Da pagare', 'In preparazione', 'Pronto', o.mode === 'consegna' ? 'In consegna' : null, o.mode === 'consegna' ? 'Consegnato' : 'Ritirato'].filter(Boolean);
+function stepIndex(o) { const m = { nuovo: 0, pagamento: 1, prep: 2, pronto: 3, consegna: 4 }; return o.status === 'chiuso' ? STEPS(o).length - 1 : (o.noPay && o.status !== 'nuovo' ? Math.max(m[o.status], 2) : m[o.status]); }
+function tracker(o) {
+  const idx = stepIndex(o);
+  return h('ol', { class: 'trk' }, STEPS(o).map((l, i) => h('li', { class: i < idx ? 'done' : i === idx ? 'now' : '' }, h('span', { class: 'trk-dot', 'aria-hidden': 'true' }), l)));
+}
+
+function viewChannels() {
+  return h('div', { style: 'display:flex;flex-direction:column;gap:14px' },
+    h('p', { class: 'hint', style: 'margin:0;font-size:13px' }, 'Oltre a WhatsApp, i pazienti arrivano dall’app e dal sito della farmacia. Vedono solo il nome Farmacia Rossi. Quello che inviano compare qui in Ordini e in In arrivo.'),
+    h('div', { class: 'chan' }, h('figure', { class: 'chan-fig' }, phoneApp(), h('figcaption', null, 'App dei pazienti · scorte di Armadietto, ordini e domande')),
+      h('figure', { class: 'chan-fig grow' }, siteWidget(), h('figcaption', null, 'Widget sul sito della farmacia · una riga di codice'))));
+}
+
+function phoneApp() {
+  const A = S.app;
+  const go = (screen, extra) => () => { Object.assign(A, { screen, err: '' }, extra || {}); render(); };
+  const mine = S.orders.filter((o) => o.patient === LUCIA.name).slice(0, 3);
+  const ther = (S.patients.find((p) => p.name === LUCIA.name) || { ther: [] }).ther;
+  let body;
+  if (A.screen === 'home') {
+    body = [
+      h('div', { class: 'ap-sec' }, h('div', { class: 'ap-h' }, 'Le tue scorte'),
+        ther.map(([n, d]) => h('div', { class: 'ap-row' }, h('span', null, h('b', null, n), h('small', { class: d <= 7 ? 'w' : '' }, 'Finisce tra ' + d + ' giorni')),
+          d <= 14 ? h('button', { class: 'ap-btn sm', type: 'button', on: { click: go('ordina', { fromStock: true, nre: '' }) } }, 'Riordina') : null)),
+        h('div', { class: 'ap-row' }, h('span', null, h('b', null, 'Vitamina D'), h('small', null, 'Finisce tra 30 giorni')))),
+      h('div', { class: 'ap-sec' }, h('div', { class: 'ap-h' }, 'I tuoi ordini'),
+        mine.length ? mine.map((o) => h('button', { class: 'ap-row ap-link', type: 'button', on: { click: go('stato', { orderId: o.id }) } }, h('span', null, h('b', null, '#' + o.code), h('small', null, o.items.length === 1 ? '1 ricetta' : o.items.length + ' ricette')), h('span', { class: 'ap-pill' + (o.status === 'pagamento' ? ' w' : '') }, o.status === 'pagamento' ? 'Da pagare' : STEPS(o)[stepIndex(o)])))
+          : h('small', null, 'Nessun ordine.')),
+      h('div', { class: 'ap-actions' },
+        h('button', { class: 'ap-btn', type: 'button', on: { click: go('ordina', { fromStock: false, nre: '' }) } }, 'Ordina con ricetta'),
+        h('button', { class: 'ap-btn ghost', type: 'button', on: { click: go('chiedi', { msg: '' }) } }, 'Scrivi al farmacista'))];
+  } else if (A.screen === 'ordina') {
+    const submit = () => {
+      const n = cleanNre(A.nre);
+      if (!n) { A.err = 'Il codice NRE ha 15 caratteri: lo trovi in alto sul promemoria.'; render(); return; }
+      if (A.mode === 'consegna' && !A.addr.trim()) { A.err = 'Scrivi l’indirizzo di consegna.'; render(); return; }
+      const o = newPatientOrder({ patient: LUCIA.name, cf: LUCIA.cf, ch: 'app', mode: A.mode, address: A.mode === 'consegna' ? A.addr.trim() : '', nre: n, armadietto: A.fromStock, drug: A.fromStock ? 'Levotiroxina 75 mcg, 50 compresse' : '' });
+      Object.assign(A, { screen: 'stato', orderId: o.id, err: '' }); render();
+    };
+    body = [
+      h('button', { class: 'ap-back', type: 'button', on: { click: go('home') } }, '← Indietro'),
+      h('div', { class: 'ap-title' }, A.fromStock ? 'Riordina Levotiroxina 75 mcg' : 'Ordina con ricetta'),
+      h('label', { class: 'ap-lbl', for: 'apNre' }, 'Codice NRE della ricetta'),
+      h('input', { id: 'apNre', class: 'ap-in mono', placeholder: '0901A 4192 640087', value: A.nre, autocomplete: 'off', on: { input: (e) => { A.nre = e.target.value; if (A.err) { A.err = ''; const er = $('apErr'); if (er) er.remove(); } } } }),
+      h('small', null, 'Codice fiscale: ' + LUCIA.cf),
+      h('div', { class: 'ap-seg', role: 'group', 'aria-label': 'Ritiro o consegna' }, [['ritiro', 'Ritiro in farmacia'], ['consegna', 'Consegna a casa']].map(([k, l]) => h('button', { type: 'button', 'aria-pressed': String(A.mode === k), on: { click: () => { A.mode = k; render(); } } }, l))),
+      A.mode === 'consegna' ? [h('label', { class: 'ap-lbl', for: 'apAddr' }, 'Indirizzo'), h('input', { id: 'apAddr', class: 'ap-in', value: A.addr, on: { input: (e) => { A.addr = e.target.value; } } }), h('small', null, 'Consegna oggi 16:00–18:00')] : null,
+      A.err ? h('div', { class: 'ap-err', id: 'apErr', role: 'alert' }, A.err) : null,
+      h('button', { class: 'ap-btn', type: 'button', on: { click: submit } }, 'Invia alla farmacia'),
+      h('small', null, 'Paghi con il link che ti manda la farmacia dopo aver controllato la ricetta.')];
+  } else if (A.screen === 'stato') {
+    const o = S.orders.find((x) => x.id === A.orderId);
+    body = !o ? [h('small', null, 'Ordine non trovato.')] : [
+      h('button', { class: 'ap-back', type: 'button', on: { click: go('home') } }, '← Indietro'),
+      h('div', { class: 'ap-title' }, 'Ordine #' + o.code),
+      h('small', null, (o.mode === 'consegna' ? 'Consegna ' : 'Ritiro ') + o.slot),
+      tracker(o),
+      o.status === 'pagamento' ? h('div', { class: 'ap-pay' }, h('b', null, 'Totale € ' + o.amount), h('small', null, 'Ricetta verificata dalla farmacia'), h('button', { class: 'ap-btn', type: 'button', on: { click: () => markPaid(o) } }, 'Paga con carta o Apple Pay')) : null,
+      o.status === 'nuovo' ? h('small', null, 'La farmacia sta controllando la ricetta. Ti avvisiamo qui quando puoi pagare.') : null,
+      o.chat.filter((c) => c.me).slice(-2).map((c) => h('div', { class: 'ap-msg' }, h('small', null, 'Farmacia Rossi · ' + c.at), c.t))];
+  } else {
+    const send = () => {
+      const t = A.msg.trim();
+      if (!t) { A.err = 'Scrivi la tua domanda.'; render(); return; }
+      receiveConsult({ from: LUCIA.name, who: '', ch: 'app', text: t, fb: { categoria: 'Altro', riassunto: t.slice(0, 120), da_sapere: [], priorita: 'normale' } });
+      Object.assign(A, { screen: 'inviata', msg: '', err: '' }); render();
+    };
+    body = A.screen === 'inviata' ? [h('div', { class: 'ap-title' }, 'Domanda inviata'), h('small', null, 'Ti risponde un farmacista di Farmacia Rossi, di solito entro un’ora negli orari di apertura.'), h('button', { class: 'ap-btn ghost', type: 'button', on: { click: go('home') } }, 'Torna alla home')]
+      : [h('button', { class: 'ap-back', type: 'button', on: { click: go('home') } }, '← Indietro'),
+        h('div', { class: 'ap-title' }, 'Scrivi al farmacista'),
+        h('label', { class: 'ap-lbl', for: 'apMsg' }, 'La tua domanda'),
+        h('textarea', { id: 'apMsg', class: 'ap-in', rows: '5', placeholder: 'Es. posso prendere il paracetamolo con la levotiroxina?', value: A.msg, on: { input: (e) => { A.msg = e.target.value; } } }),
+        A.err ? h('div', { class: 'ap-err', role: 'alert' }, A.err) : null,
+        h('small', null, 'Il farmacista vede le terapie che hai scelto di condividere.'),
+        h('button', { class: 'ap-btn', type: 'button', on: { click: send } }, 'Invia')];
+  }
+  return h('div', { class: 'phone', role: 'region', 'aria-label': 'App del paziente' },
+    h('div', { class: 'screen' },
+      h('div', { class: 'ap-top' }, h('div', { class: 'logo', style: 'width:32px;height:32px;font-size:12px' }, 'FR'), h('div', null, h('b', null, 'Farmacia Rossi'), h('small', null, 'Ciao ' + LUCIA.first))),
+      h('div', { class: 'ap-body' }, body)));
+}
+
+function siteWidget() {
+  const W = S.wid;
+  const set = (k) => (e) => { W[k] = e.target.value; };
+  let panel = null;
+  if (W.open) {
+    let inner;
+    if (W.tab === 'ordina' && W.done) {
+      const o = S.orders.find((x) => x.id === W.done);
+      inner = [h('b', null, 'Ordine #' + (o ? o.code : '') + ' inviato'), h('small', null, 'Ti scriviamo per SMS quando la ricetta è verificata, con il link per pagare. Conserva il numero d’ordine.'),
+        o ? tracker(o) : null, h('button', { class: 'wg-btn ghost', type: 'button', on: { click: () => { W.done = null; render(); } } }, 'Nuovo ordine')];
+    } else if (W.tab === 'ordina') {
+      const submit = () => {
+        const n = cleanNre(W.nre);
+        if (!W.name.trim()) { W.err = 'Scrivi nome e cognome.'; render(); return; }
+        if (String(W.cf).replace(/\s/g, '').length !== 16) { W.err = 'Il codice fiscale ha 16 caratteri.'; render(); return; }
+        if (!n) { W.err = 'Il codice NRE ha 15 caratteri.'; render(); return; }
+        if (W.mode === 'consegna' && !W.addr.trim()) { W.err = 'Scrivi l’indirizzo di consegna.'; render(); return; }
+        const o = newPatientOrder({ patient: W.name.trim(), cf: W.cf.replace(/\s/g, '').toUpperCase(), ch: 'web', mode: W.mode, address: W.mode === 'consegna' ? W.addr.trim() : '', nre: n });
+        Object.assign(W, { done: o.id, err: '', name: '', cf: '', nre: '', addr: '' }); render();
+      };
+      inner = [
+        h('label', { class: 'ap-lbl', for: 'wgName' }, 'Nome e cognome'), h('input', { id: 'wgName', class: 'ap-in', value: W.name, on: { input: set('name') } }),
+        h('label', { class: 'ap-lbl', for: 'wgCf' }, 'Codice fiscale'), h('input', { id: 'wgCf', class: 'ap-in mono', value: W.cf, on: { input: set('cf') } }),
+        h('label', { class: 'ap-lbl', for: 'wgNre' }, 'Codice NRE'), h('input', { id: 'wgNre', class: 'ap-in mono', placeholder: '15 caratteri', value: W.nre, on: { input: set('nre') } }),
+        h('div', { class: 'ap-seg', role: 'group', 'aria-label': 'Ritiro o consegna' }, [['ritiro', 'Ritiro'], ['consegna', 'Consegna']].map(([k, l]) => h('button', { type: 'button', 'aria-pressed': String(W.mode === k), on: { click: () => { W.mode = k; render(); } } }, l))),
+        W.mode === 'consegna' ? [h('label', { class: 'ap-lbl', for: 'wgAddr' }, 'Indirizzo'), h('input', { id: 'wgAddr', class: 'ap-in', value: W.addr, on: { input: set('addr') } })] : null,
+        W.err ? h('div', { class: 'ap-err', role: 'alert' }, W.err) : null,
+        h('button', { class: 'wg-btn', type: 'button', on: { click: submit } }, 'Invia la ricetta'),
+        h('small', null, 'I dati vanno solo a Farmacia Rossi.')];
+    } else {
+      const o = S.orders.find((x) => x.code === String(W.q || '').replace('#', '').trim());
+      inner = [
+        h('label', { class: 'ap-lbl', for: 'wgQ' }, 'Numero d’ordine'),
+        h('div', { style: 'display:flex;gap:6px' }, h('input', { id: 'wgQ', class: 'ap-in mono', placeholder: 'Es. 2041', value: W.q, on: { input: set('q') } }), h('button', { class: 'wg-btn', type: 'button', style: 'flex:0 0 auto', on: { click: () => { W.qerr = S.orders.some((x) => x.code === String(W.q || '').replace('#', '').trim()) ? '' : 'Nessun ordine con questo numero.'; W.qshow = true; render(); } } }, 'Cerca')),
+        W.qerr ? h('div', { class: 'ap-err', role: 'alert' }, W.qerr) : null,
+        W.qshow && o ? [h('b', null, 'Ordine #' + o.code), tracker(o)] : null];
+    }
+    panel = h('div', { class: 'wg-panel', role: 'dialog', 'aria-label': 'Ordina con ricetta' },
+      h('div', { class: 'wg-head' }, h('b', null, 'Farmacia Rossi'), h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Chiudi', on: { click: () => { W.open = false; render(); } } }, '✕')),
+      h('div', { class: 'wg-tabs' }, [['ordina', 'Ordina con ricetta'], ['stato', 'Stato ordine']].map(([k, l]) => h('button', { type: 'button', 'aria-pressed': String(W.tab === k), on: { click: () => { W.tab = k; W.err = ''; render(); } } }, l))),
+      h('div', { class: 'wg-body' }, inner));
+  }
+  return h('div', { class: 'browser', role: 'region', 'aria-label': 'Sito della farmacia con il widget' },
+    h('div', { class: 'b-bar' }, h('span', { class: 'b-dots', 'aria-hidden': 'true' }, h('i'), h('i'), h('i')), h('span', { class: 'b-url' }, 'www.[sito della farmacia].it')),
+    h('div', { class: 'site' },
+      h('div', { class: 'site-nav' }, h('b', null, 'Farmacia Rossi'), h('span', null, 'Servizi'), h('span', null, 'Orari'), h('span', null, 'Contatti')),
+      h('div', { class: 'site-hero' }, h('div', { class: 'ph', style: 'height:18px;width:60%' }), h('div', { class: 'ph', style: 'height:12px;width:80%' }), h('div', { class: 'ph', style: 'height:12px;width:70%' }), h('div', { class: 'ph', style: 'height:140px;width:100%;margin-top:8px' })),
+      h('div', { class: 'site-cols' }, h('div', { class: 'ph', style: 'height:80px' }), h('div', { class: 'ph', style: 'height:80px' }), h('div', { class: 'ph', style: 'height:80px' })),
+      W.open ? panel : h('button', { class: 'wg-launch', type: 'button', on: { click: () => { W.open = true; render(); } } }, 'Ordina con ricetta')),
+    h('code', { class: 'snippet' }, '<script src="https://[DOMINIO PIATTAFORMA]/widget.js" data-farmacia="farmacia-rossi" async><\/script>'));
+}
+
+/* ================= Avvio ================= */
+$('simCons').addEventListener('click', () => simConsult());
+$('simWa').addEventListener('click', () => simWhatsApp());
+$('ask').addEventListener('submit', (e) => { e.preventDefault(); if (busy) { busy.abort(); return; } const ta = $('askIn'); const v = ta.value; ta.value = ''; ta.style.height = ''; askClaude(v); });
+$('askIn').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); $('ask').requestSubmit(); } });
+$('askIn').addEventListener('input', (e) => { const t = e.target; t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 140) + 'px'; });
+function setAi(show) {
+  document.querySelector('.app').classList.toggle('noai', !show);
+  $('aiOpen').setAttribute('aria-pressed', String(show));
+  try { localStorage.setItem('farmacia-ai-nascosto', show ? '0' : '1'); } catch (e) { /* storage non disponibile */ }
+  if (show) setTimeout(() => { const t = $('askIn'); if (t) t.focus(); }, 0);
+}
+$('aiOpen').addEventListener('click', () => setAi(document.querySelector('.app').classList.contains('noai')));
+try { if (localStorage.getItem('farmacia-ai-nascosto') === '1') { document.querySelector('.app').classList.add('noai'); $('aiOpen').setAttribute('aria-pressed', 'false'); } } catch (e) { /* storage non disponibile */ }
+function simMenu(open) { $('simMenu').hidden = !open; $('simBtn').setAttribute('aria-expanded', String(open)); }
+$('simBtn').addEventListener('click', (e) => { e.stopPropagation(); simMenu($('simMenu').hidden); });
+$('simMenu').addEventListener('click', () => simMenu(false));
+document.addEventListener('click', (e) => { if (!e.target.closest('.sim')) simMenu(false); });
+document.addEventListener('keydown', (e) => { if (e.key !== 'Escape') return; if (!$('simMenu').hidden) { simMenu(false); $('simBtn').focus(); } else if (S.tab === 'ordini' && S.sel) { S.sel = null; render(); } });
+$('simPay').addEventListener('click', () => {
+  const o = open().find((x) => x.status === 'pagamento');
+  if (!o) { toast('Nessun ordine in attesa di pagamento: conferma prima un ordine con un totale.'); return; }
+  markPaid(o);
+});
+$('inBtn').addEventListener('click', () => setIn(document.querySelector('.app').classList.contains('noin')));
+try { if (localStorage.getItem('farmacia-in-nascosto') === '1') { document.querySelector('.app').classList.add('noin'); $('inBtn').setAttribute('aria-pressed', 'false'); } } catch (e) { /* storage non disponibile */ }
+$('newChat').addEventListener('click', () => { if (busy) busy.abort(); turns.length = 0; pendingNotes = []; renderHello(); });
+$('simOrder').addEventListener('click', () => {
+  const p = POOL[S.next % POOL.length]; S.next++;
+  const o = { fresh: true, id: 'n' + S.next, code: String(2049 + S.next), patient: p.patient, who: '', ch: p.ch, at: now(), status: 'nuovo', mode: p.mode, slot: p.slot, address: p.address, cf: p.cf, amount: '', free: '',
+    items: [ { name: p.item[0], nre: p.item[1], av: null } ], chat: p.msg ? [ { me: false, t: p.msg, at: now() } ] : [] };
+  S.orders.unshift(o); S.tab = 'ordini'; S.sel = o.id; render(); toast('Nuovo ordine da ' + p.patient + ' su ' + CH[p.ch], 'new');
+});
+
+seedInbox(); S.iSel = null;
+render(); renderHello();
+(async () => {
+  try {
+    const s = window.claude && window.claude.use ? await window.claude.use('sample') : null;
+    if (!s) { sampleState = 'off'; renderHello(); return; }
+    sample = s; sampleState = 'ready';
+    try { const lim = await s.limits(); toolsOk = !!(lim && lim.tools); } catch (e) { toolsOk = false; }
+  } catch (e) { sampleState = 'off'; renderHello(); }
+})();
+})();
+</script>
+
+</body>
+</html>
