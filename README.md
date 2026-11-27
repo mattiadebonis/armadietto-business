@@ -2,11 +2,13 @@
 
 27 novembre 2026 · Mattia De Bonis
 
+*Brainstorming di Mattia: idee e ipotesi di lavoro, non decisioni definitive.*
+
 ## Sintesi
 
 La proposta: un software in abbonamento con cui la farmacia organizza i servizi digitali da offrire ai propri pazienti, a partire dalla consegna a domicilio dei farmaci. Il modello è B2B2C: paga la farmacia, il paziente la usa gratis.
 
-**Decisioni prese**
+**Direzioni emerse finora**
 
 - No marketplace stile Just Eat: c'è già Pharmap, e la commissione sui farmaci con ricetta vale poco ed è delicata dal punto di vista normativo.
 - Sì a un software per le farmacie, che mantengono il rapporto con il paziente.
@@ -79,7 +81,7 @@ Il paziente vede sempre e solo il nome della farmacia che ha scelto il software.
 
 Armadietto resta l'app consumer per chi non ha una farmacia collegata. Il suo codice diventa il motore delle app con il nome delle farmacie.
 
-### Decisione sul marchio
+### Ipotesi sul marchio
 
 L'app negli store ha il marchio della piattaforma; il nome della farmacia sta dove il paziente la incontra. Il valore costruito, cioè base di utenti e marchio, resta vostro, e la farmacia mantiene il rapporto con il paziente.
 
