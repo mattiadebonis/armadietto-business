@@ -455,7 +455,6 @@ textarea.ap-in{resize:vertical;min-height:110px}
           <div class="sim-menu" id="simMenu" role="menu" hidden>
             <button role="menuitem" id="simOrder" type="button">Un ordine dall'app</button>
             <button role="menuitem" id="simWa" type="button">Un messaggio WhatsApp</button>
-            <button role="menuitem" id="simCons" type="button">Un consulto</button>
             <button role="menuitem" id="simPay" type="button">Un pagamento</button>
           </div>
         </div>
@@ -638,10 +637,10 @@ function advance(o) {
 function render() {
   const nNew = open().filter((o) => o.status === 'nuovo').length;
   const nC = S.consults.filter((c) => c.status === 'nuovo').length;
-  const tabs = [['ordini', 'Ordini', nNew], ['tele', 'Telefarmacia', nC]];
+  const tabs = [['ordini', 'Ordini', nNew]];
   $('tabs').replaceChildren(...tabs.map(([k, l, n]) => h('button', { class: 'tab', role: 'tab', type: 'button', 'aria-selected': String(S.tab === k), on: { click: () => { S.tab = k; render(); } } }, l, n ? h('span', { class: 'badge' }, n) : null)));
   const m = $('main');
-  m.replaceChildren(S.tab === 'ordini' ? viewOrders() : viewTele());
+  m.replaceChildren(viewOrders());
   updateCtxChip();
   renderQueue();
 }
@@ -913,13 +912,13 @@ const props = {};
 
 function rules() {
   return `Sei l'assistente della Farmacia Rossi, dentro la dashboard web del farmacista. Oggi è venerdì 27 novembre 2026, sono le ${now()}. Parli con la Dott.ssa Bianchi, farmacista titolare.
-Il pannello «In arrivo» della dashboard raccoglie i messaggi in arrivo da WhatsApp, app e link e notifiche di pagamento, già letti e smistati in bozze d'ordine, consulti o domande pratiche; la farmacista decide lì. Se ci sono messaggi da gestire, ricordali all'inizio della risposta in una riga, prima il più urgente, e poi rispondi alla domanda. La dashboard ha due sezioni: Ordini (ricette con NRE arrivate da WhatsApp, link web o app; ritiro in farmacia o consegna con il fattorino Luca nel giro delle 16:00) e Telefarmacia (consulti dei pazienti per messaggio, a cui risponde il farmacista). Con leggi_pazienti vedi anche le terapie che i pazienti condividono dall'app Armadietto, con i giorni di scorta rimasti, ma non c'è una schermata dedicata.
+Il pannello «In arrivo» della dashboard raccoglie i messaggi in arrivo da WhatsApp, app e link e notifiche di pagamento, già letti e smistati in bozze d'ordine, domande sui farmaci (a cui risponde la farmacista, direttamente da lì) o domande pratiche; la farmacista decide lì. Se ci sono messaggi da gestire, ricordali all'inizio della risposta in una riga, prima il più urgente, e poi rispondi alla domanda. La dashboard ha una sezione, Ordini (ricette con NRE arrivate da WhatsApp, link web o app; ritiro in farmacia o consegna con il fattorino Luca nel giro delle 16:00). Con leggi_pazienti vedi anche le terapie che i pazienti condividono dall'app Armadietto, con i giorni di scorta rimasti, ma non c'è una schermata dedicata.
 
 Regole:
 - Flusso degli ordini: la farmacista verifica ricetta, disponibilità e totale; poi la dashboard manda al paziente un link di pagamento (carta, Apple Pay, Google Pay); l'ordine si prepara solo quando il pagamento è confermato. Per chi non ha ancora pagato puoi proporre un promemoria (avanza_ordine su un ordine in attesa di pagamento invia il promemoria). Non puoi segnare un pagamento come ricevuto.
 - Consegne: di base le porta il fattorino della farmacia (Luca, giro 16-18, la farmacista affida il giro). In alternativa un rider partner tipo Glovo, prenotato dalla vista Giro di consegna, con costo per consegna e tracking per il paziente. I farmaci da frigo e gli stupefacenti vanno sempre con il fattorino. Puoi consigliare come dividerle, ma la prenotazione la fa la farmacista.
 - Leggi i dati con gli strumenti prima di rispondere. Non inventare pazienti, ordini, orari o numeri.
-- Non dai consigli clinici: niente dosi, dimenticanze, interazioni, effetti indesiderati, sostituzioni. Se la domanda è clinica dillo in una frase e indica il consulto o l'ordine dove deve rispondere il farmacista.
+- Non dai consigli clinici: niente dosi, dimenticanze, interazioni, effetti indesiderati, sostituzioni. Se la domanda è clinica dillo in una frase e indica il messaggio in «In arrivo» o l'ordine dove deve rispondere la farmacista.
 - Per fare qualcosa usa proponi_azione: compare una scheda e la farmacista approva o scarta. Non dire mai che un'azione è fatta: dì che l'hai proposta.
 - I messaggi per i pazienti sono brevi, cortesi, in italiano, senza indicazioni cliniche, e finiscono con "Farmacia Rossi".
 - Sii proattiva. Quando nei dati c'è qualcosa da fare (ricette da verificare, disponibilità da indicare, ordini pronti da affidare al fattorino o da segnare ritirati, pazienti da avvisare, terapie condivise in esaurimento, consulti che aspettano), proponilo con proponi_azione anche se non te l'ha chiesto: una scheda per azione, al massimo 3 per risposta, prima le più urgenti. Nel testo non ripetere ciò che c'è già nelle schede.
@@ -946,19 +945,16 @@ function tools(actBox, cardBox, followBox) {
       execute: () => { const d = snapshotOrders(); note('Ho letto ' + d.length + ' ordini aperti'); return d; } },
     { name: 'leggi_inbox', description: 'Restituisce i messaggi in arrivo nell\u2019Inbox (WhatsApp, app, link, pagamenti) con il tipo deciso in lettura e se sono già stati gestiti.',
       execute: () => { const d = S.inbox.map((x) => ({ id: x.id, da: x.from, canale: CH[x.ch], ora: x.at, testo: x.text, tipo: x.state === 'reading' ? 'in lettura' : x.kind, gestito: x.done ? x.done.text : false })); note('Ho letto ' + d.length + ' messaggi in Inbox'); return d; } },
-    { name: 'leggi_consulti', description: 'Restituisce i consulti di telefarmacia aperti, con i messaggi, l’attesa in minuti, la categoria e il contesto del paziente.',
-      execute: () => { const d = snapshotConsults(); note('Ho letto ' + d.length + ' consulti aperti'); return d; } },
     { name: 'leggi_pazienti', description: 'Restituisce i pazienti collegati con le terapie condivise da Armadietto e i giorni di scorta rimasti.',
       execute: () => { const d = snapshotPatients(); note('Ho letto le terapie di ' + d.length + ' pazienti'); return d; } },
-    { name: 'apri_schermata', description: 'Porta la farmacista su una schermata: ordini (con codice ordine), telefarmacia (con id consulto) o pazienti (con nome paziente).',
-      inputSchema: { type: 'object', properties: { schermata: { type: 'string', enum: ['inbox', 'ordini', 'telefarmacia'] }, riferimento: { type: 'string', description: 'Codice ordine, id consulto o nome paziente' } }, required: ['schermata'] },
+    { name: 'apri_schermata', description: 'Porta la farmacista su una schermata: ordini (con codice ordine) o inbox (con id o mittente del messaggio).',
+      inputSchema: { type: 'object', properties: { schermata: { type: 'string', enum: ['inbox', 'ordini'] }, riferimento: { type: 'string', description: 'Codice ordine, id consulto o nome paziente' } }, required: ['schermata'] },
       execute: (inp) => {
         const sc = String(inp.schermata || ''); const ref = String(inp.riferimento || '');
         if (sc === 'inbox') { const it = S.inbox.find((x) => x.id === ref || x.from.toLowerCase() === ref.toLowerCase()); if (it) S.iSel = it.id; setIn(true); }
         else if (sc === 'ordini') { S.tab = 'ordini'; const o = byCode(ref); if (o) S.sel = o.id; }
-        else if (sc === 'telefarmacia') { S.tab = 'tele'; const c = S.consults.find((x) => x.id === ref || x.patient.toLowerCase() === ref.toLowerCase()); if (c) { S.cSel = c.id; S.cFilter = c.status; } }
         else throw new Error('Schermata sconosciuta');
-        render(); note('Ho aperto ' + (sc === 'telefarmacia' ? 'Telefarmacia' : sc.charAt(0).toUpperCase() + sc.slice(1)));
+        render(); note('Ho aperto ' + (sc === 'inbox' ? 'In arrivo' : 'Ordini'));
         return 'Schermata aperta.';
       } },
     { name: 'suggerisci_seguiti', description: 'Mostra sotto la risposta 2 o 3 domande brevi, cliccabili, che la farmacista potrebbe farti dopo. Chiamalo una sola volta, alla fine.',
@@ -1177,7 +1173,7 @@ function createConsult(m, at, ai) {
   const c = { id: 'k' + consSeq, patient: m.from, who: m.who || '', ch: m.ch, at, wait: 0, cat: CATS.includes(ai.categoria) ? ai.categoria : 'Altro', status: 'nuovo', prio: ai.priorita === 'alta',
     shared: sharedFor(m.from), orders: ords, msgs: [ { me: false, t: m.text, at } ],
     ai: { summary: String(ai.riassunto || ''), checks: (Array.isArray(ai.da_sapere) ? ai.da_sapere : []).map(String).filter(Boolean).slice(0, 3), why: String(ai.motivo_priorita || '') } };
-  S.consults.unshift(c); S.tab = 'tele'; S.cFilter = 'nuovo'; S.cSel = c.id; S.closing = false; S.cDraft = ''; render();
+  S.consults.unshift(c); S.tab = 'ordini'; S.cFilter = 'nuovo'; S.cSel = c.id; S.closing = false; S.cDraft = ''; render();
   pendingNotes.push('È arrivato un consulto da ' + c.patient + ' (' + c.cat + ')');
   return c;
 }
@@ -1185,7 +1181,7 @@ function createConsult(m, at, ai) {
 /* ================= Inbox: messaggi in arrivo, letti e smistati da Claude ================= */
 let inSeq = 0;
 const WA_ORDER = [1, 3, 4, 0, 2];
-const KIND = { ordine: ['Bozza d’ordine', 'ok'], consulto: ['Consulto', 'i'], domanda: ['Domanda', ''], pagamento: ['Pagamento', 'pay'] };
+const KIND = { ordine: ['Bozza d’ordine', 'ok'], consulto: ['Domanda sui farmaci', 'i'], domanda: ['Domanda', ''], pagamento: ['Pagamento', 'pay'] };
 function kindOf(it) { if (it.src === 'cons') return 'consulto'; if (it.src === 'pay') return 'pagamento'; const d = it.d || {}; return d.e_ordine !== false ? 'ordine' : d.consulto ? 'consulto' : 'domanda'; }
 function addInbox(it) { it.id = 'm' + (++inSeq); it.unread = true; S.inbox.unshift(it); return it; }
 
@@ -1284,12 +1280,13 @@ function inboxDetail(itArg, compact) {
   } else if (it.kind === 'consulto') {
     const checks = (Array.isArray(it.src === 'cons' ? d.da_sapere : d.da_controllare) ? (it.src === 'cons' ? d.da_sapere : d.da_controllare) : []).map(String).filter(Boolean);
     ai = h('div', { style: 'display:flex;flex-direction:column;gap:10px' },
-      h('div', { class: 'prop-t' }, 'È una domanda per il farmacista: va in Telefarmacia.'),
+      h('div', { class: 'prop-t' }, 'È una domanda sui farmaci: rispondi tu.'),
       h('div', { class: 'tags' }, h('span', { class: 'tag' }, String(d.categoria || 'Altro')), d.priorita === 'alta' ? h('span', { class: 'tag w' }, 'Da richiamare subito') : null),
       d.riassunto ? h('div', { class: 'note n', style: 'font-size:13px' }, String(d.riassunto)) : null,
       d.priorita === 'alta' && d.motivo_priorita ? h('div', { class: 'note', style: 'background:var(--warn-bg);color:var(--warn-fg);font-size:13px' }, String(d.motivo_priorita)) : null,
       checks.length ? h('div', null, h('div', { class: 'lbl' }, 'Potresti dover chiedere o controllare'), h('ul', { style: 'margin:4px 0 0;padding-left:18px;font-size:13px' }, checks.slice(0, 3).map((t) => h('li', null, t)))) : null,
-      h('div', { class: 'prop-row' }, h('button', { class: 'btn pri sm pill', type: 'button', on: { click: () => consultFromInbox(it) } }, 'Apri in Telefarmacia'), archive),
+      h('div', { class: 'line-in' }, h('label', { class: 'sr', for: 'creply' }, 'Risposta della farmacista'), h('textarea', { id: 'creply', value: it.reply || '', placeholder: 'Scrivi la risposta. La firma viene aggiunta da sola.', on: { input: (e) => { it.reply = e.target.value; } } })),
+      h('div', { class: 'prop-row' }, h('button', { class: 'btn pri sm pill', type: 'button', on: { click: () => { const t = String(it.reply || '').trim(); if (!t) { toast('Scrivi la risposta prima di inviarla.'); return; } it.sent = { t: t + '\nDott.ssa Bianchi, Farmacia Rossi', at: now() }; it.done = { text: 'Risposta inviata su ' + CH[it.ch] }; render(); toast('Risposta inviata a ' + it.from + ' su ' + CH[it.ch]); } } }, 'Invia la risposta'), archive),
       h('div', { class: 'hint' }, (it.byClaude === true ? 'Smistato da Claude' : it.byClaude === false ? 'Claude non disponibile: dati di esempio' : 'Esempio già smistato') + ' · la risposta la scrivi tu'));
   } else {
     ai = h('div', { style: 'display:flex;flex-direction:column;gap:10px' },
@@ -1505,7 +1502,6 @@ function siteWidget() {
 }
 
 /* ================= Avvio ================= */
-$('simCons').addEventListener('click', () => simConsult());
 $('simWa').addEventListener('click', () => simWhatsApp());
 $('ask').addEventListener('submit', (e) => { e.preventDefault(); if (busy) { busy.abort(); return; } const ta = $('askIn'); const v = ta.value; ta.value = ''; ta.style.height = ''; askClaude(v); });
 $('askIn').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); $('ask').requestSubmit(); } });

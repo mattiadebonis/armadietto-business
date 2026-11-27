@@ -44,7 +44,7 @@ La differenza da costruire: terapie e scorte del paziente visibili alla farmacia
 
 ## Modello di business e flusso dell'ordine
 
-La farmacia compra un software che le permette di organizzare i servizi digitali da offrire ai propri pazienti (consegna a domicilio, ordini da ricetta online, prenotazioni, telefarmacia) e li promuove al banco. Così la farmacia è il canale per trovare i pazienti e il motivo per cui restano.
+La farmacia compra un software che le permette di organizzare i servizi digitali da offrire ai propri pazienti (consegna a domicilio, ordini da ricetta online, prenotazioni) e li promuove al banco. Così la farmacia è il canale per trovare i pazienti e il motivo per cui restano.
 
 **Chi fa cosa**
 
@@ -110,7 +110,7 @@ Si installano con una riga di codice o con un plugin WordPress/Shopify. Prendono
 | Widget | Cosa fa |
 | --- | --- |
 | Ordina con ricetta | Modulo NRE + codice fiscale o foto del promemoria, ritiro o consegna |
-| Prenota un servizio | Calendario per ECG, Holter, televisita, tamponi, vaccinazioni |
+| Prenota un servizio | Calendario per tamponi, misurazione della pressione, vaccinazioni |
 | Stato dell'ordine | Il paziente segue l'ordine con il numero ricevuto |
 | Riordina | Per i pazienti collegati: le terapie in esaurimento, ordinabili con un clic |
 | Contatto rapido | Pulsante WhatsApp integrato o chat con la farmacia |
@@ -148,30 +148,6 @@ Nella dashboard ogni farmacia sceglie, per ogni consegna, se usare il proprio fa
 **Il punto critico:** i rider esterni possono portare farmaci con ricetta? Gli accordi tra Glovo e le farmacie visti finora riguardano automedicazione e parafarmaco ([Tech Princess](https://techprincess.it/?p=223673)). Da verificare con il legale e nel contratto con il partner, prima di promettere questa opzione.
 
 **La partnership come leva:** voi negoziate la tariffa per tutta la rete di farmacie, cosa che una singola farmacia non riesce a fare. Il ricavo per voi è un margine sulla consegna o una quota per consegna prenotata.
-
-## Telefarmacia
-
-La telemedicina in farmacia è ormai strutturale e finanziata. La piattaforma non eroga prestazioni mediche: le prenota, le collega ai centri che refertano e porta i risultati nell'app del paziente.
-
-**Il quadro**
-
-- La legge di Bilancio 2026 integra stabilmente nel SSN i servizi delle farmacie convenzionate, con 50 milioni di euro l'anno ([Agenda Digitale](https://www.agendadigitale.eu/sanita/telemedicina-in-farmacia-le-nuove-regole-cambiano-il-mercato/)).
-- Le linee AGENAS di settembre 2026 prevedono quattro ambiti: televisita, telemonitoraggio/telecontrollo, teleconsulto, teleassistenza. Il farmacista non interpreta i dati clinici ([Quotidiano Sanità](https://www.quotidianosanita.it/?p=153312)).
-- Nel 2025 le farmacie hanno superato il milione di prestazioni di telemedicina, tra ECG e Holter cardiaco e pressorio ([Quotidiano Sanità](https://www.quotidianosanita.it/uncategorized/telemedicina-in-farmacia-federfarma-superato-il-milione-di-prestazioni-nel-2025-28-per-ecg-holter-cardiaco-e-pressorio/)).
-- Le farmacie lavorano già con centri servizi di telemedicina esterni per teleconsulto e refertazione ([esempio di contratto quadro](https://lawinsider.com/it/contracts/dbRnLACNbc1)).
-
-| Funzione | Cosa fa la piattaforma | Rilascio |
-| --- | --- | --- |
-| Prenotazione prestazioni | Il paziente prenota ECG, Holter, televisita da link, WhatsApp o app; promemoria e preparazione | V2 |
-| Televisita assistita | Agenda, sala video, ingresso del paziente nello spazio riservato della farmacia, collegamento con il medico | V3 |
-| Telemonitoraggio | Pressione, glicemia, saturazione da dispositivi certificati, in farmacia o a casa, raccolti in Armadietto e inviati al centro o al medico | V3 |
-| Referti | Il referto del centro arriva nell'app del paziente, accanto alle sue terapie | V2 |
-| Consulenza a distanza del farmacista | Videochiamata o chat su uso dei farmaci e aderenza | V2, da verificare cosa rientra nella teleassistenza |
-| Integrazione con i centri servizi | Collegamento ai provider di refertazione già usati dalla farmacia, non un centro proprio | V3 |
-
-**Ricavi:** modulo aggiuntivo all'abbonamento o quota per prestazione prenotata. La farmacia ha un incentivo a pagarlo, perché le prestazioni sono finanziate dal SSN.
-
-**Da verificare:** requisiti delle linee AGENAS e delle regole regionali, come spazio dedicato e farmacista formato; quali dispositivi usare; quali dati vanno al fascicolo sanitario elettronico. Il telemonitoraggio aumenta il rischio di rientrare nei dispositivi medici: meglio integrare dispositivi e software già certificati.
 
 ## Agente AI nella dashboard
 
@@ -242,10 +218,9 @@ Tutte le funzionalità della piattaforma, raggruppate per area e senza priorità
 | Dashboard della farmacia | Coda ordini a colonne con avviso sonoro; verifica della ricetta e copia nel gestionale; disponibilità (pronto, dal grossista, equivalente da confermare); chat per ordine; importo prima della consegna; più operatori con registro delle azioni |
 | Consegne | Vista corriere con giro ottimizzato e navigazione; firma o foto alla consegna; consegna a delegato; incasso con POS; stato in tempo reale al paziente; prenotazione del rider partner (Glovo On-Demand); scelta del canale per consegna |
 | Presa in carico del paziente (Armadietto) | Armadietto con scansione della confezione e scadenze; terapie e scorte con stima di fine confezione; avviso di riordino; tab "Da fare"; profili familiari e chi assiste; condivisione delle terapie con la farmacia con consenso per singola voce; avvisi proattivi del farmacista |
-| Telefarmacia | Prenotazione di ECG, Holter e televisita; televisita assistita in farmacia; telemonitoraggio da dispositivi certificati; referti nell'app del paziente; consulenza a distanza del farmacista; collegamento ai centri servizi di telemedicina |
 | Agente AI | Smistamento dei messaggi e creazione delle bozze d'ordine; piano della giornata; proposta di giri e canali di consegna; lista dei riordini proattivi con messaggi pronti; bozze di risposta a domande non cliniche; riepilogo di fine giornata |
 | Vendita e servizi | Catalogo dei prodotti senza ricetta e parafarmaco; suggerimenti del farmacista; prenotazione di servizi (tamponi, pressione, vaccinazioni); comunicazioni e promozioni con consenso marketing separato |
-| Statistiche | Ordini, tempo medio di evasione, consegne, vendite senza ricetta generate, pazienti collegati e che riordinano, prestazioni di telefarmacia |
+| Statistiche | Ordini, tempo medio di evasione, consegne, vendite senza ricetta generate, pazienti collegati e che riordinano |
 | Catene e gruppi | Più punti vendita; smistamento dell'ordine alla sede più vicina; magazzino condiviso; report consolidati |
 | Privacy e sicurezza | Consensi granulari e revocabili; registro degli accessi; conservazione dei dati definita; hosting nell'UE; trasparenza quando risponde l'AI |
 | Integrazioni | Gestionale di farmacia; WhatsApp Business Platform; Glovo On-Demand e altri partner di consegna; provider di telemedicina; API REST e webhook per l'e-commerce della farmacia; plugin WordPress/Shopify; elenco delle farmacie aderenti |
@@ -283,7 +258,6 @@ L'MVP deve battere WhatsApp al banco. La V2 dà i motivi per pagare e restare, l
 - Prenotazione dei servizi (tamponi, pressione, ECG)
 - App dedicata negli store con il nome della farmacia, pubblicata con il suo account (premium)
 - Statistiche per la farmacia; agente AI (smistamento, piano della giornata, giri di consegna, riordini proattivi); prenotazione del rider Glovo On-Demand dalla dashboard
-- Telefarmacia: prenotazione delle prestazioni, referti nell'app, consulenza a distanza del farmacista
 - Widget JS per il sito della farmacia: ordina con ricetta, prenota un servizio, stato dell'ordine, contatto rapido
 - Gestione delle ricette non elettroniche e delle deleghe
 
@@ -291,7 +265,6 @@ L'MVP deve battere WhatsApp al banco. La V2 dà i motivi per pagare e restare, l
 
 - Integrazione con il gestionale di farmacia (disponibilità in tempo reale, ordine scaricato direttamente)
 - Integrazione con altri partner di consegna oltre Glovo; scelta automatica del canale
-- Telefarmacia: televisita assistita, telemonitoraggio da dispositivi certificati, integrazione con i centri servizi di telemedicina
 - API REST e webhook per l'e-commerce delle farmacie, plugin WordPress/Shopify, widget Riordina con accesso paziente
 - Funzioni per catene e gruppi
 - Elenco delle farmacie aderenti, attivabile dal paziente (per esempio per la farmacia di turno), senza dirottare i pazienti collegati
