@@ -1,8 +1,6 @@
-# Piattaforma farmacie: consegna farmaci con ricetta e app paziente
+# Brainstorming di Mattia su una piattaforma di servizi digitali per le farmacie
 
 27 novembre 2026 · Mattia De Bonis
-
-*Brainstorming di Mattia: idee e ipotesi di lavoro, non decisioni definitive.*
 
 ## Sintesi
 
