@@ -4,7 +4,7 @@
 
 ## Sintesi
 
-La proposta: una piattaforma venduta in abbonamento alle farmacie, con cui ogni farmacia offre ai propri pazienti servizi digitali, tra cui la consegna a domicilio dei farmaci. Il modello è B2B2C: paga la farmacia, il paziente la usa gratis.
+La proposta: un software in abbonamento con cui la farmacia organizza i servizi digitali da offrire ai propri pazienti, a partire dalla consegna a domicilio dei farmaci. Il modello è B2B2C: paga la farmacia, il paziente la usa gratis.
 
 **Decisioni prese**
 
@@ -44,7 +44,7 @@ La differenza da costruire: terapie e scorte del paziente visibili alla farmacia
 
 ## Modello di business e flusso dell'ordine
 
-La farmacia compra un pacchetto di servizi digitali da offrire ai propri pazienti (consegna a domicilio, ordini da ricetta online, prenotazioni, telefarmacia) e lo promuove al banco. Così la farmacia è il canale per trovare i pazienti e il motivo per cui restano.
+La farmacia compra un software che le permette di organizzare i servizi digitali da offrire ai propri pazienti (consegna a domicilio, ordini da ricetta online, prenotazioni, telefarmacia) e li promuove al banco. Così la farmacia è il canale per trovare i pazienti e il motivo per cui restano.
 
 **Chi fa cosa**
 
