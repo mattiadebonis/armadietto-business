@@ -79,6 +79,42 @@ Il paziente vede sempre e solo il nome della farmacia che ha scelto il software.
 
 Armadietto resta l'app consumer per chi non ha una farmacia collegata. Il suo codice diventa il motore delle app con il nome delle farmacie.
 
+## Widget e API per i siti delle farmacie
+
+Molte farmacie hanno già un sito o un e-commerce di prodotti senza ricetta. La piattaforma entra lì senza sostituirlo: widget JavaScript da incollare nel sito e API per collegare l'e-commerce agli ordini da ricetta.
+
+**Widget JS personalizzati**
+
+Si installano con una riga di codice o con un plugin WordPress/Shopify. Prendono nome, logo e colori della farmacia.
+
+| Widget | Cosa fa |
+| --- | --- |
+| Ordina con ricetta | Modulo NRE + codice fiscale o foto del promemoria, ritiro o consegna |
+| Prenota un servizio | Calendario per ECG, Holter, televisita, tamponi, vaccinazioni |
+| Stato dell'ordine | Il paziente segue l'ordine con il numero ricevuto |
+| Riordina | Per i pazienti collegati: le terapie in esaurimento, ordinabili con un clic |
+| Contatto rapido | Pulsante WhatsApp integrato o chat con la farmacia |
+| Scarica l'app | Banner o QR code per collegarsi all'app della farmacia |
+
+Requisiti tecnici: isolamento dal sito ospite (Web Component con Shadow DOM o iframe), script leggero, nessun cookie di terze parti prima del consenso, dati inviati solo alla piattaforma in UE, accessibilità WCAG.
+
+**API e webhook per l'e-commerce**
+
+| Risorsa | Uso |
+| --- | --- |
+| Ordini | Creare dall'e-commerce un ordine con ricetta (NRE) e leggerne lo stato |
+| Webhook | Notifiche su cambi di stato e consegne, firmate (HMAC), con dati minimi: identificativi, non dati sanitari |
+| Prenotazioni | Leggere gli slot liberi dei servizi e prenotare |
+| Consegne | Chiedere preventivo e prenotare un rider partner |
+| Disponibilità | Disponibilità dei prodotti, quando c'è l'integrazione con il gestionale |
+| Accesso paziente | Accesso unico (OAuth) tra sito e app, solo con consenso del paziente |
+
+Sicurezza: credenziali OAuth per farmacia, permessi per risorsa, limiti di chiamate, registro delle chiamate.
+
+**Vincolo normativo:** l'e-commerce della farmacia vende solo prodotti senza ricetta. Con le API i farmaci con ricetta restano prenotazioni gestite dalla farmacia, mai articoli nel carrello da pagare online.
+
+**Opportunità di canale:** i fornitori di e-commerce per farmacie, come Farmakom e Migliorshop, possono integrare le API e portare le loro farmacie, con una quota di ricavi.
+
 ## Consegne: corrieri propri o partner
 
 Nella dashboard ogni farmacia sceglie, per ogni consegna, se usare il proprio fattorino o un corriere partner. La piattaforma gestisce entrambi allo stesso modo verso il paziente: stato, orario e conferma di consegna.
@@ -147,7 +183,7 @@ Ricavi da abbonamento mensile per punto vendita, indipendente dal valore dell'or
 | --- | --- | --- |
 | Attivazione | €0–300 una tantum | Configurazione, formazione, materiale da banco (QR code, locandine) |
 | Base | €39–59/mese | Dashboard ordini, ricette, chat, stato ordine, pazienti collegati in Armadietto |
-| Pro | €89–129/mese | + agente AI, avvisi proattivi sulle terapie condivise, catalogo senza ricetta, prenotazione servizi, statistiche, più operatori |
+| Pro | €89–129/mese | + agente AI, avvisi proattivi sulle terapie condivise, catalogo senza ricetta, prenotazione servizi, statistiche, più operatori, API e webhook per l'e-commerce |
 | Catene | Prezzo per punto vendita, scontato | Più sedi, smistamento ordini, app dedicata sugli store (premium) |
 | Consegna (V3) | €/consegna o margine sul costo pagato dal paziente | Rider partner prenotati dalla dashboard, tariffa negoziata per la rete |
 
@@ -181,7 +217,7 @@ Tutte le funzionalità della piattaforma, raggruppate per area e senza priorità
 
 | Area | Funzionalità |
 | --- | --- |
-| Canali con il nome della farmacia | Link web d'ordine con nome, logo e colori; aggiunta alla schermata Home; WhatsApp integrato sul numero della farmacia; app unica personalizzata dopo il QR code; app dedicata negli store a nome della farmacia; QR code e materiali da banco |
+| Canali con il nome della farmacia | Link web d'ordine con nome, logo e colori; aggiunta alla schermata Home; WhatsApp integrato sul numero della farmacia; app unica personalizzata dopo il QR code; app dedicata negli store a nome della farmacia; QR code e materiali da banco; widget JS da integrare nel sito della farmacia |
 | Ordini e ricette | Ordine da NRE + codice fiscale; foto del promemoria; più ricette per ordine; prodotti liberi in testo; ritiro o consegna con fascia oraria; stato dell'ordine via notifica o WhatsApp; storico ordini; gestione delle ricette non elettroniche e delle deleghe |
 | Dashboard della farmacia | Coda ordini a colonne con avviso sonoro; verifica della ricetta e copia nel gestionale; disponibilità (pronto, dal grossista, equivalente da confermare); chat per ordine; importo prima della consegna; più operatori con registro delle azioni |
 | Consegne | Vista corriere con giro ottimizzato e navigazione; firma o foto alla consegna; consegna a delegato; incasso con POS; stato in tempo reale al paziente; prenotazione del rider partner (Glovo On-Demand); scelta del canale per consegna |
@@ -192,7 +228,7 @@ Tutte le funzionalità della piattaforma, raggruppate per area e senza priorità
 | Statistiche | Ordini, tempo medio di evasione, consegne, vendite senza ricetta generate, pazienti collegati e che riordinano, prestazioni di telefarmacia |
 | Catene e gruppi | Più punti vendita; smistamento dell'ordine alla sede più vicina; magazzino condiviso; report consolidati |
 | Privacy e sicurezza | Consensi granulari e revocabili; registro degli accessi; conservazione dei dati definita; hosting nell'UE; trasparenza quando risponde l'AI |
-| Integrazioni | Gestionale di farmacia; WhatsApp Business Platform; Glovo On-Demand e altri partner di consegna; provider di telemedicina; elenco delle farmacie aderenti |
+| Integrazioni | Gestionale di farmacia; WhatsApp Business Platform; Glovo On-Demand e altri partner di consegna; provider di telemedicina; API REST e webhook per l'e-commerce della farmacia; plugin WordPress/Shopify; elenco delle farmacie aderenti |
 
 ## Funzionalità per rilascio
 
@@ -228,6 +264,7 @@ L'MVP deve battere WhatsApp al banco. La V2 dà i motivi per pagare e restare, l
 - App dedicata negli store con il nome della farmacia, pubblicata con il suo account (premium)
 - Statistiche per la farmacia; agente AI (smistamento, piano della giornata, giri di consegna, riordini proattivi); prenotazione del rider Glovo On-Demand dalla dashboard
 - Telefarmacia: prenotazione delle prestazioni, referti nell'app, consulenza a distanza del farmacista
+- Widget JS per il sito della farmacia: ordina con ricetta, prenota un servizio, stato dell'ordine, contatto rapido
 - Gestione delle ricette non elettroniche e delle deleghe
 
 ### V3
@@ -235,6 +272,7 @@ L'MVP deve battere WhatsApp al banco. La V2 dà i motivi per pagare e restare, l
 - Integrazione con il gestionale di farmacia (disponibilità in tempo reale, ordine scaricato direttamente)
 - Integrazione con altri partner di consegna oltre Glovo; scelta automatica del canale
 - Telefarmacia: televisita assistita, telemonitoraggio da dispositivi certificati, integrazione con i centri servizi di telemedicina
+- API REST e webhook per l'e-commerce delle farmacie, plugin WordPress/Shopify, widget Riordina con accesso paziente
 - Funzioni per catene e gruppi
 - Elenco delle farmacie aderenti, l'inizio del marketplace
 - Pagamento online, se il legale lo approva
