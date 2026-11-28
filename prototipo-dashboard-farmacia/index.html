@@ -1,11 +1,4 @@
-<!doctype html>
-<html lang="it">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<style>:root{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
-</head>
-<body>
+<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
 <title>Farmacia Rossi · Banco digitale</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -441,6 +434,55 @@ textarea.ap-in{resize:vertical;min-height:110px}
 .wg-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:10px}
 .wg-body small{font-size:12px;color:var(--muted)}
 .snippet{display:block;font-family:var(--mono);font-size:11.5px;color:var(--fg-2);padding:10px 12px;border-top:1px solid var(--line);overflow-x:auto;white-space:pre}
+/* ---------- Modalità agente ---------- */
+/* i pulsanti .btn.pill non devono prendere lo stile delle pillole di stato */
+.btn.pill{background:var(--surface)!important;color:var(--fg)}
+.btn.pri.pill{background:var(--accent)!important;border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost.pill{background:transparent!important;border-color:transparent;color:var(--fg-2)}
+/* switch Interfaccia / Agente */
+.mode-sw{order:4;display:inline-grid;grid-auto-flow:column;border:1px solid var(--line-2);border-radius:10px;padding:3px;gap:3px;background:var(--surface)}
+.mode-sw button{border:0;background:transparent;border-radius:7px;min-height:32px;padding:0 12px;font-size:13px;font-weight:500;color:var(--fg-2);display:inline-flex;align-items:center;gap:7px}
+.mode-sw button[aria-pressed="true"]{background:var(--ink);color:var(--ink-fg);font-weight:600}
+/* modo agente: l'agente al posto di In arrivo e chat, a destra l'area di lavoro */
+.app.agentmode{grid-template-columns:minmax(0,1fr)}
+.app.agentmode > .inbox-col{display:none}
+.app.agentmode > .ai{display:flex!important;grid-column:1;grid-row:1;border:0;overflow-y:auto;min-height:0}
+.app.agentmode > .work{display:none}
+.app.agentmode .ag,.app.agentmode .ai-log{width:100%;max-width:760px;margin-inline:auto}
+.app.agentmode .ai-foot > *{width:100%;max-width:760px;margin-inline:auto}
+.shell:has(.app.agentmode) #tabs{display:none}
+.ag-drawer{width:min(620px,100%)}
+.app.agentmode .ag{flex:none;overflow:visible}
+.app.agentmode .ai-log{flex:none;overflow:visible;padding-top:0}
+.app.agentmode .ai-log:empty{display:none}
+.app.agentmode .ai-foot{position:sticky;bottom:0;margin-top:auto;background:var(--surface);border-top:1px solid var(--line)}
+.shell:has(.app.agentmode) #inBtn,.shell:has(.app.agentmode) #aiOpen{display:none}
+
+.ag-dot{width:8px;height:8px;border-radius:50%;background:var(--line-2)}
+#modeSw.running .ag-dot{background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);animation:agpulse 1.6s ease-in-out infinite}
+@keyframes agpulse{50%{box-shadow:0 0 0 6px transparent}}
+.ag{flex:1;overflow-y:auto;padding:14px 16px 16px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:18px;background:var(--chat)}
+.ag-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.ag-state{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:13.5px}
+.ag-state i{width:9px;height:9px;border-radius:50%;background:var(--line-2)}
+.ag-state.on i{background:var(--accent);animation:agpulse 1.6s ease-in-out infinite;box-shadow:0 0 0 3px var(--accent-soft)}
+.ag-intro p{margin:0 0 8px;font-size:14px;color:var(--fg)}
+.ag-intro ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--fg-2)}
+.ag-brief{display:flex;gap:10px;align-items:flex-start;font-size:13.5px}
+.ag-brief .txt p{margin:0 0 4px}
+.ag-star{color:var(--accent);font-size:16px;line-height:1.3}
+.ag-sec{display:flex;flex-direction:column;gap:8px}
+.ag-sec h4{margin:0;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;display:flex;gap:8px;align-items:center}
+.ag-sec h4 .badge{background:var(--warn-strong);color:#FFFFFF;border-radius:999px;padding:0 7px;font-size:11px;letter-spacing:0}
+.ag-sec .hint{margin:0}
+.ag-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.ag-step{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:6px;font-size:12.5px;color:var(--fg-2);padding:6px 0;border-bottom:1px solid var(--line)}
+.ag-step:first-child{animation:agin .3s ease-out}
+.ag-step time{color:var(--muted);font-variant-numeric:tabular-nums}
+.ag-tick{color:var(--accent-fg);font-weight:700;font-size:11px;padding-top:1px}
+.ag-step.info .ag-tick{color:var(--muted)}
+@keyframes agin{from{opacity:.2;transform:translateY(-4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){#modeSw.running .ag-dot,.ag-state.on i,.ag-step:first-child{animation:none}}
 </style>
 
 <div class="shell">
@@ -450,11 +492,13 @@ textarea.ap-in{resize:vertical;min-height:110px}
         <div class="logo">FR</div>
         <div class="grow"><b>Farmacia Rossi</b></div>
         <button class="btn" id="inBtn" type="button" aria-pressed="true" aria-controls="inCol"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg><span>In arrivo</span><span class="badge" id="inCount" hidden></span></button>
+        <div class="mode-sw" id="modeSw" role="group" aria-label="Modo di lavoro"><button type="button" data-mode="ui" aria-pressed="true">Interfaccia</button><button type="button" data-mode="agent" aria-pressed="false"><span class="ag-dot" aria-hidden="true"></span>✦ Agente</button></div>
         <div class="sim">
           <button class="btn" id="simBtn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="simMenu">Simula arrivo ▾</button>
           <div class="sim-menu" id="simMenu" role="menu" hidden>
             <button role="menuitem" id="simOrder" type="button">Un ordine dall'app</button>
             <button role="menuitem" id="simWa" type="button">Un messaggio WhatsApp</button>
+            <button role="menuitem" id="simCons" type="button">Un consulto</button>
             <button role="menuitem" id="simPay" type="button">Un pagamento</button>
           </div>
         </div>
@@ -462,9 +506,11 @@ textarea.ap-in{resize:vertical;min-height:110px}
       <nav class="tabs" role="tablist" aria-label="Sezioni" id="tabs"></nav>
     </header>
     <div class="toast" id="toast" role="status" hidden></div>
+    <div id="agDrawer"></div>
 <div class="app">
   <aside class="inbox-col" id="inCol" aria-label="In arrivo"><section class="queue" id="queue" aria-label="Messaggi in arrivo"></section></aside>
   <aside class="ai" aria-label="Assistente">
+    <div class="ag" id="agent" aria-label="Modalità agente" hidden></div>
     <div class="ai-log" id="log" role="log" aria-live="polite"></div>
     <div class="ai-foot">
       <button class="ctx-chip" id="ctxChip" type="button" hidden></button>
@@ -637,12 +683,14 @@ function advance(o) {
 function render() {
   const nNew = open().filter((o) => o.status === 'nuovo').length;
   const nC = S.consults.filter((c) => c.status === 'nuovo').length;
-  const tabs = [['ordini', 'Ordini', nNew]];
+  const tabs = [['ordini', 'Ordini', nNew], ['tele', 'Telefarmacia', nC]];
   $('tabs').replaceChildren(...tabs.map(([k, l, n]) => h('button', { class: 'tab', role: 'tab', type: 'button', 'aria-selected': String(S.tab === k), on: { click: () => { S.tab = k; render(); } } }, l, n ? h('span', { class: 'badge' }, n) : null)));
   const m = $('main');
-  m.replaceChildren(viewOrders());
+  if (AG.mode === 'agent') { m.replaceChildren(); $('agDrawer').replaceChildren(...[agentDrawer()].filter(Boolean)); }
+  else { $('agDrawer').replaceChildren(); m.replaceChildren(S.tab === 'ordini' ? viewOrders() : viewTele()); }
   updateCtxChip();
   renderQueue();
+  renderAgent();
 }
 
 function tagsFor(o) {
@@ -912,13 +960,13 @@ const props = {};
 
 function rules() {
   return `Sei l'assistente della Farmacia Rossi, dentro la dashboard web del farmacista. Oggi è venerdì 27 novembre 2026, sono le ${now()}. Parli con la Dott.ssa Bianchi, farmacista titolare.
-Il pannello «In arrivo» della dashboard raccoglie i messaggi in arrivo da WhatsApp, app e link e notifiche di pagamento, già letti e smistati in bozze d'ordine, domande sui farmaci (a cui risponde la farmacista, direttamente da lì) o domande pratiche; la farmacista decide lì. Se ci sono messaggi da gestire, ricordali all'inizio della risposta in una riga, prima il più urgente, e poi rispondi alla domanda. La dashboard ha una sezione, Ordini (ricette con NRE arrivate da WhatsApp, link web o app; ritiro in farmacia o consegna con il fattorino Luca nel giro delle 16:00). Con leggi_pazienti vedi anche le terapie che i pazienti condividono dall'app Armadietto, con i giorni di scorta rimasti, ma non c'è una schermata dedicata.
+Il pannello «In arrivo» della dashboard raccoglie i messaggi in arrivo da WhatsApp, app e link e notifiche di pagamento, già letti e smistati in bozze d'ordine, consulti o domande pratiche; la farmacista decide lì. Se ci sono messaggi da gestire, ricordali all'inizio della risposta in una riga, prima il più urgente, e poi rispondi alla domanda. La dashboard ha due sezioni: Ordini (ricette con NRE arrivate da WhatsApp, link web o app; ritiro in farmacia o consegna con il fattorino Luca nel giro delle 16:00) e Telefarmacia (consulti dei pazienti per messaggio, a cui risponde il farmacista). Con leggi_pazienti vedi anche le terapie che i pazienti condividono dall'app Armadietto, con i giorni di scorta rimasti, ma non c'è una schermata dedicata.
 
 Regole:
 - Flusso degli ordini: la farmacista verifica ricetta, disponibilità e totale; poi la dashboard manda al paziente un link di pagamento (carta, Apple Pay, Google Pay); l'ordine si prepara solo quando il pagamento è confermato. Per chi non ha ancora pagato puoi proporre un promemoria (avanza_ordine su un ordine in attesa di pagamento invia il promemoria). Non puoi segnare un pagamento come ricevuto.
 - Consegne: di base le porta il fattorino della farmacia (Luca, giro 16-18, la farmacista affida il giro). In alternativa un rider partner tipo Glovo, prenotato dalla vista Giro di consegna, con costo per consegna e tracking per il paziente. I farmaci da frigo e gli stupefacenti vanno sempre con il fattorino. Puoi consigliare come dividerle, ma la prenotazione la fa la farmacista.
 - Leggi i dati con gli strumenti prima di rispondere. Non inventare pazienti, ordini, orari o numeri.
-- Non dai consigli clinici: niente dosi, dimenticanze, interazioni, effetti indesiderati, sostituzioni. Se la domanda è clinica dillo in una frase e indica il messaggio in «In arrivo» o l'ordine dove deve rispondere la farmacista.
+- Non dai consigli clinici: niente dosi, dimenticanze, interazioni, effetti indesiderati, sostituzioni. Se la domanda è clinica dillo in una frase e indica il consulto o l'ordine dove deve rispondere il farmacista.
 - Per fare qualcosa usa proponi_azione: compare una scheda e la farmacista approva o scarta. Non dire mai che un'azione è fatta: dì che l'hai proposta.
 - I messaggi per i pazienti sono brevi, cortesi, in italiano, senza indicazioni cliniche, e finiscono con "Farmacia Rossi".
 - Sii proattiva. Quando nei dati c'è qualcosa da fare (ricette da verificare, disponibilità da indicare, ordini pronti da affidare al fattorino o da segnare ritirati, pazienti da avvisare, terapie condivise in esaurimento, consulti che aspettano), proponilo con proponi_azione anche se non te l'ha chiesto: una scheda per azione, al massimo 3 per risposta, prima le più urgenti. Nel testo non ripetere ciò che c'è già nelle schede.
@@ -945,16 +993,19 @@ function tools(actBox, cardBox, followBox) {
       execute: () => { const d = snapshotOrders(); note('Ho letto ' + d.length + ' ordini aperti'); return d; } },
     { name: 'leggi_inbox', description: 'Restituisce i messaggi in arrivo nell\u2019Inbox (WhatsApp, app, link, pagamenti) con il tipo deciso in lettura e se sono già stati gestiti.',
       execute: () => { const d = S.inbox.map((x) => ({ id: x.id, da: x.from, canale: CH[x.ch], ora: x.at, testo: x.text, tipo: x.state === 'reading' ? 'in lettura' : x.kind, gestito: x.done ? x.done.text : false })); note('Ho letto ' + d.length + ' messaggi in Inbox'); return d; } },
+    { name: 'leggi_consulti', description: 'Restituisce i consulti di telefarmacia aperti, con i messaggi, l’attesa in minuti, la categoria e il contesto del paziente.',
+      execute: () => { const d = snapshotConsults(); note('Ho letto ' + d.length + ' consulti aperti'); return d; } },
     { name: 'leggi_pazienti', description: 'Restituisce i pazienti collegati con le terapie condivise da Armadietto e i giorni di scorta rimasti.',
       execute: () => { const d = snapshotPatients(); note('Ho letto le terapie di ' + d.length + ' pazienti'); return d; } },
-    { name: 'apri_schermata', description: 'Porta la farmacista su una schermata: ordini (con codice ordine) o inbox (con id o mittente del messaggio).',
-      inputSchema: { type: 'object', properties: { schermata: { type: 'string', enum: ['inbox', 'ordini'] }, riferimento: { type: 'string', description: 'Codice ordine, id consulto o nome paziente' } }, required: ['schermata'] },
+    { name: 'apri_schermata', description: 'Porta la farmacista su una schermata: ordini (con codice ordine), telefarmacia (con id consulto) o pazienti (con nome paziente).',
+      inputSchema: { type: 'object', properties: { schermata: { type: 'string', enum: ['inbox', 'ordini', 'telefarmacia'] }, riferimento: { type: 'string', description: 'Codice ordine, id consulto o nome paziente' } }, required: ['schermata'] },
       execute: (inp) => {
         const sc = String(inp.schermata || ''); const ref = String(inp.riferimento || '');
         if (sc === 'inbox') { const it = S.inbox.find((x) => x.id === ref || x.from.toLowerCase() === ref.toLowerCase()); if (it) S.iSel = it.id; setIn(true); }
         else if (sc === 'ordini') { S.tab = 'ordini'; const o = byCode(ref); if (o) S.sel = o.id; }
+        else if (sc === 'telefarmacia') { S.tab = 'tele'; const c = S.consults.find((x) => x.id === ref || x.patient.toLowerCase() === ref.toLowerCase()); if (c) { S.cSel = c.id; S.cFilter = c.status; } }
         else throw new Error('Schermata sconosciuta');
-        render(); note('Ho aperto ' + (sc === 'inbox' ? 'In arrivo' : 'Ordini'));
+        render(); note('Ho aperto ' + (sc === 'telefarmacia' ? 'Telefarmacia' : sc.charAt(0).toUpperCase() + sc.slice(1)));
         return 'Schermata aperta.';
       } },
     { name: 'suggerisci_seguiti', description: 'Mostra sotto la risposta 2 o 3 domande brevi, cliccabili, che la farmacista potrebbe farti dopo. Chiamalo una sola volta, alla fine.',
@@ -1036,7 +1087,7 @@ function fbRow(text) {
   return row;
 }
 
-function scrollLog() { const l = $('log'); l.scrollTop = l.scrollHeight; }
+function scrollLog() { const l = $('log'); l.scrollTop = l.scrollHeight; const a = document.querySelector('.app.agentmode > .ai'); if (a) a.scrollTop = a.scrollHeight; }
 function renderHello() {
   const log = $('log'); log.replaceChildren();
   const s = [['Cosa devo fare adesso?', 'Ordini, consulti, priorità'], ['Prepara il giro delle consegne', 'Le consegne di oggi pomeriggio'], ['Chi ha terapie in esaurimento?', 'E prepara i messaggi'], ['Cosa c\u2019è da gestire per primo?', 'Pannello In arrivo']];
@@ -1054,6 +1105,7 @@ const ERR = {
 };
 
 async function askClaude(text) {
+  setView('chat');
   if (document.querySelector('.app').classList.contains('noai')) setAi(true);
   text = String(text || '').trim();
   if (!text || busy) return;
@@ -1173,7 +1225,7 @@ function createConsult(m, at, ai) {
   const c = { id: 'k' + consSeq, patient: m.from, who: m.who || '', ch: m.ch, at, wait: 0, cat: CATS.includes(ai.categoria) ? ai.categoria : 'Altro', status: 'nuovo', prio: ai.priorita === 'alta',
     shared: sharedFor(m.from), orders: ords, msgs: [ { me: false, t: m.text, at } ],
     ai: { summary: String(ai.riassunto || ''), checks: (Array.isArray(ai.da_sapere) ? ai.da_sapere : []).map(String).filter(Boolean).slice(0, 3), why: String(ai.motivo_priorita || '') } };
-  S.consults.unshift(c); S.tab = 'ordini'; S.cFilter = 'nuovo'; S.cSel = c.id; S.closing = false; S.cDraft = ''; render();
+  S.consults.unshift(c); S.tab = 'tele'; S.cFilter = 'nuovo'; S.cSel = c.id; S.closing = false; S.cDraft = ''; render();
   pendingNotes.push('È arrivato un consulto da ' + c.patient + ' (' + c.cat + ')');
   return c;
 }
@@ -1181,7 +1233,7 @@ function createConsult(m, at, ai) {
 /* ================= Inbox: messaggi in arrivo, letti e smistati da Claude ================= */
 let inSeq = 0;
 const WA_ORDER = [1, 3, 4, 0, 2];
-const KIND = { ordine: ['Bozza d’ordine', 'ok'], consulto: ['Domanda sui farmaci', 'i'], domanda: ['Domanda', ''], pagamento: ['Pagamento', 'pay'] };
+const KIND = { ordine: ['Bozza d’ordine', 'ok'], consulto: ['Consulto', 'i'], domanda: ['Domanda', ''], pagamento: ['Pagamento', 'pay'] };
 function kindOf(it) { if (it.src === 'cons') return 'consulto'; if (it.src === 'pay') return 'pagamento'; const d = it.d || {}; return d.e_ordine !== false ? 'ordine' : d.consulto ? 'consulto' : 'domanda'; }
 function addInbox(it) { it.id = 'm' + (++inSeq); it.unread = true; S.inbox.unshift(it); return it; }
 
@@ -1280,13 +1332,12 @@ function inboxDetail(itArg, compact) {
   } else if (it.kind === 'consulto') {
     const checks = (Array.isArray(it.src === 'cons' ? d.da_sapere : d.da_controllare) ? (it.src === 'cons' ? d.da_sapere : d.da_controllare) : []).map(String).filter(Boolean);
     ai = h('div', { style: 'display:flex;flex-direction:column;gap:10px' },
-      h('div', { class: 'prop-t' }, 'È una domanda sui farmaci: rispondi tu.'),
+      h('div', { class: 'prop-t' }, 'È una domanda per il farmacista: va in Telefarmacia.'),
       h('div', { class: 'tags' }, h('span', { class: 'tag' }, String(d.categoria || 'Altro')), d.priorita === 'alta' ? h('span', { class: 'tag w' }, 'Da richiamare subito') : null),
       d.riassunto ? h('div', { class: 'note n', style: 'font-size:13px' }, String(d.riassunto)) : null,
       d.priorita === 'alta' && d.motivo_priorita ? h('div', { class: 'note', style: 'background:var(--warn-bg);color:var(--warn-fg);font-size:13px' }, String(d.motivo_priorita)) : null,
       checks.length ? h('div', null, h('div', { class: 'lbl' }, 'Potresti dover chiedere o controllare'), h('ul', { style: 'margin:4px 0 0;padding-left:18px;font-size:13px' }, checks.slice(0, 3).map((t) => h('li', null, t)))) : null,
-      h('div', { class: 'line-in' }, h('label', { class: 'sr', for: 'creply' }, 'Risposta della farmacista'), h('textarea', { id: 'creply', value: it.reply || '', placeholder: 'Scrivi la risposta. La firma viene aggiunta da sola.', on: { input: (e) => { it.reply = e.target.value; } } })),
-      h('div', { class: 'prop-row' }, h('button', { class: 'btn pri sm pill', type: 'button', on: { click: () => { const t = String(it.reply || '').trim(); if (!t) { toast('Scrivi la risposta prima di inviarla.'); return; } it.sent = { t: t + '\nDott.ssa Bianchi, Farmacia Rossi', at: now() }; it.done = { text: 'Risposta inviata su ' + CH[it.ch] }; render(); toast('Risposta inviata a ' + it.from + ' su ' + CH[it.ch]); } } }, 'Invia la risposta'), archive),
+      h('div', { class: 'prop-row' }, h('button', { class: 'btn pri sm pill', type: 'button', on: { click: () => consultFromInbox(it) } }, 'Apri in Telefarmacia'), archive),
       h('div', { class: 'hint' }, (it.byClaude === true ? 'Smistato da Claude' : it.byClaude === false ? 'Claude non disponibile: dati di esempio' : 'Esempio già smistato') + ' · la risposta la scrivi tu'));
   } else {
     ai = h('div', { style: 'display:flex;flex-direction:column;gap:10px' },
@@ -1501,7 +1552,182 @@ function siteWidget() {
     h('code', { class: 'snippet' }, '<script src="https://[DOMINIO PIATTAFORMA]/widget.js" data-farmacia="farmacia-rossi" async><\/script>'));
 }
 
+/* ================= Modalità agente: Claude lavora la coda e chiede solo quando serve ================= */
+const AG = { briefN: -1, on: false, paused: false, mode: 'ui', steps: [], skip: {}, brief: '', briefBy: '', briefAt: 0, timer: null };
+const toMin = (t) => { const m = /^(\d{1,2}):(\d{2})$/.exec(String(t || '').trim()); return m ? Number(m[1]) * 60 + Number(m[2]) : null; };
+const minsSince = (t) => { const a = toMin(t), b = toMin(now()); return a == null ? 999 : (b - a + 1440) % 1440; };
+function agStep(text, kind) { AG.steps.unshift({ text, at: now(), kind: kind || 'ok' }); if (AG.steps.length > 40) AG.steps.length = 40; }
+function keepView(fn) { const v = { tab: S.tab, sel: S.sel, oview: S.oview, cSel: S.cSel, cFilter: S.cFilter, iSel: S.iSel }; const r = fn(); Object.assign(S, v); return r; }
+function estimate(o) { return o.items.filter((i) => !/cartacea/i.test(i.nre)).length * 2 + (o.free ? 6.9 : 0); }
+function stockFor(i) { let n = 0; for (const ch of i.name) n += ch.charCodeAt(0); return i.fridge ? 'grossista' : n % 7 === 0 ? 'grossista' : n % 11 === 0 ? 'equivalente' : 'pronto'; }
+
+/* Le operazioni che l'agente fa da solo, una alla volta */
+function agNext() {
+  const ready = S.inbox.filter((it) => it.state === 'ready' && !it.done);
+  const pay = ready.find((it) => it.kind === 'pagamento');
+  if (pay) return () => { pay.done = { text: 'Archiviato dall’agente' }; pay.unread = false; agStep('Ho archiviato la notifica di pagamento di ' + pay.from); };
+  const ord = ready.find((it) => it.kind === 'ordine');
+  if (ord) return () => { keepView(() => orderFromInbox(ord)); const o = S.orders[0]; agStep('Ho creato la bozza d’ordine #' + o.code + ' dal messaggio di ' + ord.from + ' su ' + CH[ord.ch]); };
+  const q = ready.find((it) => it.kind === 'domanda' && String(it.reply || '').trim());
+  if (q) return () => { q.sent = { t: q.reply.trim(), at: now() }; q.done = { text: 'Risposta inviata dall’agente su ' + CH[q.ch] }; q.unread = false; agStep('Ho risposto a ' + q.from + ': «' + q.reply.trim().slice(0, 70) + (q.reply.trim().length > 70 ? '…' : '') + '»', 'msg'); };
+  const cons = ready.find((it) => it.kind === 'consulto');
+  if (cons) return () => { const c = keepView(() => { consultFromInbox(cons); return S.consults[0]; }); agStep('Ho aperto in Telefarmacia la domanda di ' + cons.from + (c ? ' (' + c.cat.toLowerCase() + ')' : '') + ': la risposta la scrivi tu'); };
+  const chk = open().find((o) => o.status === 'nuovo' && !o.agChecked);
+  if (chk) return () => {
+    chk.agChecked = true;
+    chk.items.forEach((i) => { if (!i.av) i.av = stockFor(i); });
+    if (String(chk.amount || '').trim() === '') { chk.amount = fmtEur(estimate(chk)); chk.agAmount = true; }
+    const n = chk.items.filter((i) => i.av === 'pronto').length;
+    agStep('Ho controllato il magazzino per #' + chk.code + ' di ' + chk.patient + ': ' + n + ' su ' + chk.items.length + ' pronti, totale proposto € ' + chk.amount);
+  };
+  const rem = open().find((o) => o.status === 'pagamento' && !o.reminded && minsSince(o.linkAt) >= 30);
+  if (rem) return () => { keepView(() => advance(rem)); agStep('Ho mandato a ' + rem.patient + ' il promemoria per pagare l’ordine #' + rem.code + ' (€ ' + rem.amount + ')', 'msg'); };
+  return null;
+}
+
+/* Le decisioni che restano alla farmacista */
+function agNeedsYou() {
+  const out = [];
+  S.consults.filter((c) => c.status === 'nuovo').sort((a, b) => ((b.prio ? 1 : 0) - (a.prio ? 1 : 0)) || (b.wait - a.wait)).forEach((c) => out.push({
+    key: 'c' + c.id, tag: c.prio ? ['Da richiamare', 'w'] : ['Telefarmacia', 'i'], title: 'Rispondi a ' + c.patient, why: (c.ai && c.ai.summary) || c.msgs[c.msgs.length - 1].t,
+    acts: [['Apri il consulto', () => { S.cFilter = 'nuovo'; S.cSel = c.id; if (isAgent()) S.agOpen = { t: 'cons', id: c.id }; else S.tab = 'tele'; render(); }, true]] }));
+  open().filter((o) => o.status === 'nuovo' && o.agChecked).forEach((o) => {
+    const ok = o.items.every((i) => i.av) && String(o.amount).trim() !== '';
+    out.push({ key: 'o' + o.id, tag: ['Ricetta', 'ok'], title: 'Verifica la ricetta di ' + o.patient + ' · #' + o.code,
+      why: o.items.map((i) => i.name + ' (' + (AV.find((a) => a[0] === i.av) || ['', 'da indicare'])[1].toLowerCase() + ')').join(', ') + ' · totale ' + (o.agAmount ? 'proposto' : '') + ' € ' + o.amount + '. Controlla NRE e codice fiscale nel gestionale.',
+      acts: [['Apri l’ordine', () => { S.sel = o.id; if (isAgent()) S.agOpen = { t: 'order', id: o.id }; else { S.tab = 'ordini'; S.oview = 'coda'; } render(); }, false],
+        ok ? ['Ho verificato: invia il link', () => { const before = o.status; if (advance(o)) agStep((o.status === 'pagamento' ? 'Ho inviato a ' + o.patient + ' il link di pagamento da € ' + o.amount : 'Ordine #' + o.code + ' verificato, nulla da pagare') + ' (approvato da te)', 'you'); render(); }, true] : null].filter(Boolean) });
+  });
+  S.inbox.filter((it) => it.state === 'ready' && !it.done && it.kind === 'domanda' && !String(it.reply || '').trim()).forEach((it) => out.push({
+    key: 'i' + it.id, tag: ['Messaggio', ''], title: 'Rispondi a ' + it.from, why: it.text,
+    acts: [['Apri il messaggio', () => { if (isAgent()) S.agOpen = { t: 'msg', id: it.id }; else { S.iSel = it.id; setIn(true); } render(); }, true]] }));
+  return out;
+}
+
+/* I suggerimenti: cose utili che l'agente non fa senza un tuo sì */
+function agSuggestions() {
+  const out = [];
+  const own = open().filter((o) => o.status === 'pronto' && o.mode === 'consegna' && o.via !== 'rider');
+  if (own.length) out.push({ key: 'giro' + own.map((o) => o.code).join(), title: 'Affida il giro delle 16:00 a Luca', why: own.length + (own.length === 1 ? ' tappa pronta: ' : ' tappe pronte: ') + own.map((o) => o.patient).join(', ') + '.',
+    acts: [['Affida il giro', () => { dispatchGiro(own); agStep('Ho affidato il giro a Luca: ' + own.length + (own.length === 1 ? ' tappa' : ' tappe') + ' (approvato da te)', 'you'); }, true]] });
+  open().filter((o) => o.status === 'pronto' && o.via === 'rider' && !o.rider && !hasFridge(o)).forEach((o) => out.push({ key: 'rider' + o.code, title: 'Prenota il rider per #' + o.code + ' di ' + o.patient, why: 'È pronto e va con il rider partner. Costo stimato € ' + riderCost(o) + '.',
+    acts: [['Prenota il rider', () => { bookRider(o); agStep('Ho prenotato il rider per #' + o.code + ' · € ' + o.rider.cost + ' (approvato da te)', 'you'); }, true]] }));
+  S.patients.forEach((p) => p.ther.filter(([, d]) => d <= 5).forEach(([n, d]) => {
+    const drug = n.split(' ')[0].toLowerCase();
+    if (open().some((o) => (o.patient === p.name || (o.who || '').includes(p.name.split(' ')[0])) && o.items.some((i) => i.name.toLowerCase().includes(drug)))) return;
+    const first = p.name.split(' ')[0];
+    const t = 'Buongiorno ' + first + ', la sua confezione di ' + n + ' finisce tra ' + d + (d === 1 ? ' giorno' : ' giorni') + '. Se ci manda la ricetta lo prepariamo noi, con ritiro o consegna a casa. Farmacia Rossi';
+    out.push({ key: 'rio' + p.name + n, title: 'Proponi il riordino a ' + p.name, why: n + ' finisce tra ' + d + (d === 1 ? ' giorno' : ' giorni') + '. Messaggio pronto:', quote: t,
+      acts: [['Invia il messaggio', () => { AG.skip['rio' + p.name + n] = true; toast('Messaggio inviato a ' + p.name + ' con il nome Farmacia Rossi'); agStep('Ho scritto a ' + p.name + ' per il riordino di ' + n + ' (approvato da te)', 'you'); render(); }, true]] });
+  }));
+  return out.filter((x) => !AG.skip[x.key]);
+}
+
+function agTick() {
+  if (!AG.on || AG.paused) return;
+  const run = agNext();
+  if (run) { run(); render(); return; }
+  if (agNeedsYou().length !== AG.briefN) agBrief();
+}
+function agStart() {
+  AG.on = true; AG.paused = false;
+  if (!AG.steps.length) agStep('Ho iniziato: leggo In arrivo, ordini e consulti', 'info');
+  clearInterval(AG.timer); AG.timer = setInterval(agTick, 1700);
+  render(); agBrief();
+}
+function agStop() { AG.on = false; clearInterval(AG.timer); agStep('Mi sono fermato. Le operazioni fatte restano.', 'info'); render(); }
+
+async function agBrief() {
+  const need = agNeedsYou(), sug = agSuggestions();
+  const local = 'Lavoro la coda da solo: smisto i messaggi, creo le bozze d’ordine, controllo il magazzino e mando i promemoria. ' +
+    (need.length ? 'Ti servono ' + need.length + (need.length === 1 ? ' decisione' : ' decisioni') + ', prima ' + need[0].title.charAt(0).toLowerCase() + need[0].title.slice(1) + '.' : 'Per ora non ti serve niente.');
+  AG.briefN = need.length;
+  if (AG.briefBy === 'claude' && Date.now() - AG.briefAt < 45000) return;
+  AG.brief = local; AG.briefBy = ''; renderAgent();
+  if (!sample || Date.now() - AG.briefAt < 45000) return;
+  AG.briefAt = Date.now();
+  try {
+    const res = await sample([{ role: 'user', content: rules() + '\n\nSei in modalità agente: lavori la coda della farmacia da sola. Scrivi alla farmacista un briefing di massimo 3 frasi brevi, senza elenchi: cosa stai facendo tu adesso e cosa le serve decidere per prima. Niente consigli clinici.\n\nOrdini: ' + JSON.stringify(snapshotOrders()) + '\nConsulti: ' + JSON.stringify(snapshotConsults()) + '\nDecisioni per lei: ' + JSON.stringify(need.map((x) => x.title)) + '\nSuggerimenti: ' + JSON.stringify(sug.map((x) => x.title)) }], { modelTier: 'quick', cache: false });
+    if (res && res.text) { AG.brief = res.text.trim(); AG.briefBy = 'claude'; renderAgent(); }
+  } catch (e) { if (e && e.code === 'not_granted') sampleState = 'denied'; }
+}
+
+const isAgent = () => AG.mode === 'agent';
+function setView() { if (!isAgent() && document.querySelector('.app').classList.contains('noai')) setAi(true); }
+function setMode(m) {
+  if (m === AG.mode) return;
+  AG.mode = m;
+  try { localStorage.setItem('farmacia-modo', m); } catch (e) { /* storage non disponibile */ }
+  document.querySelector('.app').classList.toggle('agentmode', m === 'agent');
+  $('modeSw').querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === m)));
+  if (m === 'agent') { if (!AG.on) agStart(); else if (AG.paused && AG.autoPaused) { AG.paused = false; AG.autoPaused = false; agStep('Ho ripreso', 'info'); } }
+  else if (AG.on && !AG.paused) { AG.paused = true; AG.autoPaused = true; agStep('In pausa: sei passata all’interfaccia', 'info'); }
+  S.agOpen = null; render();
+}
+
+function agCard(x, kind) {
+  return h('div', { class: 'prop ag-card' },
+    h('div', { class: 'prop-k' }, x.tag ? h('span', { class: 'tag ' + x.tag[1] }, x.tag[0]) : h('span', { class: 'tag' }, 'Suggerimento'),
+      kind === 'sug' ? h('button', { class: 'linkbtn', type: 'button', on: { click: () => { AG.skip[x.key] = true; renderAgent(); } } }, 'Lascia stare') : null),
+    h('div', { class: 'prop-t' }, x.title),
+    h('div', { class: 'prop-why' }, x.why),
+    x.quote ? h('p', { class: 'prop-q' }, x.quote) : null,
+    h('div', { class: 'prop-row' }, x.acts.map(([l, fn, pri]) => h('button', { class: 'btn sm pill' + (pri ? ' pri' : ''), type: 'button', on: { click: fn } }, l))));
+}
+
+/* Nel modo agente ordini, consulti e messaggi si aprono in un pannello sopra l'agente */
+function agentDrawer() {
+  const A = S.agOpen; if (!A) return null;
+  let body = null, label = '';
+  if (A.t === 'order') { const o = open().find((x) => x.id === A.id); if (o) { S.sel = o.id; body = orderDetail(); label = 'Ordine #' + o.code; } }
+  else if (A.t === 'cons') { const c = S.consults.find((x) => x.id === A.id); if (c) { S.cSel = c.id; body = consultDetail(); label = 'Consulto di ' + c.patient; } }
+  else if (A.t === 'msg') { const it = S.inbox.find((x) => x.id === A.id); if (it) { body = inboxDetail(it); label = 'Messaggio di ' + it.from; } }
+  if (!body) { S.agOpen = null; return null; }
+  const close = () => { S.agOpen = null; render(); };
+  return h('div', null, h('div', { class: 'scrim', on: { click: close } }),
+    h('div', { class: 'drawer ag-drawer', role: 'dialog', 'aria-modal': 'true', 'aria-label': label },
+      h('div', { class: 'drawer-x' }, h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Chiudi', on: { click: close } }, '\u2715')), body));
+}
+
+function renderAgent() {
+  const box = $('agent'); if (!box) return;
+  const show = isAgent();
+  box.hidden = !show;
+  $('modeSw').classList.toggle('running', AG.on && !AG.paused);
+  $('askIn').placeholder = show ? 'Dai un’istruzione a Claude…' : 'Chiedi a Claude…';
+  if (!show) return;
+  const need = AG.on ? agNeedsYou() : [], sug = AG.on ? agSuggestions() : [];
+  const working = AG.on && !AG.paused;
+  const pending = AG.on && agNext();
+  const head = h('div', { class: 'ag-head' },
+    h('span', { class: 'ag-state' + (working ? ' on' : '') }, h('i', { 'aria-hidden': 'true' }),
+      !AG.on ? 'Agente fermo' : AG.paused ? 'In pausa' : pending ? 'Al lavoro…' : 'Tutto smistato · aspetto nuovi arrivi'),
+    AG.on ? h('span', { style: 'display:flex;gap:6px' },
+      h('button', { class: 'btn sm pill', type: 'button', on: { click: () => { AG.paused = !AG.paused; agStep(AG.paused ? 'In pausa' : 'Ho ripreso', 'info'); render(); } } }, AG.paused ? 'Riprendi' : 'Pausa'),
+      h('button', { class: 'btn sm pill ghost', type: 'button', on: { click: agStop } }, 'Ferma'))
+      : h('button', { class: 'btn sm pill pri', type: 'button', on: { click: agStart } }, 'Avvia l’agente'));
+  const kids = [head];
+  if (!AG.on) kids.push(h('div', { class: 'ag-intro' },
+    h('p', null, 'In modalità agente Claude lavora la coda al posto tuo e ti lascia solo le decisioni da farmacista.'),
+    h('ul', null, h('li', null, 'Fa da solo: smista In arrivo, crea le bozze d’ordine, controlla il magazzino e propone il totale, risponde alle domande pratiche, manda i promemoria di pagamento.'),
+      h('li', null, 'Chiede a te: verifica delle ricette, consulti di telefarmacia, giro di consegna, rider e messaggi ai pazienti.'),
+      h('li', null, 'Non dà consigli clinici e ogni operazione resta nell’elenco qui sotto.'))));
+  if (AG.brief && AG.on) kids.push(h('div', { class: 'ag-brief' }, h('span', { class: 'ag-star', 'aria-hidden': 'true' }, '✦'), h('div', null, richText(AG.brief), h('div', { class: 'hint' }, AG.briefBy === 'claude' ? 'Briefing di Claude' : 'Briefing automatico'))));
+  if (AG.on) {
+    kids.push(h('section', { class: 'ag-sec' }, h('h4', null, 'Serve te', need.length ? h('span', { class: 'badge' }, need.length) : null),
+      need.length ? need.map((x) => agCard(x, 'need')) : h('p', { class: 'hint' }, 'Niente da decidere adesso.')));
+    if (sug.length) kids.push(h('section', { class: 'ag-sec' }, h('h4', null, 'Ti suggerisco'), sug.map((x) => agCard(x, 'sug'))));
+  }
+  if (AG.steps.length) kids.push(h('section', { class: 'ag-sec' }, h('h4', null, 'Fatto'),
+    h('ol', { class: 'ag-steps' }, AG.steps.map((s) => h('li', { class: 'ag-step ' + s.kind }, h('span', { class: 'ag-tick', 'aria-hidden': 'true' }, s.kind === 'info' ? '·' : s.kind === 'you' ? '✓✓' : '✓'), h('span', null, s.text), h('time', null, s.at))))));
+  box.replaceChildren(...kids);
+}
+
+$('modeSw').addEventListener('click', (e) => { const b = e.target.closest('button[data-mode]'); if (b) setMode(b.dataset.mode); });
+try { if (localStorage.getItem('farmacia-modo') === 'agent') setTimeout(() => setMode('agent'), 0); } catch (e) { /* storage non disponibile */ }
+
 /* ================= Avvio ================= */
+$('simCons').addEventListener('click', () => simConsult());
 $('simWa').addEventListener('click', () => simWhatsApp());
 $('ask').addEventListener('submit', (e) => { e.preventDefault(); if (busy) { busy.abort(); return; } const ta = $('askIn'); const v = ta.value; ta.value = ''; ta.style.height = ''; askClaude(v); });
 $('askIn').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); $('ask').requestSubmit(); } });
@@ -1546,6 +1772,4 @@ render(); renderHello();
 })();
 })();
 </script>
-
-</body>
-</html>
+</body></html>
