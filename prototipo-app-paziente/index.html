@@ -1,0 +1,882 @@
+<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>App paziente Farmacia Rossi</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: telefono al centro della scena, a destra il pannello che simula cosa fa la farmacia. Stesso stile scarno della dashboard. */
+:root{
+  --bg:#F4F5F2; --surface:#FFFFFF; --surface-2:#F1F2EE; --line:#E2E5DF; --line-2:#C9CFC7;
+  --fg:#17201B; --fg-2:#3E4943; --muted:#5B6660; --accent:#0B6B5D; --accent-ink:#FFFFFF; --accent-fg:#08493F;
+  --warn:#8F3A0C; --pay:#B0502F; --info:#174D8A; --ink:#17201B; --ink-fg:#FFFFFF;
+  --font: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0F1512; --surface:#161E1A; --surface-2:#1D2722; --line:#2A3630; --line-2:#3A4841;
+  --fg:#E7EEEA; --fg-2:#C3CEC8; --muted:#9AA8A0; --accent:#3FB39F; --accent-ink:#06231D; --accent-fg:#8ED9C9;
+  --warn:#F2B48C; --pay:#E08A66; --info:#9CC2F0; --ink:#E7EEEA; --ink-fg:#0F1512; color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --bg:#0F1512; --surface:#161E1A; --surface-2:#1D2722; --line:#2A3630; --line-2:#3A4841;
+  --fg:#E7EEEA; --fg-2:#C3CEC8; --muted:#9AA8A0; --accent:#3FB39F; --accent-ink:#06231D; --accent-fg:#8ED9C9;
+  --warn:#F2B48C; --pay:#E08A66; --info:#9CC2F0; --ink:#E7EEEA; --ink-fg:#0F1512; color-scheme:dark; }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:14px;line-height:1.45}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+.top{display:flex;align-items:center;gap:12px;padding-block:14px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:1px solid var(--line);background:var(--surface)}
+.top h1{margin:0;font-size:15px;font-weight:600}
+.top p{margin:0;font-size:12.5px;color:var(--muted)}
+.logo{width:34px;height:34px;border-radius:9px;background:var(--accent);color:var(--accent-ink);display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:0 0 auto}
+
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:32px;max-width:1040px;margin:0 auto;padding-block:28px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));align-items:start}
+@media (max-width:860px){.stage{grid-template-columns:minmax(0,1fr)}}
+.phone-wrap{display:flex;justify-content:center}
+
+/* ---------- Telefono ---------- */
+.phone{width:372px;max-width:100%;border:1px solid var(--line-2);border-radius:46px;padding:10px;background:var(--surface)}
+.screen{position:relative;height:740px;max-height:calc(100vh - 140px);min-height:560px;border:1px solid var(--line);border-radius:37px;overflow:hidden;display:flex;flex-direction:column;background:var(--surface)}
+@media (max-width:860px){.screen{max-height:none}}
+.sbar{display:flex;justify-content:space-between;align-items:center;padding:12px 26px 4px;font-size:12px;font-weight:600}
+.sbar i{font-style:normal;letter-spacing:1px;color:var(--fg-2)}
+.ap-top{display:flex;gap:10px;align-items:center;padding:8px 18px 12px;border-bottom:1px solid var(--line)}
+.ap-top .logo{width:30px;height:30px;font-size:11.5px;border-radius:8px}
+.ap-top b{display:block;font-size:14px}
+.ap-top small{display:block;font-size:12px;color:var(--muted)}
+.ap-top .grow{flex:1;min-width:0}
+.ap-body{flex:1;overflow-y:auto;padding:16px 18px 22px;display:flex;flex-direction:column;gap:18px}
+.ap-body small,.sm{font-size:12px;color:var(--muted)}
+.ap-title{font-size:22px;font-weight:600;letter-spacing:-.01em;line-height:1.2;text-wrap:balance}
+.ap-sub{font-size:13px;color:var(--fg-2);margin-top:-12px}
+.sec{display:flex;flex-direction:column;gap:2px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;margin-bottom:4px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);font-size:13.5px;text-align:left;width:100%;background:transparent;border-left:0;border-right:0;border-top:0}
+.row:last-child{border-bottom:0}
+.row .t{min-width:0;flex:1}
+.row b{display:block;font-weight:600}
+.row small{display:block}
+button.row:hover b{text-decoration:underline}
+.w{color:var(--warn)!important}
+.chev{color:var(--muted);flex:0 0 auto}
+
+.box{border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.box.strong{border-color:var(--line-2)}
+.box h3{margin:0;font-size:15px;font-weight:600}
+.box p{margin:0;font-size:13px;color:var(--fg-2)}
+
+.btn{border:1px solid var(--line-2);background:var(--surface);border-radius:12px;min-height:44px;padding:0 14px;font-weight:600;font-size:14px;color:var(--fg)}
+.btn:hover{background:var(--surface-2)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.pri:hover{filter:brightness(1.06)}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--fg-2)}
+.btn.sm{min-height:34px;font-size:12.5px;border-radius:999px;padding:0 12px}
+.btn.full{width:100%}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.back{border:0;background:transparent;color:var(--fg-2);padding:0;font-size:13px;font-weight:500;align-self:flex-start;min-height:28px}
+
+.pill{display:inline-flex;align-items:center;border:1px solid var(--line-2);border-radius:999px;padding:1px 9px;font-size:11.5px;font-weight:600;color:var(--fg-2);white-space:nowrap}
+.pill.pay{color:var(--pay);border-color:currentColor}
+.pill.ok{color:var(--accent-fg);border-color:currentColor}
+.pill.w{border-color:currentColor}
+.pill.i{color:var(--info);border-color:currentColor}
+
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line-2);background:transparent;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:500}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--ink-fg);border-color:var(--ink)}
+
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line-2);border-radius:12px;padding:3px;gap:3px}
+.seg button{border:0;background:transparent;border-radius:9px;min-height:36px;font-size:13px;font-weight:500;color:var(--fg-2)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--ink-fg);font-weight:600}
+.seg button:disabled{opacity:.4;cursor:not-allowed}
+
+.lbl{font-size:12.5px;font-weight:600;color:var(--fg-2)}
+.in{width:100%;border:1px solid var(--line-2);border-radius:12px;background:var(--surface);min-height:44px;padding:10px 12px;font-size:14px}
+textarea.in{resize:vertical;min-height:70px}
+.field{display:flex;flex-direction:column;gap:5px}
+.err{font-size:12.5px;color:var(--warn);font-weight:500}
+
+.bar{height:4px;border-radius:99px;background:var(--surface-2);overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--fg-2);border-radius:99px}
+.bar.w i{background:var(--warn)}
+
+.sw{position:relative;width:38px;height:22px;flex:0 0 auto;border-radius:99px;border:1px solid var(--line-2);background:var(--surface-2);padding:0}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--muted);transition:transform .15s}
+.sw[aria-checked="true"]{background:var(--accent);border-color:var(--accent)}
+.sw[aria-checked="true"]::after{transform:translateX(16px);background:var(--accent-ink)}
+
+.trk{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.trk li{position:relative;padding:0 0 14px 24px;font-size:13px;color:var(--muted)}
+.trk li:last-child{padding-bottom:0}
+.trk li::before{content:"";position:absolute;left:5px;top:6px;width:9px;height:9px;border-radius:50%;border:1.5px solid var(--line-2);background:var(--surface)}
+.trk li::after{content:"";position:absolute;left:9.5px;top:17px;bottom:-3px;width:1px;background:var(--line-2)}
+.trk li:last-child::after{display:none}
+.trk li.done{color:var(--fg-2)}
+.trk li.done::before{background:var(--fg-2);border-color:var(--fg-2)}
+.trk li.now{color:var(--fg);font-weight:600}
+.trk li.now::before{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
+.trk li small{display:block;font-weight:400}
+
+.code-big{font-family:var(--mono);font-size:30px;font-weight:600;letter-spacing:.12em;text-align:center;padding:6px 0}
+
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);padding:6px 6px 16px;background:var(--surface)}
+.tabs button{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:500;color:var(--muted);padding:6px 0;position:relative}
+.tabs button[aria-current="page"]{color:var(--fg);font-weight:600}
+.tabs svg{width:22px;height:22px}
+.tabs .dot{position:absolute;top:4px;right:calc(50% - 16px);min-width:16px;height:16px;border-radius:99px;background:var(--pay);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px}
+
+.push{position:absolute;left:10px;right:10px;top:38px;z-index:5;background:var(--surface);border:1px solid var(--line-2);border-radius:18px;padding:11px 13px;display:flex;gap:10px;align-items:flex-start;text-align:left;box-shadow:0 8px 28px rgba(0,0,0,.14);animation:drop .25s ease-out}
+.push .logo{width:26px;height:26px;font-size:10px;border-radius:7px}
+.push b{display:block;font-size:12.5px}
+.push span{font-size:12.5px;color:var(--fg-2)}
+@keyframes drop{from{transform:translateY(-12px);opacity:.3}to{transform:none;opacity:1}}
+
+.sheet-bg{position:absolute;inset:0;z-index:6;background:rgba(0,0,0,.32);display:flex;align-items:flex-end}
+.sheet{width:100%;background:var(--surface);border-radius:22px 22px 0 0;padding:18px 18px 26px;display:flex;flex-direction:column;gap:12px;animation:up .2s ease-out}
+@keyframes up{from{transform:translateY(30px)}to{transform:none}}
+.sheet .grab{width:38px;height:4px;border-radius:99px;background:var(--line-2);align-self:center;margin-top:-6px}
+.sum{display:flex;justify-content:space-between;font-size:13.5px;padding:3px 0}
+.sum.tot{font-weight:700;font-size:15px;border-top:1px solid var(--line);padding-top:9px}
+
+.chat{display:flex;flex-direction:column;gap:10px}
+.msg{max-width:84%;padding:9px 12px;border-radius:16px;font-size:13.5px;border:1px solid var(--line)}
+.msg small{display:block;margin-top:3px}
+.msg.me{align-self:flex-end;background:var(--ink);color:var(--ink-fg);border-color:var(--ink)}
+.msg.me small{color:inherit;opacity:.7}
+.compose{display:flex;gap:8px;padding:10px 14px 14px;border-top:1px solid var(--line)}
+.compose .in{min-height:42px;border-radius:999px;padding:8px 14px}
+
+.cam{aspect-ratio:1/1;max-width:100%;border-radius:22px;border:1px dashed var(--line-2);display:flex;align-items:center;justify-content:center;position:relative}
+.cam::before,.cam::after{content:"";position:absolute;width:46%;height:46%;border:3px solid var(--fg-2);border-radius:14px}
+.cam::after{border:0;width:30%;height:30%;background:repeating-linear-gradient(90deg,var(--fg-2) 0 4px,transparent 4px 8px),repeating-linear-gradient(0deg,var(--fg-2) 0 4px,transparent 4px 8px);background-blend-mode:normal;opacity:.5;border-radius:4px}
+
+/* ---------- Pannello farmacia ---------- */
+.panel{display:flex;flex-direction:column;gap:18px;min-width:0}
+.panel h2{margin:0;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.panel .now{font-size:13.5px;color:var(--fg-2);margin:0}
+.p-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.p-card b{font-size:13.5px}
+.p-card .sm{margin:0}
+.p-act{display:flex;flex-wrap:wrap;gap:6px}
+.p-act .btn{min-height:34px;font-size:12.5px;border-radius:8px;padding:0 11px}
+.p-list{display:flex;flex-direction:column;gap:8px}
+.note{font-size:12.5px;color:var(--muted);margin:0;border-top:1px solid var(--line);padding-top:14px}
+
+/* Dentro il prototipo unico: solo il telefono */
+.embed .top,.embed .panel{display:none}
+.embed .stage{grid-template-columns:minmax(0,1fr);max-width:none;padding-block:12px}
+.embed .screen{height:calc(100vh - 46px);max-height:none;min-height:560px}
+
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="logo" aria-hidden="true">FR</div>
+  <div>
+    <h1>App del paziente · Farmacia Rossi</h1>
+    <p>Prototipo cliccabile con dati di esempio. Il pannello a destra fa le mosse della farmacia.</p>
+  </div>
+</header>
+<div class="stage">
+  <div class="phone-wrap" id="phoneWrap"></div>
+  <aside class="panel" id="panel" aria-label="Simula la farmacia"></aside>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+function h(tag, a, ...kids) {
+  const el = document.createElement(tag);
+  if (a) for (const [k, v] of Object.entries(a)) {
+    if (v == null || v === false) continue;
+    if (k === 'on') for (const [e, f] of Object.entries(v)) el.addEventListener(e, f);
+    else if (k === 'class') el.className = v;
+    else if (k === 'style') el.style.cssText = v;
+    else if (k === 'value') el.value = v;
+    else if (k === 'html') el.innerHTML = v;
+    else el.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of kids.flat(Infinity)) { if (c == null || c === false) continue; el.append(c.nodeType ? c : document.createTextNode(String(c))); }
+  return el;
+}
+const now = (plus = 0) => { const d = new Date(Date.now() + plus * 60000); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
+const eur = (n) => n.toFixed(2).replace('.', ',');
+const ICON = {
+  oggi: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5h-5v5H5a1 1 0 0 1-1-1z"/></svg>',
+  armadietto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M12 3.5v17M9.5 11v2M14.5 11v2"/></svg>',
+  ordini: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7.5 12 4l7 3.5v9L12 20l-7-3.5z"/><path d="m5 7.5 7 3.5 7-3.5M12 11v9"/></svg>',
+  farmacia: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 4h5v5.5H20v5h-5.5V20h-5v-5.5H4v-5h5.5z"/></svg>',
+};
+const CHEV = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg>';
+
+/* ================= Dati di esempio ================= */
+const PEOPLE = {
+  lucia: { name: 'Lucia De Santis', first: 'Lucia', cf: 'DSNLCU78D61L219P', addr: 'Via Garibaldi 12, Bologna', rel: 'Tu' },
+  giorgio: { name: 'Giorgio De Santis', first: 'Giorgio', cf: 'DSNGRG46H12A944K', addr: 'Via Saragozza 40, Bologna', rel: 'Papà · lo assisti tu' },
+};
+const FARMACIA = { name: 'Farmacia Rossi', addr: 'Via Roma 8, Bologna', tel: '051 234 5678', hours: 'Oggi aperta 8:30–19:30', who: 'Dott.ssa Anna Bianchi' };
+const SAMPLE_NRE = ['0901A 4192 640087', '0801A 5530 117742', '0801A 6021 338810'];
+
+function seed() {
+  return {
+    linked: true, onb: 0, tab: 'oggi', sub: null, orderId: null, who: 'lucia', push: null, sheet: null, draft: null, next: 2072, nreUsed: 0, msg: '', shareText: '',
+    meds: [
+      { id: 'm1', p: 'lucia', name: 'Levotiroxina 75 mcg', pack: '50 compresse', per: 1, left: 6, full: 50, shared: true, rx: 'nre' },
+      { id: 'm2', p: 'lucia', name: 'Atorvastatina 20 mg', pack: '30 compresse', per: 1, left: 19, full: 30, shared: true, rx: 'nre' },
+      { id: 'm3', p: 'lucia', name: 'Vitamina D3 gocce', pack: 'flacone 10 ml', days: 34, fullDays: 60, shared: false, rx: 'libero' },
+      { id: 'm4', p: 'giorgio', name: 'Ramipril 5 mg', pack: '28 compresse', per: 1, left: 4, full: 28, shared: true, rx: 'nre' },
+      { id: 'm5', p: 'giorgio', name: 'Metformina 1000 mg', pack: '60 compresse', per: 2, left: 5, full: 60, shared: true, rx: 'nre' },
+      { id: 'm6', p: 'giorgio', name: 'Insulina glargine', pack: '5 penne da 3 ml', days: 9, fullDays: 50, shared: true, rx: 'nre', fridge: true },
+      { id: 'm7', p: 'giorgio', name: 'Tapentadolo 50 mg', pack: '30 compresse', per: 2, left: 22, full: 30, shared: false, rx: 'cartacea' },
+    ],
+    orders: [
+      { id: 'o1', code: '2068', p: 'giorgio', at: 'ieri 18:12', status: 'prep', mode: 'consegna', slot: 'oggi 16:00–18:00', addr: PEOPLE.giorgio.addr, items: [{ name: 'Metformina 1000 mg', nre: '0801A 4473 921556', med: 'm5' }], free: '', amount: 4, paidAt: 'ieri 18:40', log: { inviato: 'ieri 18:12', pagamento: 'ieri 18:30', prep: 'ieri 18:40' } },
+      { id: 'o2', code: '2043', p: 'lucia', at: 'oggi 09:20', status: 'inviato', mode: 'ritiro', slot: 'domani mattina', addr: '', items: [{ name: 'Levotiroxina 75 mcg', nre: '0901A 4192 640087', med: 'm1' }], free: '', amount: null, log: { inviato: 'oggi 09:20' } },
+      { id: 'o0', code: '2031', p: 'lucia', at: '12 novembre', status: 'chiuso', mode: 'ritiro', slot: '', items: [{ name: 'Atorvastatina 20 mg', nre: '0901A 3310 554120', med: 'm2' }], free: '', amount: 0, noPay: true, log: {} },
+    ],
+    chat: [
+      { me: true, t: 'Buongiorno, la metformina di papà arriva oggi?', at: '09:02' },
+      { me: false, t: 'Buongiorno Lucia, sì: è nel giro di consegna di oggi pomeriggio, tra le 16 e le 18. Dott.ssa Bianchi', at: '09:12' },
+    ],
+    unread: 0,
+    consults: [
+      { id: 'c1', p: 'giorgio', topic: 'Come si usa un farmaco', med: 'm6', status: 'chiuso', at: '20 novembre', msgs: [
+        { me: true, t: 'Papà ha iniziato l’insulina. La penna che sta usando va tenuta in frigo anche lei?', at: '20 nov 10:05' },
+        { me: false, t: 'Buongiorno Lucia, la penna in uso può restare fuori dal frigo, lontano da fonti di calore, per il tempo scritto nel foglietto. Quelle di scorta restano in frigo. Se vuole gliele mostro al banco. Dott.ssa Bianchi', at: '20 nov 10:41' } ] },
+      { id: 'c0', p: 'lucia', topic: 'Altro', med: 'm1', status: 'chiuso', at: 'ieri', msgs: [
+        { me: true, t: 'Cosa posso prendere per il raffreddore? Prendo la levotiroxina.', at: 'ieri 18:02' },
+        { me: false, t: 'Buonasera Lucia, passi domattina: le facciamo vedere cosa va bene con la sua terapia. Dott.ssa Bianchi', at: 'ieri 18:20' } ] },
+    ],
+    cdraft: null,
+  };
+}
+let A = seed();
+
+const daysLeft = (m) => m.days != null ? m.days : Math.floor(m.left / m.per);
+const pct = (m) => Math.max(4, Math.min(100, Math.round(100 * (m.days != null ? m.days / m.fullDays : m.left / m.full))));
+const medsOf = (p) => A.meds.filter((m) => m.p === p);
+const lowMeds = () => A.meds.filter((m) => daysLeft(m) <= 10 && m.rx !== 'libero');
+const activeOrders = () => A.orders.filter((o) => o.status !== 'chiuso');
+const inOrder = (m) => activeOrders().find((o) => o.items.some((i) => i.med === m.id));
+const arriving = (m) => { const o = inOrder(m); return o ? h('button', { class: 'pill i', type: 'button', style: 'background:transparent', on: { click: () => openOrder(o) } }, 'In arrivo · #' + o.code) : null; };
+const ST = { inviato: 'Inviato', pagamento: 'Da pagare', prep: 'In preparazione', pronto: 'Pronto', consegna: 'In consegna', chiuso: 'Concluso' };
+const pillClass = (s) => s === 'pagamento' ? 'pill pay' : s === 'pronto' ? 'pill ok' : s === 'consegna' ? 'pill i' : 'pill';
+const orderFor = (o) => o.p === 'lucia' ? 'Per te' : 'Per ' + PEOPLE[o.p].first;
+
+/* ================= Azioni ================= */
+let pushTimer = null;
+function push(title, text, go) {
+  A.push = { title, text, go };
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(() => { A.push = null; render(); }, 5000);
+}
+function openTab(t) { A.tab = t; A.sub = null; A.sheet = null; render(); }
+function openOrder(o) { A.tab = 'ordini'; A.sub = 'ordine'; A.orderId = o.id; A.sheet = null; render(); }
+function openChat() { A.tab = 'farmacia'; A.sub = 'chat'; A.unread = 0; render(); }
+
+function startDraft(fromMed) {
+  const m = fromMed ? A.meds.find((x) => x.id === fromMed) : null;
+  const p = m ? m.p : A.who;
+  A.draft = { p, items: m ? [{ med: m.id, name: m.name, nre: '', cart: m.rx === 'cartacea', fridge: !!m.fridge }] : [], free: '', mode: 'ritiro', slot: '16:00–18:00', addr: PEOPLE[p].addr, err: '', add: m ? null : 'nre', addNre: '' };
+  if (m && m.rx === 'cartacea') A.draft.mode = 'ritiro';
+  A.sub = 'ordina'; A.sheet = null; render();
+}
+function cleanNre(v) { const x = String(v || '').replace(/[\s-]+/g, '').toUpperCase(); return /^[0-9A-Z]{15}$/.test(x) ? x.slice(0, 5) + ' ' + x.slice(5, 9) + ' ' + x.slice(9) : null; }
+function nextNre() { const n = SAMPLE_NRE[A.nreUsed % SAMPLE_NRE.length]; A.nreUsed++; return n; }
+
+function submitDraft() {
+  const D = A.draft;
+  const missing = D.items.find((i) => !i.cart && !i.nre);
+  if (!D.items.length && !D.free.trim()) { D.err = 'Aggiungi almeno una ricetta o un prodotto.'; render(); return; }
+  if (missing) { D.err = 'Manca il codice NRE di ' + missing.name + '. Lo trovi sul promemoria del medico.'; render(); return; }
+  if (D.mode === 'consegna' && !D.addr.trim()) { D.err = 'Scrivi l’indirizzo di consegna.'; render(); return; }
+  const o = { id: 'o' + A.next, code: String(A.next), p: D.p, at: 'oggi ' + now(), status: 'inviato', mode: D.mode, slot: D.mode === 'consegna' ? 'oggi ' + D.slot : 'da oggi, quando vuoi', addr: D.mode === 'consegna' ? D.addr.trim() : '', items: D.items.map((i) => ({ ...i })), free: D.free.trim(), amount: null, log: { inviato: 'oggi ' + now() } };
+  A.next++; A.orders.unshift(o); A.draft = null;
+  bridge({ type: 'order', order: payload(o) });
+  openOrder(o);
+  push(FARMACIA.name, 'Abbiamo ricevuto l’ordine #' + o.code + '. Controlliamo la ricetta e ti avvisiamo.', () => openOrder(o));
+  render();
+}
+
+function stepsOf(o) {
+  const s = [['inviato', 'Inviato alla farmacia']];
+  if (!o.noPay) s.push(['pagamento', 'Ricetta verificata · da pagare']);
+  s.push(['prep', 'In preparazione'], ['pronto', o.mode === 'consegna' ? 'Pronto per il giro' : 'Pronto da ritirare']);
+  if (o.mode === 'consegna') s.push(['consegna', 'In consegna']);
+  s.push(['chiuso', o.mode === 'consegna' ? 'Consegnato' : 'Ritirato']);
+  return s;
+}
+function idxOf(o) { return stepsOf(o).findIndex(([k]) => k === o.status); }
+
+/* Mosse della farmacia (simulate dal pannello) */
+function amountOf(o) { return o.items.filter((i) => !i.cart).length * 2 + (o.free ? 6.9 : 0); }
+function verify(o, esente) {
+  o.amount = esente ? 0 : amountOf(o);
+  o.log.pagamento = 'oggi ' + now();
+  if (o.amount === 0) { o.noPay = true; o.status = 'prep'; push(FARMACIA.name, 'Ricetta verificata per l’ordine #' + o.code + ': non c’è niente da pagare. Lo stiamo preparando.', () => openOrder(o)); }
+  else { o.status = 'pagamento'; push(FARMACIA.name, 'Ricetta verificata. Puoi pagare l’ordine #' + o.code + ': € ' + eur(o.amount) + '.', () => { openOrder(o); A.sheet = { pay: o.id }; render(); }); }
+  render();
+}
+function pay(o, how) {
+  o.paidAt = 'oggi ' + now(); o.payHow = how; o.status = 'prep'; o.log.prep = o.paidAt; A.sheet = null;
+  bridge({ type: 'pay', code: o.code });
+  push(FARMACIA.name, 'Pagamento ricevuto, grazie. Prepariamo l’ordine #' + o.code + '.', () => openOrder(o));
+  render();
+}
+function ready(o) {
+  o.status = 'pronto'; o.log[o.status] = 'oggi ' + now();
+  if (o.mode === 'ritiro') { o.pickup = String(4000 + ((Number(o.code) * 37) % 5000)); push(FARMACIA.name, 'L’ordine #' + o.code + ' è pronto. Passa quando vuoi entro le 19:30.', () => openOrder(o)); }
+  else push(FARMACIA.name, 'L’ordine #' + o.code + ' è pronto e parte con il giro delle 16:00.', () => openOrder(o));
+  render();
+}
+const hasFridge = (o) => o.items.some((i) => i.fridge || (i.med && (A.meds.find((m) => m.id === i.med) || {}).fridge));
+function depart(o, via, info) {
+  info = info || {}; o.status = 'consegna'; o.via = via; o.eta = info.eta || now(via === 'rider' ? 22 : 35); o.who = info.name || (via === 'rider' ? 'Marco' : 'Luca'); o.dcode = String(1000 + ((Number(o.code) * 53) % 9000)); o.log[o.status] = 'oggi ' + now();
+  push(FARMACIA.name, (via === 'rider' ? o.who + ', il nostro corriere partner,' : o.who + ', il fattorino della farmacia,') + ' è partito con l’ordine #' + o.code + '. Arriva verso le ' + o.eta + '.', () => openOrder(o));
+  render();
+}
+function finish(o) {
+  o.status = 'chiuso'; o.doneAt = now(); o.log[o.status] = 'oggi ' + o.doneAt;
+  const upd = [];
+  o.items.forEach((i) => { const m = A.meds.find((x) => x.id === i.med); if (m) { if (m.days != null) m.days = m.fullDays; else m.left += m.full; upd.push(m.name); } });
+  o.updated = upd;
+  push(FARMACIA.name, (o.mode === 'consegna' ? 'Consegnato' : 'Ritirato') + ' l’ordine #' + o.code + '.' + (upd.length ? ' Armadietto ha aggiornato le scorte.' : ''), () => openOrder(o));
+  render();
+}
+function pharmacistReply() {
+  const lastMine = [...A.chat].reverse().find((c) => c.me);
+  const t = lastMine && /prend|insieme|dose|effett|posso/i.test(lastMine.t)
+    ? 'Buongiorno Lucia, per le domande sui farmaci apra un consulto di telefarmacia dalla sezione Farmacia: così rispondo con le sue terapie davanti. Dott.ssa Bianchi'
+    : 'Grazie del messaggio Lucia, ci pensiamo noi. Le scrivo appena ho novità. Dott.ssa Bianchi';
+  A.chat.push({ me: false, t, at: now() });
+  if (!(A.tab === 'farmacia' && A.sub === 'chat')) { A.unread++; push(FARMACIA.name, 'Nuovo messaggio dalla Dott.ssa Bianchi', openChat); }
+  render();
+}
+function stockAlert() {
+  const m = A.meds.find((x) => x.id === 'm4');
+  m.left = Math.min(m.left, 4);
+  push('Armadietto · ' + FARMACIA.name, 'Il Ramipril di Giorgio finisce tra ' + daysLeft(m) + ' giorni. Vuoi riordinarlo?', () => { A.tab = 'armadietto'; A.who = 'giorgio'; A.sub = null; render(); });
+  render();
+}
+
+/* ---------- Telefarmacia ---------- */
+const TOPICS = ['Come si usa un farmaco', 'Effetti indesiderati', 'Farmaci da prendere insieme', 'Altro'];
+const REPLY = {
+  'Come si usa un farmaco': 'le preparo le indicazioni scritte da ritirare con il farmaco. Nel frattempo segua l’orario che le ha dato il medico e non cambi la dose senza sentirlo.',
+  'Effetti indesiderati': 'mi dice da quando è iniziato? Se peggiora o fa fatica a respirare chiami subito il 112. Altrimenti passi oggi in farmacia e ne parliamo.',
+  'Farmaci da prendere insieme': 'ho davanti le terapie che mi ha condiviso. Prima di aggiungere altro passi in farmacia o mi chiami: preferisco vedere tutto insieme.',
+  'Altro': 'ci penso io e le rispondo entro oggi.',
+};
+const CST = { attesa: 'In attesa', risposto: 'Risposto', chiuso: 'Chiuso' };
+const openConsults = () => A.consults.filter((c) => c.status !== 'chiuso');
+function openConsult(c) { A.tab = 'farmacia'; A.sub = 'consulto'; A.consId = c.id; c.unread = false; A.sheet = null; render(); }
+function startConsult(medId) {
+  const m = medId ? A.meds.find((x) => x.id === medId) : null;
+  A.cdraft = { p: m ? m.p : A.who, topic: '', med: m ? m.id : '', text: '', err: '' };
+  A.tab = 'farmacia'; A.sub = 'consulto-nuovo'; A.sheet = null; render();
+}
+function sendConsult() {
+  const D = A.cdraft;
+  if (!D.topic) { D.err = 'Scegli di cosa vuoi parlare.'; render(); return; }
+  if (D.text.trim().length < 10) { D.err = 'Scrivi la domanda in qualche parola in più.'; render(); return; }
+  const c = { id: 'c' + (A.consults.length + 1) + Date.now() % 1000, p: D.p, topic: D.topic, med: D.med, status: 'attesa', at: 'oggi ' + now(), msgs: [{ me: true, t: D.text.trim(), at: now() }] };
+  A.consults.unshift(c); A.cdraft = null;
+  bridge({ type: 'consult', id: c.id, name: PEOPLE[c.p].name, who: c.p === 'giorgio' ? 'Scrive la figlia, Lucia' : '', topic: c.topic, med: c.med ? (A.meds.find((m) => m.id === c.med) || {}).name : '', text: c.msgs[0].t });
+  openConsult(c);
+  push(FARMACIA.name, 'Consulto inviato. Ti risponde la Dott.ssa Bianchi, di solito entro un’ora.', () => openConsult(c));
+  render();
+}
+function consultReply(c) {
+  const m = c.med ? A.meds.find((x) => x.id === c.med) : null;
+  const followUp = c.msgs.filter((x) => !x.me).length > 0;
+  const t = 'Buongiorno Lucia, ' + (followUp ? 'grazie, così mi è più chiaro. Le confermo quanto le ho scritto: se ha altri dubbi passi pure al banco.' : (m ? 'per ' + m.name + (c.p === 'giorgio' ? ' di suo papà' : '') + ' ' : '') + REPLY[c.topic]) + ' Dott.ssa Bianchi';
+  c.msgs.push({ me: false, t, at: now() }); c.status = 'risposto';
+  const here = A.sub === 'consulto' && A.consId === c.id;
+  c.unread = !here;
+  push(FARMACIA.name, 'La Dott.ssa Bianchi ha risposto al tuo consulto', () => openConsult(c));
+  render();
+}
+
+/* ================= Schermate ================= */
+function topBar(title, sub) {
+  return h('div', { class: 'ap-top' }, h('div', { class: 'logo', 'aria-hidden': 'true' }, 'FR'),
+    h('div', { class: 'grow' }, h('b', null, title || FARMACIA.name), h('small', null, sub || FARMACIA.hours)));
+}
+const back = (fn, label) => h('button', { class: 'back', type: 'button', on: { click: fn } }, '← ' + (label || 'Indietro'));
+const row = (main, sub, right, onClick, subCls) => h(onClick ? 'button' : 'div', { class: 'row', type: onClick ? 'button' : null, on: onClick ? { click: onClick } : null },
+  h('span', { class: 't' }, h('b', null, main), sub ? h('small', { class: subCls || '' }, sub) : null), right || null, onClick && !right ? h('span', { class: 'chev', html: CHEV }) : null);
+
+function tracker(o) {
+  const i = idxOf(o);
+  return h('ol', { class: 'trk' }, stepsOf(o).map(([k, l], j) => h('li', { class: j < i ? 'done' : j === i ? 'now' : '' }, l, o.log[k] ? h('small', null, o.log[k]) : null)));
+}
+
+function screenOggi() {
+  const low = lowMeds().sort((a, b) => daysLeft(a) - daysLeft(b));
+  const act = activeOrders();
+  return [
+    h('div', { class: 'ap-title' }, 'Ciao Lucia'),
+    h('div', { class: 'ap-sub' }, act.length ? (act.length === 1 ? 'Hai un ordine in corso.' : 'Hai ' + act.length + ' ordini in corso.') : 'Nessun ordine in corso.'),
+    act.length ? h('div', { class: 'sec' }, h('div', { class: 'sec-h' }, 'In corso'),
+      act.map((o) => {
+        const needPay = o.status === 'pagamento';
+        return h('div', { class: 'box' + (needPay ? ' strong' : '') },
+          h('div', { style: 'display:flex;justify-content:space-between;gap:8px;align-items:center' }, h('div', null, h('h3', null, 'Ordine #' + o.code), h('small', null, orderFor(o) + ' · ' + (o.mode === 'consegna' ? 'consegna ' + o.slot : 'ritiro in farmacia'))), h('span', { class: pillClass(o.status) }, ST[o.status])),
+          h('p', null, statusLine(o)),
+          needPay ? h('button', { class: 'btn pri full', type: 'button', on: { click: () => { A.sheet = { pay: o.id }; render(); } } }, 'Paga € ' + eur(o.amount))
+            : h('button', { class: 'btn full', type: 'button', on: { click: () => openOrder(o) } }, 'Segui l’ordine'));
+      })) : null,
+    openConsults().length ? h('div', { class: 'sec' }, h('div', { class: 'sec-h' }, 'Telefarmacia'),
+      openConsults().map((c) => row(c.topic + (c.p === 'giorgio' ? ' · Giorgio' : ''), c.status === 'attesa' ? 'In attesa della farmacista' : 'La farmacista ha risposto', h('span', { class: c.status === 'risposto' ? 'pill ok' : 'pill' }, CST[c.status]), () => openConsult(c)))) : null,
+    h('div', { class: 'sec' }, h('div', { class: 'sec-h' }, 'Da fare'),
+      low.length ? low.map((m) => row(m.name + (m.p === 'giorgio' ? ' · Giorgio' : ''), 'Finisce tra ' + daysLeft(m) + (daysLeft(m) === 1 ? ' giorno' : ' giorni'),
+        arriving(m) || h('button', { class: 'btn sm', type: 'button', on: { click: () => startDraft(m.id) } }, 'Riordina'), null, daysLeft(m) <= 7 && !inOrder(m) ? 'w' : ''))
+        : h('small', null, 'Niente in esaurimento nei prossimi 10 giorni.')),
+    h('div', { class: 'sec' }, h('div', { class: 'sec-h' }, 'La tua farmacia'),
+      row(FARMACIA.name, FARMACIA.addr + ' · ' + FARMACIA.hours.replace('Oggi ', '').toLowerCase(), null, () => openTab('farmacia'))),
+    h('button', { class: 'btn pri full', type: 'button', on: { click: () => startDraft() } }, 'Ordina con ricetta'),
+  ];
+}
+function statusLine(o) {
+  if (o.status === 'inviato') return 'La farmacia controlla la ricetta. Ti avvisiamo quando puoi pagare.';
+  if (o.status === 'pagamento') return 'Ricetta verificata. Paghi qui e la farmacia prepara l’ordine.';
+  if (o.status === 'prep') return o.paidAt ? 'Pagato. La farmacia sta preparando l’ordine.' : 'La farmacia sta preparando l’ordine.';
+  if (o.status === 'pronto') return o.mode === 'consegna' ? 'Pronto. Parte con il giro delle 16:00.' : 'Pronto da ritirare al banco: mostra il codice ' + o.pickup + '.';
+  if (o.status === 'consegna') return o.who + (o.via === 'rider' ? ', corriere partner' : ', fattorino della farmacia') + ', arriva verso le ' + o.eta + '.';
+  return (o.mode === 'consegna' ? 'Consegnato' : 'Ritirato') + (o.doneAt ? ' alle ' + o.doneAt : ' il ' + o.at) + '.';
+}
+
+function screenArmadietto() {
+  const list = medsOf(A.who);
+  const sharedN = list.filter((m) => m.shared).length;
+  return [
+    h('div', { class: 'ap-title' }, 'Armadietto'),
+    h('div', { class: 'chips', role: 'group', 'aria-label': 'Di chi' }, Object.entries(PEOPLE).map(([k, p]) => h('button', { class: 'chip', type: 'button', 'aria-pressed': String(A.who === k), on: { click: () => { A.who = k; render(); } } }, k === 'lucia' ? 'Lucia (tu)' : p.first))),
+    h('small', { style: 'margin-top:-10px' }, PEOPLE[A.who].rel + ' · ' + sharedN + ' di ' + list.length + ' terapie condivise con ' + FARMACIA.name),
+    h('div', { class: 'sec' }, list.map((m) => {
+      const d = daysLeft(m);
+      const sub = (m.per ? m.left + ' ' + 'compresse · ' + m.per + ' al giorno' : m.pack) + (m.fridge ? ' · in frigo' : '') + (m.rx === 'cartacea' ? ' · ricetta cartacea' : m.rx === 'libero' ? ' · senza ricetta' : '');
+      return h('div', { class: 'row', style: 'flex-direction:column;align-items:stretch;gap:8px' },
+        h('div', { style: 'display:flex;justify-content:space-between;gap:10px;align-items:flex-start' },
+          h('span', { class: 't' }, h('b', null, m.name), h('small', null, sub),
+            h('small', { class: d <= 7 ? 'w' : '' }, 'Finisce tra ' + d + (d === 1 ? ' giorno' : ' giorni')),
+            h('div', { class: 'bar' + (d <= 7 ? ' w' : '') }, h('i', { style: 'width:' + pct(m) + '%' }))),
+          arriving(m) || (d <= 14 && m.rx !== 'libero') ? arriving(m) || h('button', { class: 'btn sm', type: 'button', on: { click: () => startDraft(m.id) } }, 'Riordina') : null),
+        h('div', { style: 'display:flex;justify-content:space-between;align-items:center;gap:10px' },
+          h('span', { style: 'display:flex;flex-direction:column' }, h('small', null, m.shared ? 'La farmacia vede questa terapia' : 'Solo tu la vedi'), h('button', { class: 'back', type: 'button', style: 'font-size:12px;color:var(--accent-fg);min-height:24px', on: { click: () => startConsult(m.id) } }, 'Chiedi alla farmacista')),
+          h('button', { class: 'sw', type: 'button', role: 'switch', 'aria-checked': String(m.shared), 'aria-label': 'Condividi ' + m.name + ' con la farmacia', on: { click: () => { m.shared = !m.shared; render(); } } })));
+    })),
+    h('button', { class: 'btn full', type: 'button', on: { click: () => { A.sheet = { scan: true, step: 0 }; render(); } } }, 'Aggiungi una confezione'),
+    h('small', null, 'Armadietto ricorda le scorte e le scadenze, non dà consigli sulle cure. Per i dubbi apri un consulto di telefarmacia.'),
+  ];
+}
+
+function screenOrdini() {
+  const act = activeOrders(), old = A.orders.filter((o) => o.status === 'chiuso');
+  const item = (o) => row('Ordine #' + o.code, orderFor(o) + ' · ' + o.items.map((i) => i.name).concat(o.free ? ['altri prodotti'] : []).join(', '), h('span', { class: pillClass(o.status) }, ST[o.status]), () => openOrder(o));
+  return [
+    h('div', { class: 'ap-title' }, 'Ordini'),
+    h('div', { class: 'sec' }, h('div', { class: 'sec-h' }, 'In corso'), act.length ? act.map(item) : h('small', null, 'Nessun ordine in corso.')),
+    h('div', { class: 'sec' }, h('div', { class: 'sec-h' }, 'Conclusi'), old.length ? old.map(item) : h('small', null, 'Ancora nessuno.')),
+    h('button', { class: 'btn pri full', type: 'button', on: { click: () => startDraft() } }, 'Nuovo ordine con ricetta'),
+  ];
+}
+
+function screenOrdine() {
+  const o = A.orders.find((x) => x.id === A.orderId);
+  if (!o) return [back(() => openTab('ordini')), h('small', null, 'Ordine non trovato.')];
+  const fridge = hasFridge(o);
+  return [
+    back(() => openTab(A.tab), 'Ordini'),
+    h('div', null, h('div', { class: 'ap-title' }, 'Ordine #' + o.code), h('small', null, orderFor(o) + ' · inviato ' + o.at)),
+    o.status === 'pagamento' ? h('div', { class: 'box strong' },
+      h('h3', null, 'Da pagare € ' + eur(o.amount)),
+      h('p', null, 'La farmacia ha verificato la ricetta. Il prezzo comprende il ticket' + (o.free ? ' e gli altri prodotti.' : '.')),
+      h('button', { class: 'btn pri full', type: 'button', on: { click: () => { A.sheet = { pay: o.id }; render(); } } }, 'Paga € ' + eur(o.amount))) : null,
+    o.status === 'pronto' && o.mode === 'ritiro' ? h('div', { class: 'box strong' }, h('h3', null, 'Pronto da ritirare'), h('p', null, 'Mostra questo codice al banco. Puoi mandare anche un familiare.'), h('div', { class: 'code-big' }, o.pickup)) : null,
+    o.status === 'consegna' ? h('div', { class: 'box strong' },
+      h('h3', null, o.who + ' è in viaggio'),
+      h('p', null, (o.via === 'rider' ? 'Corriere partner della farmacia' : 'Fattorino di ' + FARMACIA.name) + '. Arriva verso le ' + o.eta + ' in ' + o.addr + '.'),
+      h('p', null, 'Codice da dire alla consegna'), h('div', { class: 'code-big' }, o.dcode)) : null,
+    o.status === 'chiuso' && o.updated && o.updated.length ? h('div', { class: 'box' }, h('h3', null, 'Scorte aggiornate'), h('p', null, 'Armadietto ha aggiunto ' + o.updated.join(', ') + ' alle scorte di ' + (o.p === 'lucia' ? 'Lucia' : PEOPLE[o.p].first) + '.')) : null,
+    h('div', { class: 'sec' }, h('div', { class: 'sec-h' }, 'Stato'), tracker(o)),
+    h('div', { class: 'sec' }, h('div', { class: 'sec-h' }, 'Cosa hai ordinato'),
+      o.items.map((i) => row(i.name, i.cart ? 'Ricetta cartacea: portala al ritiro' : 'NRE ' + i.nre, null, null)),
+      o.free ? row('Altri prodotti', o.free, null, null) : null),
+    h('div', { class: 'sec' }, h('div', { class: 'sec-h' }, o.mode === 'consegna' ? 'Consegna' : 'Ritiro'),
+      o.mode === 'consegna' ? row(o.addr, o.slot + (fridge ? ' · farmaco da frigo, lo porta il fattorino della farmacia' : ''), null, null) : row(FARMACIA.name, FARMACIA.addr + ' · ' + o.slot, null, null),
+      o.paidAt ? row('Pagato € ' + eur(o.amount), (o.payHow || 'Carta') + ' · ' + o.paidAt, null, null) : o.noPay ? row('Niente da pagare', 'Ricetta esente', null, null) : null),
+    h('button', { class: 'btn full', type: 'button', on: { click: () => { A.msg = 'Ordine #' + o.code + ': '; openChat(); } } }, 'Scrivi alla farmacia su questo ordine'),
+  ];
+}
+
+function screenOrdina() {
+  const D = A.draft;
+  const P = PEOPLE[D.p];
+  const anyCart = D.items.some((i) => i.cart);
+  const anyFridge = D.items.some((i) => i.fridge);
+  if (anyCart) D.mode = 'ritiro';
+  const addItem = () => {
+    const n = cleanNre(D.addNre);
+    if (!n) { D.err = 'Il codice NRE ha 15 caratteri, lettere e numeri. Lo trovi in alto sul promemoria.'; render(); return; }
+    D.items.push({ name: 'Ricetta ' + (D.items.length + 1), nre: n }); D.addNre = ''; D.add = null; D.err = ''; render();
+  };
+  const photo = (target) => {
+    const it = target || { name: 'Ricetta ' + (D.items.length + 1), nre: '' };
+    if (!target) D.items.push(it);
+    it.reading = true; D.add = null; D.err = ''; render();
+    setTimeout(() => { it.reading = false; it.nre = nextNre(); if (!it.med) it.name = 'Ricetta dal promemoria'; render(); }, 1300);
+  };
+  const askDoctor = (it) => {
+    A.shareText = 'Buongiorno dottore, avrei bisogno della ricetta di ' + it.name + ' per ' + P.name + ' (codice fiscale ' + P.cf + '). Può mandarmi il codice NRE? Grazie, ' + (D.p === 'lucia' ? 'Lucia' : 'Lucia De Santis, figlia') + '.';
+    A.sheet = { doctor: true }; render();
+  };
+  return [
+    back(() => { A.draft = null; A.sub = null; render(); }, 'Annulla'),
+    h('div', { class: 'ap-title' }, D.items.length === 1 && D.items[0].med ? 'Riordina ' + D.items[0].name : 'Ordina con ricetta'),
+    h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Per chi'),
+      h('div', { class: 'chips', role: 'group', 'aria-label': 'Per chi' }, Object.entries(PEOPLE).map(([k, p]) => h('button', { class: 'chip', type: 'button', 'aria-pressed': String(D.p === k), on: { click: () => { D.p = k; D.addr = PEOPLE[k].addr; render(); } } }, k === 'lucia' ? 'Per me' : p.first))),
+      h('small', null, 'Codice fiscale ' + P.cf)),
+    h('div', { class: 'sec' }, h('div', { class: 'sec-h' }, 'Ricette'),
+      D.items.map((it, i) => h('div', { class: 'row', style: 'flex-direction:column;align-items:stretch;gap:8px' },
+        h('div', { style: 'display:flex;justify-content:space-between;gap:8px' },
+          h('span', { class: 't' }, h('b', null, it.name),
+            it.cart ? h('small', { class: 'w' }, 'Ricetta cartacea: non ha un codice NRE. Prenoti qui e la porti in farmacia al ritiro.')
+              : it.reading ? h('small', null, 'Leggo il promemoria…')
+              : it.nre ? h('small', { class: 'mono' }, 'NRE ' + it.nre) : h('small', { class: 'w' }, 'Manca il codice NRE')),
+          h('button', { class: 'btn ghost sm', type: 'button', 'aria-label': 'Togli ' + it.name, on: { click: () => { D.items.splice(i, 1); render(); } } }, 'Togli')),
+        !it.cart && !it.nre && !it.reading ? h('div', { style: 'display:flex;flex-direction:column;gap:6px' },
+          h('div', { style: 'display:flex;gap:6px' },
+            h('input', { id: 'nre_' + i, class: 'in mono', placeholder: 'Codice NRE', autocomplete: 'off', 'aria-label': 'Codice NRE di ' + it.name, on: { change: (e) => { const n = cleanNre(e.target.value); if (n) { it.nre = n; D.err = ''; } else D.err = 'Il codice NRE ha 15 caratteri, lettere e numeri.'; render(); } } }),
+            h('button', { class: 'btn', type: 'button', style: 'flex:0 0 auto', on: { click: () => photo(it) } }, 'Foto')),
+          h('button', { class: 'back', type: 'button', style: 'color:var(--accent-fg)', on: { click: () => askDoctor(it) } }, 'Non hai ancora la ricetta? Chiedila al medico')) : null)),
+      D.add === 'nre' ? h('div', { style: 'display:flex;flex-direction:column;gap:8px;padding-top:8px' },
+        h('label', { class: 'lbl', for: 'addNre' }, 'Codice NRE della ricetta'),
+        h('input', { id: 'addNre', class: 'in mono', placeholder: '0901A 4192 640087', autocomplete: 'off', value: D.addNre, on: { input: (e) => { D.addNre = e.target.value; } , keydown: (e) => { if (e.key === 'Enter') addItem(); } } }),
+        h('div', { style: 'display:grid;grid-template-columns:1fr 1fr;gap:6px' },
+          h('button', { class: 'btn', type: 'button', on: { click: addItem } }, 'Aggiungi'),
+          h('button', { class: 'btn', type: 'button', on: { click: () => photo() } }, 'Fotografa il promemoria')),
+        h('button', { class: 'back', type: 'button', style: 'color:var(--muted)', on: { click: () => { D.addNre = '0901A4192640087'; render(); } } }, 'Usa un codice di esempio'))
+        : h('button', { class: 'btn ghost', type: 'button', style: 'align-self:flex-start;padding:0', on: { click: () => { D.add = 'nre'; render(); } } }, '+ Aggiungi un’altra ricetta')),
+    h('div', { class: 'field' }, h('label', { class: 'lbl', for: 'free' }, 'Altri prodotti senza ricetta (facoltativo)'),
+      h('textarea', { id: 'free', class: 'in', rows: '2', placeholder: 'Es. cerotti, crema solare 50+', value: D.free, on: { input: (e) => { D.free = e.target.value; } } })),
+    h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Come lo ricevi'),
+      h('div', { class: 'seg', role: 'group', 'aria-label': 'Ritiro o consegna' },
+        [['ritiro', 'Ritiro in farmacia'], ['consegna', 'Consegna a casa']].map(([k, l]) => h('button', { type: 'button', 'aria-pressed': String(D.mode === k), disabled: k === 'consegna' && anyCart, on: { click: () => { D.mode = k; render(); } } }, l))),
+      anyCart ? h('small', null, 'Con la ricetta cartacea serve il ritiro in farmacia, anche da parte di un familiare.') : null),
+    D.mode === 'consegna' ? h('div', { class: 'field' },
+      h('label', { class: 'lbl', for: 'addr' }, 'Indirizzo'),
+      h('input', { id: 'addr', class: 'in', value: D.addr, on: { input: (e) => { D.addr = e.target.value; } } }),
+      h('div', { class: 'chips', role: 'group', 'aria-label': 'Fascia oraria' }, ['16:00–18:00', '18:00–19:30'].map((s) => h('button', { class: 'chip', type: 'button', 'aria-pressed': String(D.slot === s), on: { click: () => { D.slot = s; render(); } } }, 'Oggi ' + s))),
+      anyFridge ? h('small', null, 'C’è un farmaco da frigo: lo porta il fattorino della farmacia in borsa refrigerata.') : h('small', null, 'Consegna gratuita entro 3 km.')) : null,
+    D.err ? h('div', { class: 'err', role: 'alert' }, D.err) : null,
+    h('button', { class: 'btn pri full', type: 'button', disabled: D.items.some((i) => i.reading), on: { click: submitDraft } }, 'Invia a ' + FARMACIA.name),
+    h('small', null, 'Prima la farmacia verifica la ricetta, poi ti manda il totale da pagare. I tuoi dati vanno solo a ' + FARMACIA.name + '.'),
+  ];
+}
+
+function screenFarmacia() {
+  return [
+    h('div', { style: 'display:flex;gap:12px;align-items:center' }, h('div', { class: 'logo', style: 'width:52px;height:52px;font-size:18px;border-radius:14px', 'aria-hidden': 'true' }, 'FR'),
+      h('div', null, h('div', { class: 'ap-title' }, FARMACIA.name), h('small', null, FARMACIA.addr))),
+    h('div', { class: 'sec' },
+      row(FARMACIA.hours, 'Sabato 8:30–12:30 · domenica chiusa', null, null),
+      row('Telefono', h('span', { class: 'mono', style: 'user-select:all' }, FARMACIA.tel), null, null),
+      row('La tua farmacista', FARMACIA.who + ' · risponde ai messaggi negli orari di apertura', null, null)),
+    h('div', { class: 'box strong' },
+      h('h3', null, 'Telefarmacia'),
+      h('p', null, 'Fai una domanda sui farmaci tuoi o di Giorgio. Risponde per iscritto la Dott.ssa Bianchi, con le terapie che hai condiviso davanti, di solito entro un’ora negli orari di apertura.'),
+      h('button', { class: 'btn pri full', type: 'button', on: { click: () => startConsult() } }, 'Nuovo consulto'),
+      A.consults.length ? h('div', { class: 'sec' }, A.consults.map((c) => row(c.topic + (c.p === 'giorgio' ? ' · Giorgio' : ''), c.at + (c.unread ? ' · nuova risposta' : ''), h('span', { class: c.status === 'risposto' ? 'pill ok' : 'pill' }, CST[c.status]), () => openConsult(c), c.unread ? 'w' : ''))) : null,
+      h('small', null, 'Per un’urgenza chiama il 112 o il tuo medico.')),
+    h('button', { class: 'btn full', type: 'button', on: { click: openChat } }, A.unread ? 'Messaggi con la farmacia · ' + A.unread + ' nuovo' : 'Messaggi con la farmacia'),
+    h('div', { class: 'sec' }, h('div', { class: 'sec-h' }, 'Cosa vede la farmacia'),
+      row('Terapie condivise', A.meds.filter((m) => m.shared).length + ' di ' + A.meds.length + ', per Lucia e Giorgio. Puoi cambiarle una per una.', null, () => openTab('armadietto')),
+      row('Ordini e messaggi', 'Solo quelli che mandi a ' + FARMACIA.name + '.', null, null),
+      row('Offerte e comunicazioni', 'Non hai dato il consenso', h('button', { class: 'sw', type: 'button', role: 'switch', 'aria-checked': String(!!A.mkt), 'aria-label': 'Offerte e comunicazioni', on: { click: () => { A.mkt = !A.mkt; render(); } } }), null)),
+    h('button', { class: 'btn ghost', type: 'button', style: 'align-self:flex-start;padding:0', on: { click: () => { A.sheet = { unlink: true }; render(); } } }, 'Cambia farmacia'),
+  ];
+}
+
+function screenConsultoNuovo() {
+  const D = A.cdraft;
+  const meds = medsOf(D.p);
+  return [
+    back(() => { A.cdraft = null; A.sub = null; render(); }, 'Annulla'),
+    h('div', { class: 'ap-title' }, 'Nuovo consulto'),
+    h('div', { class: 'ap-sub' }, 'Telefarmacia con ' + FARMACIA.who),
+    h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Per chi'),
+      h('div', { class: 'chips', role: 'group', 'aria-label': 'Per chi' }, Object.entries(PEOPLE).map(([k, p]) => h('button', { class: 'chip', type: 'button', 'aria-pressed': String(D.p === k), on: { click: () => { D.p = k; D.med = ''; render(); } } }, k === 'lucia' ? 'Per me' : p.first)))),
+    h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Di cosa vuoi parlare'),
+      h('div', { class: 'chips', role: 'group', 'aria-label': 'Argomento' }, TOPICS.map((t) => h('button', { class: 'chip', type: 'button', 'aria-pressed': String(D.topic === t), on: { click: () => { D.topic = t; D.err = ''; render(); } } }, t)))),
+    h('div', { class: 'field' }, h('span', { class: 'lbl' }, 'Quale farmaco (facoltativo)'),
+      h('div', { class: 'chips', role: 'group', 'aria-label': 'Farmaco' }, meds.map((m) => h('button', { class: 'chip', type: 'button', 'aria-pressed': String(D.med === m.id), on: { click: () => { D.med = D.med === m.id ? '' : m.id; render(); } } }, m.name))),
+      D.med && !(A.meds.find((m) => m.id === D.med) || {}).shared ? h('small', { class: 'w' }, 'Questa terapia non è condivisa: la farmacista vedrà solo il nome nel consulto.') : null),
+    h('div', { class: 'field' }, h('label', { class: 'lbl', for: 'cText' }, 'La tua domanda'),
+      h('textarea', { id: 'cText', class: 'in', rows: '5', placeholder: 'Es. da quando prende il ramipril papà ha la tosse secca, è normale?', value: D.text, on: { input: (e) => { D.text = e.target.value; } } })),
+    D.err ? h('div', { class: 'err', role: 'alert' }, D.err) : null,
+    h('button', { class: 'btn pri full', type: 'button', on: { click: sendConsult } }, 'Invia alla farmacista'),
+    h('small', null, 'Risponde una persona, non un assistente automatico. Il consulto non sostituisce il medico. Per un’urgenza chiama il 112.'),
+  ];
+}
+function screenConsulto() {
+  const c = A.consults.find((x) => x.id === A.consId);
+  if (!c) return { body: [back(() => openTab('farmacia')), h('small', null, 'Consulto non trovato.')] };
+  const m = c.med ? A.meds.find((x) => x.id === c.med) : null;
+  const send = () => { const t = String(A.cmsg || '').trim(); if (!t) return; c.msgs.push({ me: true, t, at: now() }); c.status = 'attesa'; A.cmsg = ''; bridge({ type: 'consultMsg', id: c.id, text: t }); render(); };
+  return {
+    body: [
+      back(() => openTab('farmacia'), 'Farmacia'),
+      h('div', null, h('div', { class: 'ap-title' }, c.topic), h('small', null, (c.p === 'lucia' ? 'Per te' : 'Per Giorgio') + (m ? ' · ' + m.name : '') + ' · ' + c.at)),
+      h('div', { style: 'display:flex;gap:8px;align-items:center' }, h('span', { class: c.status === 'risposto' ? 'pill ok' : 'pill' }, CST[c.status]), h('small', null, c.status === 'attesa' ? 'Di solito risponde entro un’ora' : c.status === 'chiuso' ? 'Consulto chiuso' : 'Puoi rispondere o chiudere il consulto')),
+      h('div', { class: 'chat' }, c.msgs.map((x) => h('div', { class: 'msg' + (x.me ? ' me' : '') }, x.t, h('small', null, (x.me ? 'Tu' : 'Dott.ssa Bianchi') + ' · ' + x.at)))),
+      c.status === 'risposto' ? h('button', { class: 'btn full', type: 'button', on: { click: () => { c.status = 'chiuso'; bridge({ type: 'consultClose', id: c.id }); render(); } } }, 'Chiudi il consulto, grazie') : null,
+    ],
+    foot: c.status === 'chiuso' ? h('div', { class: 'compose' }, h('button', { class: 'btn full', type: 'button', on: { click: () => startConsult(c.med) } }, 'Nuovo consulto')) : h('div', { class: 'compose' },
+      h('input', { id: 'consIn', class: 'in', placeholder: 'Rispondi alla farmacista', value: A.cmsg || '', 'aria-label': 'Risposta', on: { input: (e) => { A.cmsg = e.target.value; }, keydown: (e) => { if (e.key === 'Enter') send(); } } }),
+      h('button', { class: 'btn pri', type: 'button', style: 'border-radius:999px', on: { click: send } }, 'Invia')),
+  };
+}
+
+function screenChat() {
+  const send = () => { const t = A.msg.trim(); if (!t) return; A.chat.push({ me: true, t, at: now() }); A.msg = ''; bridge({ type: 'chat', ext: 'chat' + (A.chatN = (A.chatN || 0) + 1), name: PEOPLE.lucia.name, text: t }); render(); };
+  return {
+    body: [
+      back(() => openTab('farmacia'), FARMACIA.name),
+      h('small', { style: 'text-align:center' }, 'Per ordini e domande pratiche. Per le domande sui farmaci usa la telefarmacia.'),
+      h('div', { class: 'chat' }, A.chat.map((c) => h('div', { class: 'msg' + (c.me ? ' me' : '') }, c.t, h('small', null, c.at)))),
+    ],
+    foot: h('div', { class: 'compose' },
+      h('input', { id: 'chatIn', class: 'in', placeholder: 'Scrivi un messaggio', value: A.msg, 'aria-label': 'Messaggio', on: { input: (e) => { A.msg = e.target.value; }, keydown: (e) => { if (e.key === 'Enter') send(); } } }),
+      h('button', { class: 'btn pri', type: 'button', style: 'border-radius:999px', on: { click: send } }, 'Invia')),
+  };
+}
+
+function screenOnboarding() {
+  const s = A.onb;
+  if (s === 0) return [
+    h('div', { style: 'margin-top:20px' }, h('small', null, '[NOME PIATTAFORMA]'), h('div', { class: 'ap-title', style: 'margin-top:6px' }, 'Collega la tua farmacia')),
+    h('p', { style: 'margin:0;color:var(--fg-2)' }, 'Inquadra il QR code che ti dà il farmacista al banco. Da quel momento l’app ha il nome e i servizi della tua farmacia.'),
+    h('div', { class: 'cam', 'aria-hidden': 'true' }),
+    h('button', { class: 'btn pri full', type: 'button', on: { click: () => { A.onb = 1; render(); } } }, 'Inquadra il QR code'),
+    h('small', { style: 'text-align:center' }, 'Nel prototipo il QR viene letto subito.'),
+  ];
+  if (s === 1) return [
+    h('div', { style: 'display:flex;gap:12px;align-items:center;margin-top:20px' }, h('div', { class: 'logo', style: 'width:52px;height:52px;font-size:18px;border-radius:14px' }, 'FR'), h('div', null, h('b', null, FARMACIA.name), h('small', null, FARMACIA.addr))),
+    h('div', { class: 'ap-title' }, 'Accedi con il tuo numero'),
+    h('div', { class: 'field' }, h('label', { class: 'lbl', for: 'tel' }, 'Numero di cellulare'), h('input', { id: 'tel', class: 'in mono', inputmode: 'tel', placeholder: '333 000 0000', autocomplete: 'off' })),
+    h('small', null, 'Ti mandiamo un codice per SMS. Niente password da ricordare.'),
+    h('button', { class: 'btn pri full', type: 'button', on: { click: () => { A.onb = 2; render(); } } }, 'Mandami il codice'),
+  ];
+  if (s === 2) return [
+    h('div', { class: 'ap-title', style: 'margin-top:20px' }, 'Scrivi il codice'),
+    h('div', { class: 'field' }, h('label', { class: 'lbl', for: 'otp' }, 'Codice di 6 cifre'), h('input', { id: 'otp', class: 'in mono', inputmode: 'numeric', placeholder: '000000', autocomplete: 'off' })),
+    h('small', null, 'Nel prototipo va bene qualsiasi codice.'),
+    h('button', { class: 'btn pri full', type: 'button', on: { click: () => { A.onb = 3; render(); } } }, 'Continua'),
+  ];
+  const mine = medsOf('lucia');
+  return [
+    h('div', { class: 'ap-title', style: 'margin-top:20px' }, 'Cosa vuoi condividere con ' + FARMACIA.name + '?'),
+    h('p', { style: 'margin:0;color:var(--fg-2)' }, 'La farmacia vede solo le terapie che scegli e ti avvisa quando stanno per finire. Puoi cambiare idea quando vuoi da Armadietto.'),
+    h('div', { class: 'sec' }, mine.map((m) => row(m.name, m.pack, h('button', { class: 'sw', type: 'button', role: 'switch', 'aria-checked': String(m.shared), 'aria-label': 'Condividi ' + m.name, on: { click: () => { m.shared = !m.shared; render(); } } }), null)),
+      row('Offerte e comunicazioni', 'Facoltativo, separato dalle terapie', h('button', { class: 'sw', type: 'button', role: 'switch', 'aria-checked': String(!!A.mkt), 'aria-label': 'Offerte e comunicazioni', on: { click: () => { A.mkt = !A.mkt; render(); } } }), null)),
+    h('button', { class: 'btn pri full', type: 'button', on: { click: () => { A.linked = true; A.onb = 0; openTab('oggi'); push(FARMACIA.name, 'Benvenuta Lucia. Da oggi trovi qui ordini, scorte e messaggi con la farmacia.', null); render(); } } }, 'Entra'),
+  ];
+}
+
+/* ---------- Fogli sopra lo schermo ---------- */
+function sheetView() {
+  const S = A.sheet; if (!S) return null;
+  const closeS = () => { A.sheet = null; render(); };
+  let kids;
+  if (S.pay) {
+    const o = A.orders.find((x) => x.id === S.pay);
+    const tick = o.items.filter((i) => !i.cart).length * 2;
+    kids = [
+      h('div', { style: 'display:flex;justify-content:space-between;align-items:center' }, h('b', null, 'Paga ' + FARMACIA.name), h('small', null, 'Pagamento sicuro')),
+      h('div', null,
+        h('div', { class: 'sum' }, h('span', null, 'Ticket ricette (' + o.items.filter((i) => !i.cart).length + ')'), h('span', { class: 'mono' }, '€ ' + eur(tick))),
+        o.free ? h('div', { class: 'sum' }, h('span', null, 'Altri prodotti'), h('span', { class: 'mono' }, '€ ' + eur(o.amount - tick))) : null,
+        o.mode === 'consegna' ? h('div', { class: 'sum' }, h('span', null, 'Consegna'), h('span', { class: 'mono' }, '€ 0,00')) : null,
+        h('div', { class: 'sum tot' }, h('span', null, 'Totale'), h('span', { class: 'mono' }, '€ ' + eur(o.amount)))),
+      h('button', { class: 'btn pri full', type: 'button', style: 'background:var(--ink);border-color:var(--ink);color:var(--ink-fg)', on: { click: () => pay(o, 'Apple Pay') } }, 'Paga con Apple Pay'),
+      h('button', { class: 'btn full', type: 'button', on: { click: () => pay(o, 'Carta ···· 4242') } }, 'Paga con la carta salvata ···· 4242'),
+      h('small', null, 'Il pagamento va direttamente a ' + FARMACIA.name + '. Nel prototipo non viene addebitato nulla.'),
+    ];
+  } else if (S.doctor) {
+    const copy = async () => { try { await navigator.clipboard.writeText(A.shareText); A.sheet.copied = true; } catch (e) { const t = $('docTxt'); if (t) { t.focus(); t.select(); } A.sheet.copied = 'sel'; } render(); };
+    kids = [
+      h('b', null, 'Messaggio per il medico'),
+      h('textarea', { id: 'docTxt', class: 'in', rows: '5', value: A.shareText, readonly: true }),
+      h('button', { class: 'btn pri full', type: 'button', on: { click: copy } }, S.copied === true ? 'Copiato' : 'Copia il messaggio'),
+      h('small', null, S.copied === 'sel' ? 'Testo selezionato: copialo e incollalo nella chat del medico.' : 'Incollalo su WhatsApp o nella mail del medico. Quando ti manda l’NRE torna qui.'),
+    ];
+  } else if (S.scan) {
+    kids = S.step === 0 ? [
+      h('b', null, 'Inquadra il codice sulla confezione'),
+      h('div', { class: 'cam', style: 'max-height:200px;aspect-ratio:auto;height:200px', 'aria-hidden': 'true' }),
+      h('button', { class: 'btn pri full', type: 'button', on: { click: () => { A.sheet.step = 1; render(); } } }, 'Leggi la confezione'),
+    ] : [
+      h('b', null, 'Paracetamolo 1000 mg · 16 compresse'),
+      h('small', null, 'Scade a 03/2028 · senza ricetta'),
+      h('button', { class: 'btn pri full', type: 'button', on: { click: () => { A.meds.push({ id: 'm' + (A.meds.length + 1), p: A.who, name: 'Paracetamolo 1000 mg', pack: '16 compresse · scade 03/2028', days: 60, fullDays: 60, shared: false, rx: 'libero' }); A.sheet = null; render(); } } }, 'Aggiungi ad Armadietto di ' + (A.who === 'lucia' ? 'Lucia' : PEOPLE[A.who].first)),
+    ];
+  } else if (S.unlink) {
+    kids = [h('b', null, 'Cambiare farmacia?'), h('p', { style: 'margin:0;font-size:13px;color:var(--fg-2)' }, FARMACIA.name + ' non vedrà più le tue terapie. Gli ordini già fatti restano nello storico. Per collegarti a un’altra farmacia inquadri il suo QR code.'),
+      h('button', { class: 'btn full', type: 'button', on: { click: () => { A.sheet = null; A.linked = false; A.onb = 0; render(); } } }, 'Scollega e inquadra un altro QR'),
+      h('button', { class: 'btn ghost full', type: 'button', on: { click: closeS } }, 'Resta con ' + FARMACIA.name)];
+  }
+  return h('div', { class: 'sheet-bg', on: { click: (e) => { if (e.target === e.currentTarget) closeS(); } } },
+    h('div', { class: 'sheet', role: 'dialog', 'aria-modal': 'true' }, h('span', { class: 'grab', 'aria-hidden': 'true' }), kids));
+}
+
+/* ---------- Telefono ---------- */
+const scrollMem = {};
+function phone() {
+  let body, foot = null, top;
+  if (!A.linked) { body = screenOnboarding(); top = null; }
+  else {
+    top = topBar();
+    if (A.sub === 'ordina') body = screenOrdina();
+    else if (A.sub === 'ordine') body = screenOrdine();
+    else if (A.sub === 'chat') { const c = screenChat(); body = c.body; foot = c.foot; top = topBar(FARMACIA.name, FARMACIA.who); }
+    else if (A.sub === 'consulto-nuovo') body = screenConsultoNuovo();
+    else if (A.sub === 'consulto') { const c = screenConsulto(); body = c.body; foot = c.foot || null; top = topBar('Telefarmacia', FARMACIA.who); }
+    else body = ({ oggi: screenOggi, armadietto: screenArmadietto, ordini: screenOrdini, farmacia: screenFarmacia })[A.tab]();
+  }
+  const payN = A.orders.filter((o) => o.status === 'pagamento').length;
+  const tabs = A.linked && !['chat', 'ordina', 'consulto', 'consulto-nuovo'].includes(A.sub) ? h('nav', { class: 'tabs', 'aria-label': 'Sezioni' },
+    [['oggi', 'Oggi'], ['armadietto', 'Armadietto'], ['ordini', 'Ordini'], ['farmacia', 'Farmacia']].map(([k, l]) =>
+      h('button', { type: 'button', 'aria-current': A.tab === k ? 'page' : null, on: { click: () => openTab(k) } }, h('span', { html: ICON[k], 'aria-hidden': 'true', style: 'display:flex' }), l,
+        k === 'ordini' && payN ? h('span', { class: 'dot' }, payN) : k === 'farmacia' && (A.unread + A.consults.filter((c) => c.unread).length) ? h('span', { class: 'dot' }, A.unread + A.consults.filter((c) => c.unread).length) : null))) : null;
+  const P = A.push;
+  return h('div', { class: 'phone', role: 'region', 'aria-label': 'App del paziente' },
+    h('div', { class: 'screen' },
+      h('div', { class: 'sbar', 'aria-hidden': 'true' }, h('span', null, now()), h('i', null, '•••• 5G')),
+      P ? h('button', { class: 'push', type: 'button', on: { click: () => { A.push = null; if (P.go) P.go(); else render(); } } }, h('div', { class: 'logo', 'aria-hidden': 'true' }, 'FR'), h('div', null, h('b', null, P.title), h('span', null, P.text))) : null,
+      top,
+      h('div', { class: 'ap-body', id: 'apBody' }, body),
+      foot, tabs, sheetView()));
+}
+
+/* ---------- Pannello della farmacia ---------- */
+const SEE = {
+  oggi: 'Oggi: gli ordini in corso, le terapie che stanno finendo e la farmacia. Il paziente vede solo il nome Farmacia Rossi.',
+  armadietto: 'Armadietto: scorte e scadenze di Lucia e di suo papà, che lei assiste. Ogni terapia si condivide con la farmacia una per una.',
+  ordini: 'Ordini: quelli in corso e lo storico, con lo stato aggiornato dalla dashboard della farmacia.',
+  farmacia: 'La mia farmacia: telefarmacia, messaggi, orari e cosa vede la farmacia.',
+  ordina: 'Nuovo ordine: NRE scritto o letto dalla foto del promemoria, più ricette, prodotti senza ricetta, ritiro o consegna.',
+  ordine: 'Dettaglio ordine: lo stato, il pagamento con link dopo la verifica, il codice di ritiro o di consegna.',
+  chat: 'Messaggi: ordini e domande pratiche. Arrivano nella colonna In arrivo della dashboard.',
+  'consulto-nuovo': 'Nuovo consulto di telefarmacia: per chi, argomento, farmaco dalle terapie di Armadietto e domanda. Arriva nel tab Telefarmacia della dashboard.',
+  consulto: 'Consulto di telefarmacia: risposta scritta della farmacista, con le terapie condivise davanti. Il paziente può rispondere o chiuderlo.',
+  onb: 'Primo accesso: QR code al banco, numero di telefono con codice SMS, consenso terapia per terapia.',
+};
+function panel() {
+  const key = !A.linked ? 'onb' : A.sub || A.tab;
+  const act = activeOrders();
+  const card = (o) => {
+    let btns, hint = null;
+    const B = (label, fn, pri) => h('button', { class: 'btn' + (pri ? ' pri' : ''), type: 'button', on: { click: fn } }, label);
+    if (o.status === 'inviato') btns = [B('Verifica e manda il link di pagamento · € ' + eur(amountOf(o)), () => verify(o, false), true), B('Ricetta esente', () => verify(o, true))];
+    else if (o.status === 'pagamento') { btns = []; hint = 'Aspetta il pagamento: paga dal telefono.'; }
+    else if (o.status === 'prep') btns = [B('Ordine pronto', () => ready(o), true)];
+    else if (o.status === 'pronto' && o.mode === 'ritiro') btns = [B('Ritirato al banco', () => finish(o), true)];
+    else if (o.status === 'pronto') btns = [B('Parte il fattorino', () => depart(o, 'fattorino'), true), hasFridge(o) ? null : B('Affida al rider partner', () => depart(o, 'rider'))];
+    else btns = [B('Consegnato · firma o foto', () => finish(o), true)];
+    return h('div', { class: 'p-card' }, h('div', { style: 'display:flex;justify-content:space-between;gap:8px' }, h('b', null, '#' + o.code + ' · ' + PEOPLE[o.p].name), h('span', { class: pillClass(o.status) }, ST[o.status])),
+      hint ? h('p', { class: 'sm' }, hint) : null, btns.length ? h('div', { class: 'p-act' }, btns) : null);
+  };
+  return [
+    h('div', null, h('h2', null, 'Stai vedendo'), h('p', { class: 'now', style: 'margin-top:6px' }, SEE[key])),
+    h('div', { class: 'p-list' }, h('h2', null, 'La farmacia fa'),
+      act.length ? act.map(card) : h('p', { class: 'sm', style: 'margin:0' }, 'Nessun ordine in corso. Creane uno dal telefono.'),
+      A.consults.filter((c) => c.status === 'attesa').map((c) => h('div', { class: 'p-card' },
+        h('div', { style: 'display:flex;justify-content:space-between;gap:8px' }, h('b', null, 'Consulto · ' + PEOPLE[c.p].name), h('span', { class: 'pill' }, 'In attesa')),
+        h('p', { class: 'sm' }, c.topic + ': “' + c.msgs[c.msgs.length - 1].t.slice(0, 80) + (c.msgs[c.msgs.length - 1].t.length > 80 ? '…' : '') + '”'),
+        h('div', { class: 'p-act' }, h('button', { class: 'btn pri', type: 'button', on: { click: () => consultReply(c) } }, 'La farmacista risponde')))),
+      h('div', { class: 'p-card' }, h('b', null, 'Altro'), h('div', { class: 'p-act' },
+        h('button', { class: 'btn', type: 'button', on: { click: pharmacistReply } }, 'Il farmacista risponde in chat'),
+        h('button', { class: 'btn', type: 'button', on: { click: stockAlert } }, 'Avviso di scorta'),
+        h('button', { class: 'btn', type: 'button', on: { click: () => { A.linked = false; A.onb = 0; A.sheet = null; render(); } } }, 'Mostra il primo accesso')))),
+    h('p', { class: 'note' }, 'Nello store l’app ha il nome della piattaforma; dopo il QR code il paziente vede solo la sua farmacia. Pagamento anticipato, rider esterni per i farmaci con ricetta e risposte scritte della telefarmacia sono da verificare con il legale.'),
+    h('button', { class: 'btn ghost', type: 'button', style: 'align-self:flex-start;min-height:30px;padding:0;font-size:12.5px', on: { click: () => { clearTimeout(pushTimer); A = seed(); render(); } } }, 'Ricomincia da capo'),
+  ];
+}
+
+function render() {
+  const old = $('apBody');
+  const prevKey = render.key;
+  if (old && prevKey) scrollMem[prevKey] = old.scrollTop;
+  const focusId = document.activeElement && document.activeElement.id;
+  $('phoneWrap').replaceChildren(phone());
+  $('panel').replaceChildren(...panel());
+  const key = (A.linked ? A.tab + '/' + (A.sub || '') + '/' + (A.orderId || '') : 'onb' + A.onb);
+  const nb = $('apBody');
+  if (nb) {
+    if (A.sub === 'chat' || A.sub === 'consulto') nb.scrollTop = nb.scrollHeight;
+    else nb.scrollTop = key === prevKey ? (scrollMem[key] || 0) : 0;
+  }
+  render.key = key;
+  shareSync();
+  if (focusId) { const f = $(focusId); if (f) f.focus(); }
+}
+/* ================= Collegamento con la dashboard (solo nel prototipo unico) ================= */
+const LINK = !!window.LINKED;
+let lastShare = '';
+function bridge(m) { if (!LINK) return; try { parent.postMessage(Object.assign({ from: 'paz' }, m), '*'); } catch (e) { /* senza pagina che ci contiene */ } }
+function payload(o) {
+  return { code: o.code, name: PEOPLE[o.p].name, who: o.p === 'giorgio' ? 'Ordina la figlia, Lucia' : '', cf: PEOPLE[o.p].cf, status: o.status, mode: o.mode, slot: o.slot, addr: o.addr, at: o.at,
+    items: o.items.map((i) => ({ name: i.name, nre: i.nre, cart: !!i.cart, fridge: !!(i.fridge || (A.meds.find((m) => m.id === i.med) || {}).fridge) })), free: o.free, amount: o.amount, noPay: !!o.noPay, paidAt: o.paidAt || '' };
+}
+const sharesPayload = () => Object.keys(PEOPLE).map((k) => ({ name: PEOPLE[k].name, note: k === 'giorgio' ? 'Lo assiste la figlia Lucia dall’app' : '', ther: medsOf(k).filter((m) => m.shared).map((m) => [m.name, daysLeft(m)]) }));
+function shareSync() { if (!LINK) return; const j = JSON.stringify(sharesPayload()); if (j !== lastShare) { lastShare = j; bridge({ type: 'patients', list: sharesPayload() }); } }
+function applyStatus(o, st, r) {
+  const from = o.status;
+  if (st === 'pagamento') { o.status = 'pagamento'; o.log.pagamento = 'oggi ' + now(); push(FARMACIA.name, 'Ricetta verificata. Puoi pagare l’ordine #' + o.code + ': € ' + eur(o.amount) + '.', () => { openOrder(o); A.sheet = { pay: o.id }; render(); }); return; }
+  if ((st === 'prep' || st === 'pronto' || st === 'consegna') && !o.noPay && !o.paidAt) { o.paidAt = 'oggi ' + (r.paidAt || now()); o.log.prep = o.paidAt; }
+  if (o.noPay && from === 'inviato') o.log.prep = 'oggi ' + now();
+  if (st === 'prep') {
+    o.status = 'prep';
+    if (o.noPay) push(FARMACIA.name, 'Ricetta verificata per l’ordine #' + o.code + ': non c’è niente da pagare. Lo stiamo preparando.', () => openOrder(o));
+    else if (from === 'pagamento') push(FARMACIA.name, 'Pagamento ricevuto, grazie. Prepariamo l’ordine #' + o.code + '.', () => openOrder(o));
+    return;
+  }
+  if (st === 'pronto') { ready(o); return; }
+  if (st === 'consegna') { depart(o, r.via === 'rider' ? 'rider' : 'fattorino', r.rider ? { name: r.rider.name, eta: r.rider.eta } : null); return; }
+  if (st === 'chiuso') finish(o);
+}
+function sync(d) {
+  A.seen = A.seen || {};
+  (d.orders || []).forEach((r) => {
+    const o = A.orders.find((x) => x.code === r.code); if (!o) return;
+    const amt = parseFloat(String(r.amount == null ? '' : r.amount).replace(',', '.'));
+    if (!isNaN(amt)) o.amount = amt;
+    if (r.noPay) o.noPay = true;
+    const st = r.status === 'nuovo' ? 'inviato' : r.status;
+    if (st !== o.status) applyStatus(o, st, r);
+  });
+  (d.consults || []).forEach((r) => {
+    const ph = r.msgs.map((m) => ({ me: false, t: String(m.t).replace(/\n/g, ' '), at: m.at }));
+    if (r.ext.indexOf('chat') === 0) {
+      const fresh = ph.slice(A.seen[r.ext] || 0); A.seen[r.ext] = ph.length;
+      if (fresh.length) { A.chat.push(...fresh); if (!(A.tab === 'farmacia' && A.sub === 'chat')) { A.unread += fresh.length; push(FARMACIA.name, 'Nuovo messaggio dalla farmacia', openChat); } }
+      return;
+    }
+    const c = A.consults.find((x) => x.id === r.ext); if (!c) return;
+    const fresh = ph.slice(c.msgs.filter((m) => !m.me).length);
+    if (fresh.length) { c.msgs.push(...fresh); c.status = 'risposto'; c.unread = !(A.sub === 'consulto' && A.consId === c.id); push(FARMACIA.name, 'La Dott.ssa Bianchi ha risposto al tuo consulto', () => openConsult(c)); }
+    if (r.status === 'chiuso') c.status = 'chiuso';
+  });
+  render();
+}
+if (LINK) {
+  document.body.classList.add('embed');
+  window.addEventListener('message', (e) => { const d = e.data; if (!d || d.to !== 'paz') return; if (d.type === 'state') sync(d); else if (d.type === 'stock') stockAlert(); });
+}
+render();
+if (LINK) { bridge({ type: 'ready' }); bridge({ type: 'hello', orders: activeOrders().map(payload), patients: sharesPayload() }); }
+</script>
+</body></html>
