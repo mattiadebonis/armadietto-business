@@ -12,7 +12,7 @@ I due prototipi affiancati e collegati: a sinistra la [dashboard della farmacia]
 - **Messaggi:** i messaggi dall'app arrivano in In arrivo e la risposta compare nella chat del telefono.
 - **Terapie:** le terapie che Lucia condivide aggiornano i pazienti della farmacia.
 
-In alto ci sono "Avviso di scorta sul telefono" e "Ricomincia". Anche qui la dashboard ha lo switch tra Interfaccia e Agente.
+In alto, fuori dalle due app, ci sono "Simula arrivo" e "Ricomincia". Simula arrivo fa arrivare alla farmacia un ordine, un messaggio WhatsApp, un consulto o un pagamento, oppure manda un avviso di scorta sul telefono di Lucia. La dashboard si apre su Home, dove lavora Claude; un ordine dall'app non sposta la farmacista da Home.
 
 ## Come funziona
 
@@ -20,4 +20,4 @@ In alto ci sono "Avviso di scorta sul telefono" e "Ricomincia". Anche qui la das
 
 ## Come aprirlo
 
-Apri `index.html` nel browser. La chat e l'agente usano Claude solo quando la pagina è aperta come artifact su claude.ai.
+Apri `index.html` nel browser. La chat e il briefing di Home usano Claude solo quando la pagina è aperta come artifact su claude.ai.
