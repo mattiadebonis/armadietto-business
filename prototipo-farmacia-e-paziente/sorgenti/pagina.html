@@ -1,0 +1,81 @@
+<title>Farmacia Rossi e paziente</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: dashboard della farmacia a sinistra, telefono del paziente a destra, collegati. */
+:root{
+  --bg:#F4F5F2; --surface:#FFFFFF; --line:#E2E5DF; --line-2:#C9CFC7; --fg:#17201B; --fg-2:#3E4943; --muted:#5B6660; --accent:#0B6B5D; --accent-ink:#FFFFFF;
+  --font: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0F1512; --surface:#161E1A; --line:#2A3630; --line-2:#3A4841; --fg:#E7EEEA; --fg-2:#C3CEC8; --muted:#9AA8A0; --accent:#3FB39F; --accent-ink:#06231D; color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --bg:#0F1512; --surface:#161E1A; --line:#2A3630; --line-2:#3A4841; --fg:#E7EEEA; --fg-2:#C3CEC8; --muted:#9AA8A0; --accent:#3FB39F; --accent-ink:#06231D; color-scheme:dark; }
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);display:flex;flex-direction:column}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));border-bottom:1px solid var(--line);background:var(--surface)}
+.logo{width:30px;height:30px;border-radius:8px;background:var(--accent);color:var(--accent-ink);display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex:0 0 auto}
+.top h1{margin:0;font-size:14.5px;font-weight:600}
+.top p{margin:0;font-size:12.5px;color:var(--muted)}
+.top .grow{flex:1;min-width:220px}
+.btn{border:1px solid var(--line-2);background:var(--surface);border-radius:8px;min-height:34px;padding:0 12px;font-size:12.5px;font-weight:500}
+.btn:hover{background:var(--bg)}
+.duo{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 404px;gap:0}
+.pane{display:flex;flex-direction:column;min-width:0;min-height:0}
+.pane + .pane{border-left:1px solid var(--line)}
+.lbl{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;padding:8px 16px;border-bottom:1px solid var(--line);background:var(--surface)}
+iframe{flex:1;width:100%;min-height:0;border:0;background:var(--bg);display:block}
+@media (max-width:1080px){
+  body{height:auto}
+  .duo{grid-template-columns:minmax(0,1fr)}
+  .pane + .pane{border-left:0;border-top:1px solid var(--line)}
+  .pane.farm iframe{height:900px;flex:0 0 auto}
+  .pane.paz iframe{height:860px;flex:0 0 auto}
+}
+</style>
+
+<header class="top">
+  <div class="logo" aria-hidden="true">FR</div>
+  <div class="grow">
+    <h1>Farmacia Rossi · banco digitale e app del paziente</h1>
+    <p>Due prototipi collegati: quello che Lucia manda dal telefono arriva alla farmacia, e le risposte della farmacia tornano sul telefono.</p>
+  </div>
+  <button class="btn" type="button" id="stock">Avviso di scorta sul telefono</button>
+  <button class="btn" type="button" id="reset">Ricomincia</button>
+</header>
+<div class="duo">
+  <section class="pane farm"><div class="lbl">Banco digitale · Dott.ssa Bianchi</div><iframe id="fFarm" title="Dashboard della farmacia"></iframe></section>
+  <section class="pane paz"><div class="lbl">App del paziente · Lucia De Santis</div><iframe id="fPaz" title="App del paziente"></iframe></section>
+</div>
+
+<script type="text/plain" id="docFarm">%%FARM%%</script>
+<script type="text/plain" id="docPaz">%%PAZ%%</script>
+<script>
+(() => {
+  const dec = (id) => new TextDecoder().decode(Uint8Array.from(atob(document.getElementById(id).textContent.trim()), (c) => c.charCodeAt(0)));
+  const DOCS = { farm: dec('docFarm'), paz: dec('docPaz') };
+  const frames = { farm: document.getElementById('fFarm'), paz: document.getElementById('fPaz') };
+  let ready, queue;
+  function load() {
+    ready = { farm: false, paz: false }; queue = { farm: [], paz: [] };
+    frames.farm.srcdoc = DOCS.farm; frames.paz.srcdoc = DOCS.paz;
+  }
+  function deliver(to, msg) {
+    if (ready[to] && frames[to].contentWindow) frames[to].contentWindow.postMessage(msg, '*');
+    else queue[to].push(msg);
+  }
+  window.addEventListener('message', (e) => {
+    const m = e.data; if (!m || (m.from !== 'farm' && m.from !== 'paz')) return;
+    if (e.source !== frames[m.from].contentWindow) return;
+    if (m.type === 'ready') { ready[m.from] = true; queue[m.from].splice(0).forEach((x) => frames[m.from].contentWindow.postMessage(x, '*')); return; }
+    deliver(m.from === 'farm' ? 'paz' : 'farm', Object.assign({}, m, { to: m.from === 'farm' ? 'paz' : 'farm' }));
+  });
+  document.getElementById('stock').addEventListener('click', () => deliver('paz', { to: 'paz', type: 'stock' }));
+  document.getElementById('reset').addEventListener('click', load);
+  load();
+})();
+</script>
