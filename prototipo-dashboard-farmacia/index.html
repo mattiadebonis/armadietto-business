@@ -439,24 +439,94 @@ textarea.ap-in{resize:vertical;min-height:110px}
 .btn.pill{background:var(--surface)!important;color:var(--fg)}
 .btn.pri.pill{background:var(--accent)!important;border-color:var(--accent);color:var(--accent-ink)}
 .btn.ghost.pill{background:transparent!important;border-color:transparent;color:var(--fg-2)}
+/* In arrivo: pannello che si apre di lato, sopra la dashboard */
+.app,.app.noin,.app.noai,.app.noin.noai{grid-template-columns:minmax(0,1fr)}
+.app > .work{grid-column:1}
+.app > .inbox-col,.app.noin > .inbox-col{display:block;position:fixed;top:0;left:0;bottom:0;width:min(440px,92vw);z-index:40;border-right:1px solid var(--line);box-shadow:16px 0 40px rgba(15,21,18,.16);transform:none;visibility:visible;transition:transform .2s ease,visibility .2s}
+.app.noin > .inbox-col{transform:translateX(-104%);visibility:hidden;box-shadow:none}
+.in-scrim{position:fixed;inset:0;background:rgba(15,21,18,.28);z-index:39}
+@media (prefers-reduced-motion: reduce){.app > .inbox-col{transition:none}}
+/* barra del prototipo: fuori dall'interfaccia della farmacia */
+.proto-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px max(16px,env(safe-area-inset-right,0px)) 6px max(16px,env(safe-area-inset-left,0px));background:var(--surface-2);border-bottom:1px dashed var(--line-2);font-size:12.5px;color:var(--muted);flex:0 0 auto}
+.proto-bar .sim{order:0;margin-left:auto}
+.proto-bar .sim > .btn{min-height:30px;font-size:12.5px}
+html.linked .proto-bar{display:none}
+/* la chat non c'è più: nel modo agente restano solo i pannelli dell'agente */
+#ctxChip{display:none!important}
+/* interruttore Agente, in alto a destra */
+.ag-flag{order:9;margin-left:auto;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-2);background:var(--surface);border-radius:999px;min-height:36px;padding:0 6px 0 12px;font-size:13px;font-weight:600;color:var(--fg-2)}
+.ag-track{position:relative;width:34px;height:20px;border-radius:99px;background:var(--line-2);transition:background .15s}
+.ag-track::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--surface);transition:transform .15s}
+.ag-flag[aria-checked="true"]{color:var(--fg);border-color:var(--fg)}
+.ag-flag[aria-checked="true"] .ag-track{background:var(--accent)}
+.ag-flag[aria-checked="true"] .ag-track::after{transform:translateX(14px)}
+/* Home: Claude, il piano di oggi e la chat */
+.app.agentmode .ag{gap:16px;padding-bottom:6px}
+.app.agentmode .ag-head{position:sticky;top:0;z-index:2;background:var(--chat);padding:8px 0;margin-top:-8px}
+.plan{display:flex;flex-direction:column;gap:18px}
+.plan-head{display:flex;flex-direction:column;gap:10px}
+.plan-head h3{margin:0;font-size:18px;font-weight:600;letter-spacing:-.01em}
+.plan-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0}
+.plan-stats > div{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--surface)}
+.plan-stats dt{font-size:11.5px;color:var(--muted)}
+.plan-stats dd{margin:0;font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+.plan-stats .now dd{color:var(--warn-strong)}
+.plan-stats .done dd{color:var(--accent-fg)}
+@media (max-width:520px){.plan-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.plan-bar{height:4px;border-radius:99px;background:var(--line);overflow:hidden}
+.plan-bar i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .3s}
+.plan-empty{margin:0;font-size:13.5px;color:var(--fg-2);border:1px dashed var(--line-2);border-radius:12px;padding:16px;text-align:center}
+.pg{display:flex;flex-direction:column;gap:10px}
+.pg-head{display:flex;align-items:center;gap:10px}
+.pg-head h5{margin:0;font-size:14px;font-weight:600}
+.pg-head div{flex:1;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.pg-head div span{font-size:12px;color:var(--muted)}
+.pg-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--muted);flex:0 0 auto}
+.pg.now .pg-dot{background:var(--warn-strong);border-color:var(--warn-strong)}
+.pg.today .pg-dot{border-color:var(--info-fg)}
+.pg-n{font-size:12px;font-weight:600;border:1px solid var(--line-2);border-radius:999px;padding:0 8px;color:var(--fg-2);font-variant-numeric:tabular-nums}
+.pg.now .pg-n{color:var(--warn-fg);border-color:currentColor}
+.pi-ic{width:32px;height:32px;border-radius:9px;border:1px solid var(--line);display:inline-flex;align-items:center;justify-content:center;color:var(--fg-2);flex:0 0 auto;background:var(--surface)}
+.pg.now .pi-ic{color:var(--warn-fg);border-color:currentColor}
+.pc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:10px}
+.pc{background:var(--surface);border:1px solid var(--line-2);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.pc-top{display:flex;align-items:center;gap:10px;min-width:0}
+.pc-meta{font-size:12px;color:var(--muted);min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pc-meta b{color:var(--fg-2);font-weight:600}
+.pc-when{font-size:12px;font-weight:600;color:var(--warn-fg);white-space:nowrap}
+.pc-t{margin:0;font-size:15px;font-weight:600;line-height:1.3;text-wrap:balance}
+.pc-why{margin:0;font-size:13px;color:var(--fg-2);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.pc-reason{margin:0;font-size:12.5px;font-weight:600;color:var(--warn-fg)}
+.pi-acts{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.pc .pi-acts{margin-top:auto;padding-top:4px}
+.pr-list{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.pr + .pr{border-top:1px solid var(--line)}
+.pr-line{display:flex;align-items:center;gap:8px;padding:6px 10px 6px 6px}
+.pr-main{flex:1;min-width:0;display:flex;align-items:center;gap:10px;border:0;background:transparent;text-align:left;padding:4px;border-radius:8px}
+.pr-main:hover .pr-t{text-decoration:underline}
+.pr-txt{display:flex;flex-direction:column;min-width:0}
+.pr-t{font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pr-sub{font-size:12px;color:var(--muted)}
+.pr.later .pr-t{font-weight:500}
+.pr-body{display:flex;flex-direction:column;gap:8px;padding:0 14px 14px 52px}
+.ag-done{border-top:1px solid var(--line);padding-top:8px}
+.ag-done summary{cursor:pointer;font-size:12.5px;color:var(--fg-2);font-weight:500;padding:4px 0}
+.ag-done[open] summary{margin-bottom:4px}
 /* switch Interfaccia / Agente */
 .mode-sw{order:4;display:inline-grid;grid-auto-flow:column;border:1px solid var(--line-2);border-radius:10px;padding:3px;gap:3px;background:var(--surface)}
 .mode-sw button{border:0;background:transparent;border-radius:7px;min-height:32px;padding:0 12px;font-size:13px;font-weight:500;color:var(--fg-2);display:inline-flex;align-items:center;gap:7px}
 .mode-sw button[aria-pressed="true"]{background:var(--ink);color:var(--ink-fg);font-weight:600}
 /* modo agente: l'agente al posto di In arrivo e chat, a destra l'area di lavoro */
 .app.agentmode{grid-template-columns:minmax(0,1fr)}
-.app.agentmode > .inbox-col{display:none}
 .app.agentmode > .ai{display:flex!important;grid-column:1;grid-row:1;border:0;overflow-y:auto;min-height:0}
 .app.agentmode > .work{display:none}
 .app.agentmode .ag,.app.agentmode .ai-log{width:100%;max-width:760px;margin-inline:auto}
 .app.agentmode .ai-foot > *{width:100%;max-width:760px;margin-inline:auto}
-.shell:has(.app.agentmode) #tabs{display:none}
 .ag-drawer{width:min(620px,100%)}
 .app.agentmode .ag{flex:none;overflow:visible}
 .app.agentmode .ai-log{flex:none;overflow:visible;padding-top:0}
 .app.agentmode .ai-log:empty{display:none}
 .app.agentmode .ai-foot{position:sticky;bottom:0;margin-top:auto;background:var(--surface);border-top:1px solid var(--line)}
-.shell:has(.app.agentmode) #inBtn,.shell:has(.app.agentmode) #aiOpen{display:none}
 
 .ag-dot{width:8px;height:8px;border-radius:50%;background:var(--line-2)}
 #modeSw.running .ag-dot{background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);animation:agpulse 1.6s ease-in-out infinite}
@@ -486,14 +556,7 @@ textarea.ap-in{resize:vertical;min-height:110px}
 </style>
 
 <div class="shell">
-    <header class="top">
-      <div class="brand">
-        <button class="btn" id="aiOpen" type="button" aria-pressed="true" aria-label="Mostra o nascondi la chat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 3v18"></path></svg><span id="aiOpenLbl">Chat</span></button>
-        <div class="logo">FR</div>
-        <div class="grow"><b>Farmacia Rossi</b></div>
-        <button class="btn" id="inBtn" type="button" aria-pressed="true" aria-controls="inCol"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg><span>In arrivo</span><span class="badge" id="inCount" hidden></span></button>
-        <div class="mode-sw" id="modeSw" role="group" aria-label="Modo di lavoro"><button type="button" data-mode="ui" aria-pressed="true">Interfaccia</button><button type="button" data-mode="agent" aria-pressed="false"><span class="ag-dot" aria-hidden="true"></span>✦ Agente</button></div>
-        <div class="sim">
+    <div class="proto-bar" id="protoBar"><span>Prototipo con dati di esempio</span><div class="sim">
           <button class="btn" id="simBtn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="simMenu">Simula arrivo ▾</button>
           <div class="sim-menu" id="simMenu" role="menu" hidden>
             <button role="menuitem" id="simOrder" type="button">Un ordine dall'app</button>
@@ -501,13 +564,19 @@ textarea.ap-in{resize:vertical;min-height:110px}
             <button role="menuitem" id="simCons" type="button">Un consulto</button>
             <button role="menuitem" id="simPay" type="button">Un pagamento</button>
           </div>
-        </div>
+        </div></div>
+    <header class="top">
+      <div class="brand">
+        <div class="logo">FR</div>
+        <div class="grow"><b>Farmacia Rossi</b></div>
+        <button class="btn" id="inBtn" type="button" aria-pressed="true" aria-controls="inCol"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg><span>In arrivo</span><span class="badge" id="inCount" hidden></span></button>
       </div>
       <nav class="tabs" role="tablist" aria-label="Sezioni" id="tabs"></nav>
     </header>
     <div class="toast" id="toast" role="status" hidden></div>
     <div id="agDrawer"></div>
 <div class="app">
+  <div class="in-scrim" id="inScrim" hidden></div>
   <aside class="inbox-col" id="inCol" aria-label="In arrivo"><section class="queue" id="queue" aria-label="Messaggi in arrivo"></section></aside>
   <aside class="ai" aria-label="Assistente">
     <div class="ag" id="agent" aria-label="Modalità agente" hidden></div>
@@ -541,7 +610,7 @@ const fmtEur = (n) => n.toFixed(2).replace('.', ',');
 const AV = [['pronto', 'Pronto'], ['grossista', 'Dal grossista'], ['equivalente', 'Equivalente']];
 
 const S = {
-  tab: 'ordini', chatForce: false, inbox: [], iSel: null, iFilter: 'aperti', oview: 'coda', filter: 'tutti', sel: null, draft: '', copied: null,
+  tab: 'agente', chatForce: false, inbox: [], iSel: null, iFilter: 'aperti', oview: 'coda', filter: 'tutti', sel: null, draft: '', copied: null,
   cFilter: 'nuovo', cSel: 'c5', cDraft: '', closing: false, pSel: 'p1', done: 9, next: 0,
   orders: [
     { id: 'o1', code: '2041', patient: 'Giulia Marchetti', who: 'Ordina per la madre, Anna Marchetti', ch: 'wa', at: '08:42', status: 'nuovo', mode: 'consegna', slot: 'oggi 16:00–18:00', address: 'Via Mazzini 14', cf: 'MRCNNA41C52L219K', amount: '', free: 'Cerotti per calli',
@@ -683,10 +752,12 @@ function advance(o) {
 function render() {
   const nNew = open().filter((o) => o.status === 'nuovo').length;
   const nC = S.consults.filter((c) => c.status === 'nuovo').length;
-  const tabs = [['ordini', 'Ordini', nNew], ['tele', 'Telefarmacia', nC]];
+  const nAg = AG.on ? agPlan().filter(([k]) => k !== 'later').reduce((n, [, , l]) => n + l.length, 0) : 0;
+  const tabs = [['agente', 'Home', nAg], ['ordini', 'Ordini', nNew], ['tele', 'Telefarmacia', nC]];
+  document.querySelector('.app').classList.toggle('agentmode', S.tab === 'agente');
   $('tabs').replaceChildren(...tabs.map(([k, l, n]) => h('button', { class: 'tab', role: 'tab', type: 'button', 'aria-selected': String(S.tab === k), on: { click: () => { S.tab = k; render(); } } }, l, n ? h('span', { class: 'badge' }, n) : null)));
   const m = $('main');
-  if (AG.mode === 'agent') { m.replaceChildren(); $('agDrawer').replaceChildren(...[agentDrawer()].filter(Boolean)); }
+  if (S.tab === 'agente') { m.replaceChildren(); $('agDrawer').replaceChildren(...[agentDrawer()].filter(Boolean)); }
   else { $('agDrawer').replaceChildren(); m.replaceChildren(S.tab === 'ordini' ? viewOrders() : viewTele()); }
   updateCtxChip();
   renderQueue();
@@ -811,7 +882,7 @@ function viewGiro(deliveries) {
 
   const th = (cols) => h('thead', null, h('tr', null, cols.map((t) => h('th', { scope: 'col' }, t))));
   return h('div', { style: 'display:flex;flex-direction:column;gap:22px' },
-    h('div', { class: 'bar' }, h('button', { class: 'btn ghost sm', type: 'button', on: { click: () => askClaude('Organizza le consegne di oggi: cosa affidare al fattorino e cosa conviene dare al rider partner, e in che ordine.') } }, '✦ Chiedi a Claude come dividere le consegne')),
+    h('div', { class: 'bar' }, null),
     h('section', { style: 'display:flex;flex-direction:column;gap:10px' },
       h('div', { class: 'kv', style: 'flex-wrap:wrap' },
         h('div', null, h('div', { class: 'h3', style: 'font-size:15px;color:var(--fg)' }, 'Fattorino della farmacia'), h('div', { class: 'lbl' }, 'Luca · giro 16:00–18:00 · firma o foto alla consegna · obbligatorio per frigo e stupefacenti')),
@@ -858,7 +929,7 @@ function orderDetail() {
       h('h2', null, o.patient), o.who ? h('div', { style: 'font-size:13px;color:var(--fg-2)' }, o.who) : null,
       o.armadietto ? h('div', { class: 'note ok' }, 'Riordino partito dall’avviso scorte di Armadietto.') : null,
       o.photo ? h('div', { class: 'note n' }, 'Foto del promemoria allegata: controlla l’NRE prima di copiarlo nel gestionale.') : null,
-      h('div', null, h('button', { class: 'btn soft sm pill', type: 'button', on: { click: () => askClaude('Aiutami con l’ordine #' + o.code + ' di ' + o.patient + ': cosa manca per chiuderlo?') } }, '✦ Chiedi a Claude su questo ordine'))),
+      h('div', null, null)),
     sec(h('div', { class: 'kv' }, h('div', null, h('div', { class: 'lbl' }, 'Codice fiscale'), h('div', { class: 'mono', style: 'font-size:14px' }, o.cf)), h('button', { class: 'btn sm', type: 'button', on: { click: () => copy(o.cf, o.id + 'cf') } }, S.copied === o.id + 'cf' ? 'Copiato' : 'Copia'))),
     sec(h('div', { class: 'h3' }, 'Ricette e disponibilità'), items, o.free ? h('div', { style: 'font-size:13px' }, h('span', { class: 'lbl' }, 'Senza ricetta: '), o.free) : null),
     sec(h('div', { class: 'two' },
@@ -911,7 +982,7 @@ function consultDetail() {
         h('span', { class: 'pill s-' + (c.status === 'nuovo' ? 'nuovo' : c.status === 'attesa' ? 'prep' : 'chiuso') }, c.status === 'nuovo' ? 'Da rispondere' : c.status === 'attesa' ? 'In attesa' : 'Chiuso')),
       h('h2', null, c.patient), c.who ? h('div', { class: 'muted' }, c.who) : null,
       h('div', { class: 'bar' },
-        h('button', { class: 'btn soft sm', type: 'button', on: { click: () => askClaude('Riassumimi il consulto di ' + c.patient + ' e il contesto che abbiamo. Non serve una risposta clinica.') } }, '✦ Riassumi con Claude'),
+        null,
         c.status !== 'chiuso' ? h('button', { class: 'btn sm', type: 'button', on: { click: () => { S.closing = !S.closing; render(); } } }, 'Chiudi il consulto') : null),
       S.closing ? h('div', { class: 'bar' }, h('span', { class: 'lbl' }, 'Com’è finito?'), outcomes.map((l) => h('button', { class: 'btn soft sm pill', type: 'button', on: { click: () => { c.status = 'chiuso'; c.outcome = l; S.closing = false; render(); toast('Consulto chiuso · ' + l); } } }, l))) : null),
     c.ai ? sec(h('div', { class: 'h3' }, '\u2726 Nota di Claude'), c.ai.summary ? h('div', { class: 'note n', style: 'font-size:13px' }, c.ai.summary) : null,
@@ -946,7 +1017,7 @@ function viewPatients() {
     h('div', { class: 'det-sec' }, h('div', { class: 'lbl', style: 'font-weight:600;color:var(--fg)' }, 'Terapie condivise da Armadietto'),
       sel.ther.length ? sel.ther.map(([n, d]) => h('div', { class: 'kv item', style: 'flex-direction:row' }, h('b', null, n), h('span', { style: 'font-weight:600;' + (d <= 7 ? 'color:var(--warn-fg)' : 'color:var(--muted)') }, 'finisce tra ' + d + ' giorni'))) : h('div', { class: 'hint' }, 'Il paziente non ha condiviso le terapie con la farmacia.'),
       h('div', { class: 'hint' }, 'Il consenso è del paziente, per singola terapia, e si revoca dall’app.')),
-    sel.ther.some(([, d]) => d <= 7) ? h('div', { class: 'det-sec' }, h('button', { class: 'btn soft', type: 'button', style: 'justify-content:center;min-height:44px', on: { click: () => askClaude('Prepara un messaggio di riordino per ' + sel.name + ' per le terapie che stanno finendo.') } }, '✦ Fai preparare a Claude il messaggio di riordino')) : null)
+    sel.ther.some(([, d]) => d <= 7) ? h('div', { class: 'det-sec' }, null) : null)
     : h('section', { class: 'card empty' }, 'Scegli un paziente.');
   return h('div', { class: 'split' }, h('section', { class: 'card list', 'aria-label': 'Pazienti collegati' }, rows), det);
 }
@@ -1106,7 +1177,6 @@ const ERR = {
 
 async function askClaude(text) {
   setView('chat');
-  if (document.querySelector('.app').classList.contains('noai')) setAi(true);
   text = String(text || '').trim();
   if (!text || busy) return;
   if (!sample) { toast(sampleState === 'loading' ? 'Sto collegando Claude, riprova tra un attimo.' : 'Claude non è disponibile in questa vista.'); return; }
@@ -1248,7 +1318,7 @@ function seedInbox() {
 async function simWhatsApp() {
   const m = WA[WA_ORDER[waNext % WA_ORDER.length]]; waNext++;
   const it = addInbox({ src: 'wa', from: m.from, who: '', ch: 'wa', at: now(), text: m.text, m, d: null, state: 'reading', byClaude: false });
-  it.unread = false; S.iSel = it.id; setIn(true); render();
+  S.iSel = it.id; render();
   toast('Nuovo messaggio WhatsApp da ' + m.from + ' · Claude lo sta leggendo', 'new');
   let d = null;
   if (sample) { try { d = await sample.json(waPrompt(m, it.at), { modelTier: 'quick', cache: false }); it.byClaude = true; } catch (e) { if (e && e.code === 'not_granted') sampleState = 'denied'; } }
@@ -1259,7 +1329,7 @@ async function simWhatsApp() {
 async function simConsult() {
   const m = CP[cpNext % CP.length]; cpNext++;
   const it = addInbox({ src: 'cons', from: m.from, who: m.who || '', ch: m.ch, at: now(), text: m.text, m, d: null, state: 'reading', byClaude: false });
-  it.unread = false; S.iSel = it.id; setIn(true); render();
+  S.iSel = it.id; render();
   toast('Nuovo messaggio da ' + m.from + ' su ' + CH[m.ch] + ' · Claude lo sta leggendo', 'new');
   let d = null;
   if (sample) { try { d = await sample.json(consPrompt(m), { modelTier: 'quick', cache: false }); it.byClaude = true; } catch (e) { if (e && e.code === 'not_granted') sampleState = 'denied'; } }
@@ -1346,14 +1416,14 @@ function inboxDetail(itArg, compact) {
       h('div', { class: 'prop-row' }, h('button', { class: 'btn pri sm pill', type: 'button', on: { click: () => { const t = String(it.reply || '').trim(); if (!t) { toast('Scrivi la risposta prima di inviarla.'); return; } it.sent = { t, at: now() }; it.done = { text: 'Risposta inviata su ' + CH[it.ch] }; render(); toast('Risposta inviata a ' + it.from + ' su ' + CH[it.ch]); } } }, 'Invia la risposta'), archive), src);
   }
   if (compact) return h('div', { class: 'q-body' }, it.who ? h('div', { class: 'lbl' }, it.who) : null, h('div', { class: 'bub pt' }, it.text), ai,
-    h('button', { class: 'btn ghost sm', type: 'button', style: 'align-self:flex-start', on: { click: () => askClaude('Aiutami con il messaggio di ' + it.from + ': cosa devo fare?') } }, '\u2726 Chiedi all\u2019assistente'));
+    null);
   return h('section', { class: 'card det', 'aria-label': 'Messaggio di ' + it.from },
     sec(h('div', { class: 'kv' }, h('span', { class: 'lbl' }, CH[it.ch] + ' · ' + it.at), it.state === 'reading' ? h('span', { class: 'tag' }, 'In lettura') : h('span', { class: 'tag ' + KIND[it.kind][1] }, KIND[it.kind][0])),
       h('h2', null, it.from), it.who ? h('div', { style: 'font-size:13px;color:var(--fg-2)' }, it.who) : null),
     sec(h('div', { class: 'thread' }, h('div', { class: 'bub pt' }, it.text), h('div', { class: 'meta' }, it.from.split(' ')[0] + ' · ' + it.at),
       it.sent ? h('div', { class: 'bub me' }, it.sent.t) : null, it.sent ? h('div', { class: 'meta r' }, 'Farmacia · ' + it.sent.at) : null)),
     sec(h('div', { class: 'h3' }, '✦ Lettura di Claude'), ai),
-    sec(h('div', null, h('button', { class: 'btn ghost sm', type: 'button', on: { click: () => askClaude('Aiutami con il messaggio di ' + it.from + ' in Inbox: cosa devo fare?') } }, '✦ Chiedi all’assistente'))));
+    sec(h('div', null, null)));
 }
 
 
@@ -1382,15 +1452,15 @@ function renderQueue() {
   const doneRow = (it) => h('div', { class: 'q-done' }, h('span', { class: 'q-main' }, h('b', null, it.from), h('span', { class: 'lbl' }, it.done.text)),
     it.done.go ? h('button', { class: 'linkbtn', type: 'button', style: 'font-size:12px', on: { click: () => { Object.assign(S, it.done.go); render(); } } }, it.done.label) : null);
   q.replaceChildren(...[
-    h('div', { class: 'q-head' }, h('h3', null, 'Da gestire'), h('span', { class: items.length ? 'badge' : 'pend' }, String(items.length))),
+    h('div', { class: 'q-head' }, h('h3', null, 'In arrivo · da gestire'), h('span', { class: items.length ? 'badge' : 'pend' }, String(items.length)),
+      h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Chiudi In arrivo', style: 'margin-left:auto', on: { click: () => { setIn(false); $('inBtn').focus(); } } }, '\u2715')),
     h('div', { class: 'q-list' }, items.length ? items.map(row) : h('p', { class: 'q-empty' }, 'Niente da gestire. I messaggi da WhatsApp, app e link arrivano qui, già letti da Claude.')),
-    done.length ? h('div', { class: 'q-head' }, h('h3', null, 'Gestiti oggi')) : null,
-    done.length ? h('div', { class: 'q-list' }, done.map(doneRow)) : null].filter(Boolean));
+  ].filter(Boolean));
 }
 function setIn(open) {
   document.querySelector('.app').classList.toggle('noin', !open); $('inBtn').setAttribute('aria-pressed', String(open));
-  try { localStorage.setItem('farmacia-in-nascosto', open ? '0' : '1'); } catch (e) { /* storage non disponibile */ }
-  if (open) renderQueue();
+  $('inScrim').hidden = !open;
+  if (open) { renderQueue(); setTimeout(() => { const b = document.querySelector('#inCol .q-head .icon-btn'); if (b) b.focus(); }, 0); }
 }
 /* ================= Lato paziente: app e widget per il sito ================= */
 const LUCIA = { name: 'Lucia De Santis', first: 'Lucia', cf: 'DSNLCU78D61L219P', address: 'Via Garibaldi 12' };
@@ -1409,7 +1479,7 @@ function newPatientOrder(src) {
 }
 async function receiveConsult(m) {
   const it = addInbox({ src: 'cons', from: m.from, who: m.who || '', ch: m.ch, at: now(), text: m.text, m, d: null, state: 'reading', byClaude: false });
-  S.iSel = it.id; setIn(true); render();
+  S.iSel = it.id; render();
   toast('Nuova domanda da ' + m.from + ' su ' + CH[m.ch] + ' · Claude la sta leggendo', 'new');
   let d = null;
   if (sample) { try { d = await sample.json(consPrompt(m), { modelTier: 'quick', cache: false }); it.byClaude = true; } catch (e) { if (e && e.code === 'not_granted') sampleState = 'denied'; } }
@@ -1585,42 +1655,63 @@ function agNext() {
   return null;
 }
 
-/* Le decisioni che restano alla farmacista */
+/* Il piano: tutto ciò che serve alla farmacista, diviso per priorità (adesso, entro oggi, quando puoi) */
+const BUCKETS = [['now', 'Adesso'], ['today', 'Entro oggi'], ['later', 'Quando puoi']];
+const waitTxt = (m) => (m >= 999 ? 'da ieri' : 'da ' + fmtWait(m));
+const giroSoon = () => { const n = toMin(now()); return n != null && n >= 15 * 60 + 30 && n < 16 * 60; };
+const askAbout = (x) => () => askClaude('Aiutami con questa cosa del piano: ' + x.title + '. ' + x.why + ' Dimmi cosa fare, senza consigli clinici.');
+
 function agNeedsYou() {
   const out = [];
-  S.consults.filter((c) => c.status === 'nuovo').sort((a, b) => ((b.prio ? 1 : 0) - (a.prio ? 1 : 0)) || (b.wait - a.wait)).forEach((c) => out.push({
-    key: 'c' + c.id, tag: c.prio ? ['Da richiamare', 'w'] : ['Telefarmacia', 'i'], title: 'Rispondi a ' + c.patient, why: (c.ai && c.ai.summary) || c.msgs[c.msgs.length - 1].t,
-    acts: [['Apri il consulto', () => { S.cFilter = 'nuovo'; S.cSel = c.id; if (isAgent()) S.agOpen = { t: 'cons', id: c.id }; else S.tab = 'tele'; render(); }, true]] }));
+  S.consults.filter((c) => c.status === 'nuovo').forEach((c) => {
+    const w = c.wait || minsSince(c.at);
+    const why = (c.ai && c.ai.summary) || c.msgs[c.msgs.length - 1].t;
+    out.push({ key: 'c' + c.id, type: 'cons', meta: CH[c.ch] + (c.who ? ' · ' + c.who : ''), kind: c.prio ? ['Da richiamare', 'w'] : ['Telefarmacia', 'i'], title: 'Rispondi a ' + c.patient, why,
+      bucket: c.prio || w >= 60 ? 'now' : 'today', when: 'aspetta ' + waitTxt(w), rank: (c.prio ? 2000 : 0) + w,
+      reason: c.prio ? 'Riferisce un sintomo nuovo: meglio richiamarlo.' : w >= 60 ? 'Aspetta da più di un’ora.' : '',
+      acts: [['Apri il consulto', () => { S.cFilter = 'nuovo'; S.cSel = c.id; if (isAgent()) S.agOpen = { t: 'cons', id: c.id }; else S.tab = 'tele'; render(); }, true]] });
+  });
   open().filter((o) => o.status === 'nuovo' && o.agChecked).forEach((o) => {
     const ok = o.items.every((i) => i.av) && String(o.amount).trim() !== '';
-    out.push({ key: 'o' + o.id, tag: ['Ricetta', 'ok'], title: 'Verifica la ricetta di ' + o.patient + ' · #' + o.code,
-      why: o.items.map((i) => i.name + ' (' + (AV.find((a) => a[0] === i.av) || ['', 'da indicare'])[1].toLowerCase() + ')').join(', ') + ' · totale ' + (o.agAmount ? 'proposto' : '') + ' € ' + o.amount + '. Controlla NRE e codice fiscale nel gestionale.',
-      acts: [['Apri l’ordine', () => { S.sel = o.id; if (isAgent()) S.agOpen = { t: 'order', id: o.id }; else { S.tab = 'ordini'; S.oview = 'coda'; } render(); }, false],
-        ok ? ['Ho verificato: invia il link', () => { const before = o.status; if (advance(o)) agStep((o.status === 'pagamento' ? 'Ho inviato a ' + o.patient + ' il link di pagamento da € ' + o.amount : 'Ordine #' + o.code + ' verificato, nulla da pagare') + ' (approvato da te)', 'you'); render(); }, true] : null].filter(Boolean) });
+    const w = minsSince(o.at);
+    const forGiro = o.mode === 'consegna' && /oggi 16/.test(o.slot);
+    out.push({ key: 'o' + o.id, type: 'ricetta', meta: CH[o.ch] + ' · ' + (o.mode === 'consegna' ? 'consegna ' + o.slot.replace('oggi ', '') : 'ritiro'), kind: ['Ricetta', 'ok'], title: 'Verifica la ricetta di ' + o.patient + ' · #' + o.code,
+      why: o.items.map((i) => i.name + ' (' + (AV.find((a) => a[0] === i.av) || ['', 'da indicare'])[1].toLowerCase() + ')').join(', ') + ' · totale ' + (o.agAmount ? 'proposto ' : '') + '€ ' + o.amount + '.',
+      bucket: w >= 60 || (forGiro && giroSoon()) ? 'now' : 'today', when: forGiro ? 'per il giro delle 16:00' : 'arrivato ' + waitTxt(w).replace('da ', 'da '), rank: (forGiro ? 500 : 0) + w,
+      reason: forGiro ? 'Se lo verifichi presto, il paziente paga e parte con il giro di oggi.' : '',
+      acts: [ok ? ['Ho verificato: invia il link', () => { if (advance(o)) agStep((o.status === 'pagamento' ? 'Ho inviato a ' + o.patient + ' il link di pagamento da € ' + o.amount : 'Ordine #' + o.code + ' verificato, nulla da pagare') + ' (approvato da te)', 'you'); render(); }, true] : null,
+        ['Apri l’ordine', () => { S.sel = o.id; if (isAgent()) S.agOpen = { t: 'order', id: o.id }; else { S.tab = 'ordini'; S.oview = 'coda'; } render(); }, false]].filter(Boolean) });
   });
   S.inbox.filter((it) => it.state === 'ready' && !it.done && it.kind === 'domanda' && !String(it.reply || '').trim()).forEach((it) => out.push({
-    key: 'i' + it.id, tag: ['Messaggio', ''], title: 'Rispondi a ' + it.from, why: it.text,
+    key: 'i' + it.id, type: 'msg', meta: CH[it.ch], kind: ['Messaggio', ''], title: 'Rispondi a ' + it.from, why: it.text, bucket: 'today', when: 'arrivato alle ' + it.at, rank: minsSince(it.at), reason: '',
     acts: [['Apri il messaggio', () => { if (isAgent()) S.agOpen = { t: 'msg', id: it.id }; else { S.iSel = it.id; setIn(true); } render(); }, true]] }));
   return out;
 }
 
-/* I suggerimenti: cose utili che l'agente non fa senza un tuo sì */
 function agSuggestions() {
   const out = [];
   const own = open().filter((o) => o.status === 'pronto' && o.mode === 'consegna' && o.via !== 'rider');
-  if (own.length) out.push({ key: 'giro' + own.map((o) => o.code).join(), title: 'Affida il giro delle 16:00 a Luca', why: own.length + (own.length === 1 ? ' tappa pronta: ' : ' tappe pronte: ') + own.map((o) => o.patient).join(', ') + '.',
+  if (own.length) out.push({ key: 'giro' + own.map((o) => o.code).join(), type: 'giro', meta: 'Fattorino Luca · 16:00–18:00', kind: ['Consegne', ''], title: 'Affida il giro delle 16:00 a Luca',
+    why: own.length + (own.length === 1 ? ' tappa pronta: ' : ' tappe pronte: ') + own.map((o) => o.patient).join(', ') + '.', bucket: giroSoon() ? 'now' : 'today', when: 'parte alle 16:00', rank: 300, reason: '',
     acts: [['Affida il giro', () => { dispatchGiro(own); agStep('Ho affidato il giro a Luca: ' + own.length + (own.length === 1 ? ' tappa' : ' tappe') + ' (approvato da te)', 'you'); }, true]] });
-  open().filter((o) => o.status === 'pronto' && o.via === 'rider' && !o.rider && !hasFridge(o)).forEach((o) => out.push({ key: 'rider' + o.code, title: 'Prenota il rider per #' + o.code + ' di ' + o.patient, why: 'È pronto e va con il rider partner. Costo stimato € ' + riderCost(o) + '.',
+  open().filter((o) => o.status === 'pronto' && o.via === 'rider' && !o.rider && !hasFridge(o)).forEach((o) => out.push({ key: 'rider' + o.code, type: 'rider', meta: 'Rider partner · ' + (o.address || ''), kind: ['Rider', ''], title: 'Prenota il rider per #' + o.code + ' di ' + o.patient,
+    why: 'È pronto e aspetta in farmacia. Costo stimato € ' + riderCost(o) + '.', bucket: 'now', when: 'pronto, in attesa', rank: 400, reason: 'Ogni minuto in più è un ritardo per il paziente.',
     acts: [['Prenota il rider', () => { bookRider(o); agStep('Ho prenotato il rider per #' + o.code + ' · € ' + o.rider.cost + ' (approvato da te)', 'you'); }, true]] }));
   S.patients.forEach((p) => p.ther.filter(([, d]) => d <= 5).forEach(([n, d]) => {
     const drug = n.split(' ')[0].toLowerCase();
     if (open().some((o) => (o.patient === p.name || (o.who || '').includes(p.name.split(' ')[0])) && o.items.some((i) => i.name.toLowerCase().includes(drug)))) return;
     const first = p.name.split(' ')[0];
-    const t = 'Buongiorno ' + first + ', la sua confezione di ' + n + ' finisce tra ' + d + (d === 1 ? ' giorno' : ' giorni') + '. Se ci manda la ricetta lo prepariamo noi, con ritiro o consegna a casa. Farmacia Rossi';
-    out.push({ key: 'rio' + p.name + n, title: 'Proponi il riordino a ' + p.name, why: n + ' finisce tra ' + d + (d === 1 ? ' giorno' : ' giorni') + '. Messaggio pronto:', quote: t,
+    const t = 'Buongiorno ' + first + ', la sua confezione di ' + n + ' finisce tra ' + d + (d === 1 ? ' giorno' : ' giorni') + '. Se ci manda la ricetta la prepariamo noi, con ritiro o consegna a casa. Farmacia Rossi';
+    out.push({ key: 'rio' + p.name + n, type: 'riordino', meta: 'Terapia condivisa da Armadietto', kind: ['Riordino', ''], title: 'Proponi il riordino a ' + p.name, why: n + ' finisce tra ' + d + (d === 1 ? ' giorno.' : ' giorni.'), quote: t,
+      bucket: d <= 2 ? 'today' : 'later', when: 'finisce tra ' + d + (d === 1 ? ' giorno' : ' giorni'), rank: 100 - d, reason: '', sug: true,
       acts: [['Invia il messaggio', () => { AG.skip['rio' + p.name + n] = true; toast('Messaggio inviato a ' + p.name + ' con il nome Farmacia Rossi'); agStep('Ho scritto a ' + p.name + ' per il riordino di ' + n + ' (approvato da te)', 'you'); render(); }, true]] });
   }));
-  return out.filter((x) => !AG.skip[x.key]);
+  return out.filter((x) => !AG.skip[x.key]).map((x) => Object.assign({ sug: true }, x));
+}
+
+function agPlan() {
+  const all = agNeedsYou().concat(agSuggestions());
+  return BUCKETS.map(([k, l]) => [k, l, all.filter((x) => x.bucket === k).sort((a, b) => b.rank - a.rank)]);
 }
 
 function agTick() {
@@ -1652,28 +1743,8 @@ async function agBrief() {
   } catch (e) { if (e && e.code === 'not_granted') sampleState = 'denied'; }
 }
 
-const isAgent = () => AG.mode === 'agent';
+const isAgent = () => S.tab === 'agente';
 function setView() { if (!isAgent() && document.querySelector('.app').classList.contains('noai')) setAi(true); }
-function setMode(m) {
-  if (m === AG.mode) return;
-  AG.mode = m;
-  try { localStorage.setItem('farmacia-modo', m); } catch (e) { /* storage non disponibile */ }
-  document.querySelector('.app').classList.toggle('agentmode', m === 'agent');
-  $('modeSw').querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === m)));
-  if (m === 'agent') { if (!AG.on) agStart(); else if (AG.paused && AG.autoPaused) { AG.paused = false; AG.autoPaused = false; agStep('Ho ripreso', 'info'); } }
-  else if (AG.on && !AG.paused) { AG.paused = true; AG.autoPaused = true; agStep('In pausa: sei passata all’interfaccia', 'info'); }
-  S.agOpen = null; render();
-}
-
-function agCard(x, kind) {
-  return h('div', { class: 'prop ag-card' },
-    h('div', { class: 'prop-k' }, x.tag ? h('span', { class: 'tag ' + x.tag[1] }, x.tag[0]) : h('span', { class: 'tag' }, 'Suggerimento'),
-      kind === 'sug' ? h('button', { class: 'linkbtn', type: 'button', on: { click: () => { AG.skip[x.key] = true; renderAgent(); } } }, 'Lascia stare') : null),
-    h('div', { class: 'prop-t' }, x.title),
-    h('div', { class: 'prop-why' }, x.why),
-    x.quote ? h('p', { class: 'prop-q' }, x.quote) : null,
-    h('div', { class: 'prop-row' }, x.acts.map(([l, fn, pri]) => h('button', { class: 'btn sm pill' + (pri ? ' pri' : ''), type: 'button', on: { click: fn } }, l))));
-}
 
 /* Nel modo agente ordini, consulti e messaggi si aprono in un pannello sopra l'agente */
 function agentDrawer() {
@@ -1689,42 +1760,104 @@ function agentDrawer() {
       h('div', { class: 'drawer-x' }, h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Chiudi', on: { click: close } }, '\u2715')), body));
 }
 
+const PI_ICON = {
+  cons: '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',
+  ricetta: '<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 16h5"/>',
+  msg: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+  giro: '<path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.5"/><circle cx="17" cy="17.5" r="1.5"/>',
+  rider: '<circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M6 17l4-7h5l3 7M10 10l-1-3H7"/>',
+  riordino: '<path d="M20 11a8 8 0 0 0-14.6-4.5L4 8M4 4v4h4M4 13a8 8 0 0 0 14.6 4.5L20 16M20 20v-4h-4"/>',
+};
+const GROUP_SUB = { now: 'Da fare subito', today: 'Prima della chiusura delle 19:30', later: 'Non urgenti' };
+function piIcon(type) { const s = h('span', { class: 'pi-ic', 'aria-hidden': 'true' }); s.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + (PI_ICON[type] || PI_ICON.msg) + '</svg>'; return s; }
+function piActions(x, full) {
+  const [main, ...rest] = x.acts;
+  return h('div', { class: 'pi-acts' },
+    main ? h('button', { class: 'btn sm pill' + (main[2] ? ' pri' : ''), type: 'button', on: { click: main[1] } }, main[0]) : null,
+    full ? rest.map(([l, fn]) => h('button', { class: 'btn sm pill', type: 'button', on: { click: fn } }, l)) : null,
+    full ? h('button', { class: 'btn sm pill ghost', type: 'button', on: { click: askAbout(x) } }, '✦ Chiedi a Claude') : null,
+    full && x.sug ? h('button', { class: 'btn sm pill ghost', type: 'button', on: { click: () => { AG.skip[x.key] = true; renderAgent(); } } }, 'Lascia stare') : null);
+}
+/* Scheda singola: grande per le cose da fare adesso, riga compatta per le altre (si apre al clic) */
+function planCard(x) {
+  return h('article', { class: 'pc ' + x.bucket },
+    h('div', { class: 'pc-top' }, piIcon(x.type), h('span', { class: 'pc-meta' }, h('b', null, x.kind[0]), x.meta ? ' · ' + x.meta : ''), h('span', { class: 'pc-when' }, x.when)),
+    h('h4', { class: 'pc-t' }, x.title),
+    h('p', { class: 'pc-why' }, x.why),
+    x.reason ? h('p', { class: 'pc-reason' }, x.reason) : null,
+    x.quote ? h('p', { class: 'prop-q' }, x.quote) : null,
+    piActions(x, true));
+}
+function planRow(x) {
+  const isOpen = AG.openItem === x.key;
+  return h('li', { class: 'pr ' + x.bucket + (isOpen ? ' open' : '') },
+    h('div', { class: 'pr-line' },
+      h('button', { class: 'pr-main', type: 'button', 'aria-expanded': String(isOpen), on: { click: () => { AG.openItem = isOpen ? null : x.key; renderAgent(); } } },
+        piIcon(x.type), h('span', { class: 'pr-txt' }, h('span', { class: 'pr-t' }, x.title), h('span', { class: 'pr-sub' }, x.kind[0] + ' · ' + x.when))),
+      isOpen ? null : piActions(x, false)),
+    isOpen ? h('div', { class: 'pr-body' },
+      x.meta ? h('div', { class: 'pc-meta' }, x.meta) : null,
+      h('p', { class: 'pc-why' }, x.why),
+      x.reason ? h('p', { class: 'pc-reason' }, x.reason) : null,
+      x.quote ? h('p', { class: 'prop-q' }, x.quote) : null,
+      piActions(x, true)) : null);
+}
+function planGroup(k, label, items) {
+  return h('section', { class: 'pg ' + k, 'aria-label': label },
+    h('header', { class: 'pg-head' },
+      h('span', { class: 'pg-dot', 'aria-hidden': 'true' }),
+      h('div', null, h('h5', null, label), h('span', null, GROUP_SUB[k])),
+      h('span', { class: 'pg-n' }, String(items.length))),
+    k === 'now' ? h('div', { class: 'pc-grid' }, items.map(planCard)) : h('ul', { class: 'pr-list' }, items.map(planRow)));
+}
+
 function renderAgent() {
   const box = $('agent'); if (!box) return;
   const show = isAgent();
   box.hidden = !show;
-  $('modeSw').classList.toggle('running', AG.on && !AG.paused);
-  $('askIn').placeholder = show ? 'Dai un’istruzione a Claude…' : 'Chiedi a Claude…';
+  $('askIn').placeholder = 'Scrivi a Claude: chiedi o dai un’istruzione…';
   if (!show) return;
-  const need = AG.on ? agNeedsYou() : [], sug = AG.on ? agSuggestions() : [];
+  const plan = AG.on ? agPlan() : [];
+  const cnt = (k) => (plan.find((p) => p[0] === k) || [0, 0, []])[2].length;
+  const total = plan.reduce((n, [, , l]) => n + l.length, 0);
+  const doneN = AG.steps.filter((s) => s.kind !== 'info').length;
   const working = AG.on && !AG.paused;
   const pending = AG.on && agNext();
+  const star = () => { const sv = h('span', { class: 'star', 'aria-hidden': 'true' }); sv.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 2c.6 4.8 3.2 7.4 8 8-4.8.6-7.4 3.2-8 8-.6-4.8-3.2-7.4-8-8 4.8-.6 7.4-3.2 8-8z" fill="var(--accent)"></path></svg>'; return sv; };
   const head = h('div', { class: 'ag-head' },
     h('span', { class: 'ag-state' + (working ? ' on' : '') }, h('i', { 'aria-hidden': 'true' }),
-      !AG.on ? 'Agente fermo' : AG.paused ? 'In pausa' : pending ? 'Al lavoro…' : 'Tutto smistato · aspetto nuovi arrivi'),
+      !AG.on ? 'Claude è fermo' : AG.paused ? 'Claude è in pausa' : pending ? 'Claude sta lavorando la coda…' : 'Coda smistata · Claude aspetta nuovi arrivi'),
     AG.on ? h('span', { style: 'display:flex;gap:6px' },
       h('button', { class: 'btn sm pill', type: 'button', on: { click: () => { AG.paused = !AG.paused; agStep(AG.paused ? 'In pausa' : 'Ho ripreso', 'info'); render(); } } }, AG.paused ? 'Riprendi' : 'Pausa'),
       h('button', { class: 'btn sm pill ghost', type: 'button', on: { click: agStop } }, 'Ferma'))
-      : h('button', { class: 'btn sm pill pri', type: 'button', on: { click: agStart } }, 'Avvia l’agente'));
+      : h('button', { class: 'btn sm pill pri', type: 'button', on: { click: agStart } }, 'Avvia Claude'));
   const kids = [head];
-  if (!AG.on) kids.push(h('div', { class: 'ag-intro' },
-    h('p', null, 'In modalità agente Claude lavora la coda al posto tuo e ti lascia solo le decisioni da farmacista.'),
-    h('ul', null, h('li', null, 'Fa da solo: smista In arrivo, crea le bozze d’ordine, controlla il magazzino e propone il totale, risponde alle domande pratiche, manda i promemoria di pagamento.'),
-      h('li', null, 'Chiede a te: verifica delle ricette, consulti di telefarmacia, giro di consegna, rider e messaggi ai pazienti.'),
-      h('li', null, 'Non dà consigli clinici e ogni operazione resta nell’elenco qui sotto.'))));
-  if (AG.brief && AG.on) kids.push(h('div', { class: 'ag-brief' }, h('span', { class: 'ag-star', 'aria-hidden': 'true' }, '✦'), h('div', null, richText(AG.brief), h('div', { class: 'hint' }, AG.briefBy === 'claude' ? 'Briefing di Claude' : 'Briefing automatico'))));
-  if (AG.on) {
-    kids.push(h('section', { class: 'ag-sec' }, h('h4', null, 'Serve te', need.length ? h('span', { class: 'badge' }, need.length) : null),
-      need.length ? need.map((x) => agCard(x, 'need')) : h('p', { class: 'hint' }, 'Niente da decidere adesso.')));
-    if (sug.length) kids.push(h('section', { class: 'ag-sec' }, h('h4', null, 'Ti suggerisco'), sug.map((x) => agCard(x, 'sug'))));
+  if (!AG.on) {
+    kids.push(h('div', { class: 'msg-ai' }, star(), h('div', { class: 'body' }, h('div', { class: 'txt' },
+      h('p', null, 'Quando mi avvii lavoro la coda al posto tuo: smisto In arrivo, creo le bozze d’ordine, controllo il magazzino, rispondo alle domande pratiche e mando i promemoria di pagamento.'),
+      h('p', null, 'A te lascio il piano con le priorità. Puoi scrivermi qui sotto in qualsiasi momento.')))));
+  } else {
+    kids.push(h('div', { class: 'msg-ai' }, star(), h('div', { class: 'body' }, h('div', { class: 'txt' }, richText(AG.brief || '')))));
+    kids.push(h('section', { class: 'plan', 'aria-label': 'Il piano di oggi' },
+      h('div', { class: 'plan-head' },
+        h('h3', null, 'Il piano di oggi'),
+        h('dl', { class: 'plan-stats' },
+          h('div', { class: 'now' }, h('dt', null, 'Adesso'), h('dd', null, cnt('now'))),
+          h('div', null, h('dt', null, 'Entro oggi'), h('dd', null, cnt('today'))),
+          h('div', null, h('dt', null, 'Quando puoi'), h('dd', null, cnt('later'))),
+          h('div', { class: 'done' }, h('dt', null, 'Fatte da Claude'), h('dd', null, doneN))),
+        h('div', { class: 'plan-bar', 'aria-hidden': 'true' }, h('i', { style: 'width:' + Math.round(100 * doneN / Math.max(1, doneN + total)) + '%' }))),
+      plan.filter(([, , l]) => l.length).map(([k, l, items]) => planGroup(k, l, items)),
+      total ? null : h('p', { class: 'plan-empty' }, 'Niente da decidere adesso. Ti avviso qui quando arriva qualcosa.')));
+    if (AG.steps.length) kids.push(h('details', { class: 'ag-done' }, h('summary', null, 'Cosa ha fatto Claude · ' + doneN),
+      h('ol', { class: 'ag-steps' }, AG.steps.map((s) => h('li', { class: 'ag-step ' + s.kind }, h('span', { class: 'ag-tick', 'aria-hidden': 'true' }, s.kind === 'info' ? '·' : s.kind === 'you' ? '✓✓' : '✓'), h('span', null, s.text), h('time', null, s.at))))));
   }
-  if (AG.steps.length) kids.push(h('section', { class: 'ag-sec' }, h('h4', null, 'Fatto'),
-    h('ol', { class: 'ag-steps' }, AG.steps.map((s) => h('li', { class: 'ag-step ' + s.kind }, h('span', { class: 'ag-tick', 'aria-hidden': 'true' }, s.kind === 'info' ? '·' : s.kind === 'you' ? '✓✓' : '✓'), h('span', null, s.text), h('time', null, s.at))))));
+  const keepOpen = box.querySelector('details.ag-done') && box.querySelector('details.ag-done').open;
   box.replaceChildren(...kids);
+  if (keepOpen) { const d = box.querySelector('details.ag-done'); if (d) d.open = true; }
 }
 
-$('modeSw').addEventListener('click', (e) => { const b = e.target.closest('button[data-mode]'); if (b) setMode(b.dataset.mode); });
-try { if (localStorage.getItem('farmacia-modo') === 'agent') setTimeout(() => setMode('agent'), 0); } catch (e) { /* storage non disponibile */ }
+
 
 /* ================= Avvio ================= */
 $('simCons').addEventListener('click', () => simConsult());
@@ -1733,25 +1866,25 @@ $('ask').addEventListener('submit', (e) => { e.preventDefault(); if (busy) { bus
 $('askIn').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); $('ask').requestSubmit(); } });
 $('askIn').addEventListener('input', (e) => { const t = e.target; t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 140) + 'px'; });
 function setAi(show) {
+  show = false; /* la chat con Claude non c'è più: resta solo l'agente */
   document.querySelector('.app').classList.toggle('noai', !show);
-  $('aiOpen').setAttribute('aria-pressed', String(show));
   try { localStorage.setItem('farmacia-ai-nascosto', show ? '0' : '1'); } catch (e) { /* storage non disponibile */ }
   if (show) setTimeout(() => { const t = $('askIn'); if (t) t.focus(); }, 0);
 }
-$('aiOpen').addEventListener('click', () => setAi(document.querySelector('.app').classList.contains('noai')));
-try { if (localStorage.getItem('farmacia-ai-nascosto') === '1') { document.querySelector('.app').classList.add('noai'); $('aiOpen').setAttribute('aria-pressed', 'false'); } } catch (e) { /* storage non disponibile */ }
+document.querySelector('.app').classList.add('noai');
 function simMenu(open) { $('simMenu').hidden = !open; $('simBtn').setAttribute('aria-expanded', String(open)); }
 $('simBtn').addEventListener('click', (e) => { e.stopPropagation(); simMenu($('simMenu').hidden); });
 $('simMenu').addEventListener('click', () => simMenu(false));
 document.addEventListener('click', (e) => { if (!e.target.closest('.sim')) simMenu(false); });
-document.addEventListener('keydown', (e) => { if (e.key !== 'Escape') return; if (!$('simMenu').hidden) { simMenu(false); $('simBtn').focus(); } else if (S.tab === 'ordini' && S.sel) { S.sel = null; render(); } });
+document.addEventListener('keydown', (e) => { if (e.key !== 'Escape') return; if (!document.querySelector('.app').classList.contains('noin')) { setIn(false); $('inBtn').focus(); return; } if (!$('simMenu').hidden) { simMenu(false); $('simBtn').focus(); } else if (S.tab === 'ordini' && S.sel) { S.sel = null; render(); } });
 $('simPay').addEventListener('click', () => {
   const o = open().find((x) => x.status === 'pagamento');
   if (!o) { toast('Nessun ordine in attesa di pagamento: conferma prima un ordine con un totale.'); return; }
   markPaid(o);
 });
+$('inScrim').addEventListener('click', () => setIn(false));
 $('inBtn').addEventListener('click', () => setIn(document.querySelector('.app').classList.contains('noin')));
-try { if (localStorage.getItem('farmacia-in-nascosto') === '1') { document.querySelector('.app').classList.add('noin'); $('inBtn').setAttribute('aria-pressed', 'false'); } } catch (e) { /* storage non disponibile */ }
+document.querySelector('.app').classList.add('noin'); $('inBtn').setAttribute('aria-pressed', 'false');
 $('newChat').addEventListener('click', () => { if (busy) busy.abort(); turns.length = 0; pendingNotes = []; renderHello(); });
 $('simOrder').addEventListener('click', () => {
   const p = POOL[S.next % POOL.length]; S.next++;
@@ -1761,7 +1894,7 @@ $('simOrder').addEventListener('click', () => {
 });
 
 seedInbox(); S.iSel = null;
-render(); renderHello();
+render(); renderHello(); agStart();
 (async () => {
   try {
     const s = window.claude && window.claude.use ? await window.claude.use('sample') : null;

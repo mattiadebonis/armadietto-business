@@ -1,5 +1,6 @@
 /* ================= Collegamento con l'app del paziente (solo nel prototipo unico) ================= */
 if (window.LINKED) {
+  document.documentElement.classList.add('linked');
   const PAZ = ['Lucia De Santis', 'Giorgio De Santis'];
   const toPaz = (m) => { try { parent.postMessage(Object.assign({ from: 'farm' }, m), '*'); } catch (e) { /* nessuna pagina intorno */ } };
   const CAT = { 'Come si usa un farmaco': 'Uso del farmaco', 'Effetti indesiderati': 'Effetti indesiderati', 'Farmaci da prendere insieme': 'Interazioni', 'Altro': 'Altro' };
@@ -36,14 +37,14 @@ if (window.LINKED) {
     S.orders.unshift(o);
     if (!quiet) {
       pendingNotes.push('È arrivato l’ordine #' + o.code + ' di ' + o.patient + ' dall’app');
-      S.tab = 'ordini'; S.oview = 'coda'; S.sel = o.id;
+      if (S.tab !== 'agente') { S.tab = 'ordini'; S.oview = 'coda'; S.sel = o.id; }
       toast('Nuovo ordine dall’app di ' + o.patient + ' · #' + o.code, 'new');
     }
   };
   async function receiveChat(r) {
     const m = { from: r.name, who: '', ch: 'app', text: r.text, ext: r.ext };
     const it = addInbox({ src: 'wa', from: r.name, who: '', ch: 'app', at: now(), text: r.text, m, d: null, state: 'reading', byClaude: false });
-    S.iSel = it.id; setIn(true); render();
+    S.iSel = it.id; render();
     toast('Nuovo messaggio dall’app di ' + r.name + ' · Claude lo sta leggendo', 'new');
     let d = null;
     if (sample) { try { d = await sample.json(waPrompt(m, it.at), { modelTier: 'quick', cache: false }); it.byClaude = true; } catch (e) { if (e && e.code === 'not_granted') sampleState = 'denied'; } }
@@ -69,8 +70,8 @@ if (window.LINKED) {
     }
     else if (r.type === 'consultClose') { const c = S.consults.find((x) => x.ext === r.id); if (c) { c.status = 'chiuso'; c.outcome = 'Chiuso dal paziente'; render(); } }
     else if (r.type === 'chat') receiveChat(r);
+    else if (r.type === 'sim') { const b = $({ order: 'simOrder', wa: 'simWa', cons: 'simCons', pay: 'simPay' }[r.what]); if (b) b.click(); }
   });
-  // spazio stretto accanto al telefono: la chat con Claude parte chiusa, si apre con il pulsante Chat
-  setTimeout(() => { try { setAi(false); } catch (e) { /* toggle non disponibile */ } toPaz({ type: 'ready' }); emit(); }, 0);
+  setTimeout(() => { toPaz({ type: 'ready' }); emit(); }, 0);
 }
 
